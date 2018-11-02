@@ -1,0 +1,26 @@
+.profileNav {
+  margin-top: 40px;
+}
+
+.basicInfo {
+  margin-left: 10px;
+  color: #455A3B;
+  display: inline-block;
+}
+
+.profileImg {
+  margin-bottom: 12px;
+  margin-left: -21px;
+}
+
+.h3-title-profile {
+  color: #333;
+  display: block !important;
+  margin-left: 15px;
+  width: 200px;
+  margin-top: 20px;
+}
+
+.profile-placeholders {
+  margin-left: 15px;
+}

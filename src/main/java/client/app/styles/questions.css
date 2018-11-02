@@ -1,0 +1,43 @@
+.horizontal-line {
+  width: 100%;
+  margin-left: 18rem;
+  margin-bottom: 2.5rem;
+  color: #C1B599;
+}
+
+.h3-title-questions {
+  color: #333;
+  display: block !important;
+  margin-left: -20px;
+  width: 200px;
+}
+
+.question-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  width: 70%;
+  display: block;
+  margin-left: 300px;
+}
+
+
+.question-title1 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  width: 70%;
+  display: block;
+}
+
+.answer {
+  color: #333;
+  width: 70% !important;
+  margin-left: 300px;
+}
+
+.questionNav {
+  float: left;
+  width: 0 !important;
+  padding-left: 55px;
+}

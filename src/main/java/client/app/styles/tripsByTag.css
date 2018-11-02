@@ -1,0 +1,35 @@
+.content-card-item-tags {
+    min-width: 0;
+    align-self: start;
+    margin-right: 72px;
+    display: inline-block;
+}
+
+.content-card-v2-tags {
+  display: inline-block !important;
+  font-size: 17px;
+  color: black;
+  margin: 7px 10px 10px 10px;
+  overflow-wrap: break-word;
+  line-height: 1em;
+  letter-spacing: .02em;
+  font-weight: 400;
+  padding: 20px;
+  background-color: #e2dcd0;
+  width: 340px;
+  margin-left: 160px;
+}
+
+.trips-by-tag {
+  margin-left: 300px;
+  margin-right: 300px;
+}
+
+.learn-more-tags {
+  color: #455A3B;
+  font-weight: bold;
+}
+
+.card-grid-tag {
+  margin-left: 225px !important;
+}

@@ -1,0 +1,36 @@
+.top-bar {
+  background-color: #455A3B;
+  color: white;
+}
+
+.top-bar, .top-bar ul  {
+  background-color: #455A3B;
+  color: white;
+  /* color: #C1B599; */
+}
+
+.menu>li>a {
+  color: white;
+}
+
+.top-bar input.button {
+  background-color: white;
+  color: #C1B599;
+}
+
+.top-bar-right > a {
+  color: white;
+}
+
+.loginLink {
+  margin-right: 25px;
+  margin-top: 10px;
+}
+
+.registerLink {
+  margin-right: 25px;
+}
+
+.top-bar-right {
+  margin-top: 7px;
+}

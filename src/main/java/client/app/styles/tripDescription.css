@@ -1,0 +1,56 @@
+.trip-body-title {
+  width: 150px;
+  margin-left: -50px;
+  color: #455A3B;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.col-md-8 {
+    width: 66.6666666667%;
+}
+
+.col-md-8, .col-md-11, .col-md-12 {
+    float: left;
+}
+
+.item-header {
+    margin-top: 42px;
+    margin-bottom: 44px;
+}
+
+.event-content-body {
+    margin-bottom: 50px;
+}
+
+.content-body {
+    padding-right: 0;
+}
+
+.col-md-11 {
+    width: 91.6666666667%;
+}
+
+.content-siderail {
+    float: right;
+    width: 0px;
+    padding: 0;
+    margin-right: 10px;
+    position: relative;
+    min-height: 1px;
+}
+
+.trip-detail-pane-wrap {
+    margin-top: 46px;
+}
+
+.trip-sidebar-wrap {
+    border-top: 1px solid rgba(80,65,109,.2);
+    padding-top: 15px;
+    margin-top: 25px;
+    width: 150px;
+}
+
+nav {
+  float: left;
+}

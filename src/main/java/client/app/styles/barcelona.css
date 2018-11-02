@@ -1,0 +1,236 @@
+.event-content .trip-content {
+  padding-bottom: 50px;
+  margin: 0 !important;
+}
+
+.container {
+  width: 1160px;
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.row {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
+.col-md-8 {
+  width: 66.6666666667%;
+  float: left;
+  position: relative;
+  min-height: 1px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
+  float: left;
+  position: relative;
+  min-height: 1px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.content-siderail {
+  float: right;
+  width: 300px;
+  padding: 0;
+  margin-right: 10px;
+  position: relative;
+  min-height: 1px;
+}
+
+aside {
+  display: block;
+}
+
+.container-fluid {
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.trip-content .item-title.trip-title {
+  margin-bottom: 38px;
+}
+
+.item-title {
+  margin-bottom: 28px;
+  position: relative;
+  top: -4px;
+}
+
+.title-lg {
+  font-size: 60px;
+  line-height: .9333em;
+  letter-spacing: .02em;
+}
+
+h1, .h1 {
+  font-size: 49px;
+}
+
+h1, .h1, h2, .h2, h3, .h3 {
+  margin-top: 27px;
+  margin-bottom: 13.5px;
+}
+
+.event-details-top {
+  padding: 10px 15px 15px;
+}
+
+.tripsUl {
+  margin: 0;
+  padding: 0;
+  list-style-type: square !important;
+}
+
+.detail-sm {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  margin-bottom: 10px;
+  margin-left: 3px;
+  padding: 0;
+  line-height: 1em;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.trip-content p:first-child {
+  font-style: italic;
+  font-size: 22px;
+}
+
+.item-body p:first-child, #article-body p:first-child {
+  margin-top: -14px;
+}
+
+.item-body p, #article-body p {
+  margin-bottom: 28px;
+  clear: none;
+  position: relative;
+  top: 9px;
+}
+
+p {
+  font-family: freight pro,Georgia,times new roman,serif;
+  font-size: 19px;
+  line-height: 28px;
+  font-variant-ligatures: common-ligatures;
+  letter-spacing: normal;
+  width: 500px;
+}
+
+.event-body-subheading {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  margin-bottom: 0px;
+  padding: 0;
+  line-height: 1em;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 7px;
+}
+
+.trip-detail-pane-wrap {
+  margin-top: 46px;
+}
+
+.trip-content .event-details-pane {
+  background: #fff;
+  border: 1px solid rgba(80,65,109,.2);
+  margin-left: -20px;
+}
+
+.event-details-list li {
+  margin-bottom: 10px;
+}
+
+.event-detail {
+  letter-spacing: .04em;
+  line-height: 1.05em;
+}
+
+.item-body ul, .item-body ol, .item-body-text-style ul, .item-body-text-style ol {
+  margin-bottom: 28px;
+  font-family: freight pro,Georgia,times new roman,serif;
+  font-size: 19px;
+  line-height: 28px;
+  font-variant-ligatures: common-ligatures;
+  letter-spacing: normal;
+  padding-left: 0;
+}
+
+.trip-day-nav-num {
+  color: #ccb48d;
+  width: 55px;
+  line-height: inherit;
+  position:absolute;
+}
+
+.trip-day-nav-link {
+  margin-left: 55px;
+  color: #455A3B;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Helvetica Neue,Helvetica,Roboto,Arial,sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: inherit;
+  text-rendering: optimizeLegibility;
+  margin-top: 0;
+  margin-bottom: .5rem;
+  line-height: 1.4;
+}
+
+.trip-body-title {
+  width: 500px;
+  color: #455A3B;
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 60px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.trip-day-nav {
+  width: 320px;
+  margin-left: -20px;
+}
+
+.trip-day-nav-li {
+  margin-left: -47px;
+}
+
+.event-fine-print {
+  border: 1px solid rgba(204,180,141,.5);
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: rgba(204, 180, 141, 0.5);
+  border-bottom: 0;
+  background: #fff;
+}
+
+.event-fine-print-body .item-body {
+  padding: 20px 30px 0;
+  font-size: 17px;
+}
+
+.event-fine-print .title-sm {
+  margin-bottom: 7px;
+  margin-top: 10px;
+  margin-left: 26px;
+}
+
+.title-sm {
+  font-size: 24px;
+  line-height: 1em;
+  letter-spacing: .03em;
+}

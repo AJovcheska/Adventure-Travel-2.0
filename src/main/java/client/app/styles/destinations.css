@@ -1,0 +1,74 @@
+nav {
+  float: left;
+  width: 30%;
+  padding-left: 55px;
+  margin-top: 79px;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+section:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+div > input {
+  width: 35px;
+}
+
+.h3-title-destinations {
+  padding-top: 2.5rem;
+  color: white;
+}
+
+.h4-title-destinations {
+  color: white;
+}
+
+
+.sort-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: -80px;
+  color: white;
+}
+
+.sort-type {
+  color: #C1B599;
+}
+
+section > nav > ul > div {
+  color: #C1B599;
+}
+
+input[type=radio] {
+  margin-right: 5px;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 300px 300px 300px 300px;
+}
+
+.destination-article {
+  margin-top: 40px;
+  margin-right: 40px;
+  width: 80%;
+  background-color: #C1B599;
+}
+
+.sort-div {
+  padding-top: 3.0rem;
+}
+
+.sort-label {
+  color: black;
+}
+
+.sortList li {
+  display: inline;
+}

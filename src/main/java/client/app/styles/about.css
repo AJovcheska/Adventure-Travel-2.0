@@ -1,0 +1,30 @@
+.about-subtitle {
+  font-size: 20px;
+  font-weight: bold;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  text-align: center;
+  color: #455A3B;
+  font-family: freight pro,Georgia,times new roman,serif;
+}
+
+.main-about-div {
+  width: 100%;
+    margin-top: -24px;
+}
+
+.column-about {
+  float: left;
+  width: 50%;
+  padding: 2 px;
+}
+
+.rowAbout {
+  max-width: 75rem;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+h1 {
+  color: #333;
+}

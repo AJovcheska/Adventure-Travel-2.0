@@ -3,6 +3,7 @@ package com.finki.controller;
 import com.finki.domain.Trip;
 import com.finki.service.TripService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,12 +52,12 @@ public class TripController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, value = "/nonsecured/trips/selected")
-    public ResponseEntity<List<Trip>> getSelectedTrips(@RequestParam(required = false) List<String> regions,
-                                                       @RequestParam(required = false) List<String> categories,
+    @RequestMapping(method = RequestMethod.GET, value = "/nonsecured/trips/selected", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Trip>> getSelectedTrips(@RequestParam(required = false) List<String> region,
+                                                       @RequestParam(required = false) List<String> category,
                                                        @RequestParam String sortBy,
                                                        @RequestParam boolean ascending) {
-        return ResponseEntity.ok(tripService.getSelectedTrips(regions, categories, sortBy, ascending));
+        return ResponseEntity.ok(tripService.getSelectedTrips(region, category, sortBy, ascending));
     }
 
     @ResponseBody
