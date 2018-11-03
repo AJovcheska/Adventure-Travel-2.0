@@ -16,6 +16,8 @@ const GET_TOKEN_URL = "http://localhost:8080/api/oauth/token";
 
 const GET_TRIPS_USER_URL = "http://localhost:8080/api/secure/trips";
 
+const GET_USER_BY_USERNAME_URL = "http://localhost:8080/api/secure/users/";
+
 module.exports = {
   getTemp: function (location) {
     var encodedLocation = encodeURIComponent(location);
@@ -121,18 +123,22 @@ module.exports = {
         }
       }).catch(e => console.log(e));
   },
-  loginUser: function(accessToken, email) {
+  loginUser: function(accessToken, username) {
     var encodedAccessToken = decodeURIComponent(accessToken);
-    var encodedEmail = decodeURIComponent(email);
+    var encodedUsername = decodeURIComponent(username);
     var config = {
           headers: {'Authorization': "bearer " + encodedAccessToken}
         };
-    var tripsUserUrl = `${GET_TRIPS_USER_URL}/${encodedEmail}`;
+    var tripsUserUrl = `${GET_TRIPS_USER_URL}/${encodedUsername}`;
     return axios.get(tripsUserUrl, config).then(function (res) {
       if (res.data.cod && res.data.message) {
         throw new Error(res.data.message);
       } else {
         return res.data;
+      }
+    }).catch(function (error) {
+      if (error.response) {
+        return error.response.status;
       }
     });
   },
@@ -150,4 +156,23 @@ module.exports = {
       }
     });
   },
+  getUserByUsername: function(accessToken, username) {
+    var encodedAccessToken = decodeURIComponent(accessToken);
+    var encodedUsername = decodeURIComponent(username);
+    var config = {
+          headers: {'Authorization': "bearer " + encodedAccessToken}
+        };
+    var tripsUserUrl = `${GET_USER_BY_USERNAME_URL}${encodedUsername}`;
+    return axios.get(tripsUserUrl, config).then(function (res) {
+      if (res.data.cod && res.data.message) {
+        throw new Error(res.data.message);
+      } else {
+        return res.data;
+      }
+    }).catch(function (error) {
+      if (error.response) {
+        return error.response.status;
+      }
+    });
+  }
 }

@@ -113,48 +113,49 @@
 	var Profile = __webpack_require__(268);
 	var LoginForm = __webpack_require__(269);
 	var SuccessRegistration = __webpack_require__(270);
+	var ErrorPage = __webpack_require__(271);
 
-	var MotherNatureTag = __webpack_require__(271);
-	var InTheMountainTag = __webpack_require__(273);
-	var ArchitecturalWondersTag = __webpack_require__(274);
-	var BikingAndHikingTag = __webpack_require__(275);
-	var HistoryAndMisteryTag = __webpack_require__(276);
-	var InspiringArtTag = __webpack_require__(277);
-	var IcecoldTag = __webpack_require__(278);
-	var PhotographyBombTag = __webpack_require__(279);
-	var FascinatingFaunaTag = __webpack_require__(280);
-	var FarFarEastTag = __webpack_require__(281);
+	var MotherNatureTag = __webpack_require__(272);
+	var InTheMountainTag = __webpack_require__(274);
+	var ArchitecturalWondersTag = __webpack_require__(275);
+	var BikingAndHikingTag = __webpack_require__(276);
+	var HistoryAndMisteryTag = __webpack_require__(277);
+	var InspiringArtTag = __webpack_require__(278);
+	var IcecoldTag = __webpack_require__(279);
+	var PhotographyBombTag = __webpack_require__(280);
+	var FascinatingFaunaTag = __webpack_require__(281);
+	var FarFarEastTag = __webpack_require__(282);
 
-	var Barcelona = __webpack_require__(282);
-	var Rome = __webpack_require__(283);
-	var Morocco = __webpack_require__(284);
-	var Persia = __webpack_require__(285);
-	var Mongolia = __webpack_require__(286);
-	var Everest = __webpack_require__(287);
-	var Antarctica = __webpack_require__(288);
-	var Brazil = __webpack_require__(289);
-	var Petra = __webpack_require__(290);
-	var Zambia = __webpack_require__(291);
-	var Rwanda = __webpack_require__(292);
+	var Barcelona = __webpack_require__(283);
+	var Rome = __webpack_require__(284);
+	var Morocco = __webpack_require__(285);
+	var Persia = __webpack_require__(286);
+	var Mongolia = __webpack_require__(287);
+	var Everest = __webpack_require__(288);
+	var Antarctica = __webpack_require__(289);
+	var Brazil = __webpack_require__(290);
+	var Petra = __webpack_require__(291);
+	var Zambia = __webpack_require__(292);
+	var Rwanda = __webpack_require__(293);
 
 	// Load foundation
-	__webpack_require__(293);
+	__webpack_require__(294);
 	$(document).foundation();
 
 	// app css
-	__webpack_require__(297);
-	__webpack_require__(299);
-	__webpack_require__(301);
-	__webpack_require__(303);
-	__webpack_require__(305);
-	__webpack_require__(307);
-	__webpack_require__(309);
-	__webpack_require__(311);
-	__webpack_require__(313);
-	__webpack_require__(315);
-	__webpack_require__(317);
-	__webpack_require__(319);
-	__webpack_require__(321);
+	__webpack_require__(298);
+	__webpack_require__(300);
+	__webpack_require__(302);
+	__webpack_require__(304);
+	__webpack_require__(306);
+	__webpack_require__(308);
+	__webpack_require__(310);
+	__webpack_require__(312);
+	__webpack_require__(314);
+	__webpack_require__(316);
+	__webpack_require__(318);
+	__webpack_require__(320);
+	__webpack_require__(322);
 
 	ReactDOM.render(React.createElement(
 	  Router,
@@ -191,6 +192,7 @@
 	    React.createElement(Route, { path: 'tags/history', component: HistoryAndMisteryTag }),
 	    React.createElement(Route, { path: 'tags/fauna', component: FascinatingFaunaTag }),
 	    React.createElement(Route, { path: 'successRegistration', component: SuccessRegistration }),
+	    React.createElement(Route, { path: 'errorPage', component: ErrorPage }),
 	    React.createElement(IndexRoute, { component: HomePage })
 	  )
 	), document.getElementById('app'));
@@ -25050,15 +25052,6 @@
 	              { to: '/destinations', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
 	              'Destinations'
 	            )
-	          ),
-	          React.createElement(
-	            'li',
-	            null,
-	            React.createElement(
-	              Link,
-	              { to: '/about', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
-	              'About Us'
-	            )
 	          )
 	        )
 	      ),
@@ -25069,11 +25062,6 @@
 	          Link,
 	          { to: '/registration', className: 'registerLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
 	          'Register'
-	        ),
-	        React.createElement(
-	          Link,
-	          { to: '/profile', className: 'profileLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
-	          'My Profile'
 	        )
 	      )
 	    );
@@ -25289,44 +25277,87 @@
 	var backendApi = __webpack_require__(227);
 
 	var _require = __webpack_require__(166),
-	    IndexLink = _require.IndexLink;
+	    browserHistory = _require.browserHistory;
 
 	var _require2 = __webpack_require__(166),
-	    browserHistory = _require2.browserHistory;
+	    Link = _require2.Link;
 
 	var Weather = React.createClass({
 	  displayName: 'Weather',
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isLoading: false
+	      accessToken: '',
+	      username: '',
+	      trips: [],
+	      user: []
 	    };
 	  },
-	  handleLogin: function handleLogin(e) {
+	  componentDidMount: function componentDidMount() {
+	    this.setState({
+	      accessToken: '',
+	      username: '',
+	      trips: [],
+	      user: []
+	    });
+	  },
+	  handleGetProfile: function handleGetProfile(e) {
 	    var _this = this;
 
+	    var _state = this.state,
+	        accessToken = _state.accessToken,
+	        username = _state.username;
+
+	    console.log("Username: " + username);
+	    console.log("Accesstoken: " + accessToken);
+	    backendApi.loginUser(accessToken, username).then(function (result) {
+	      if (result) {
+	        _this.setState({
+	          trips: result.data
+	        });
+	      } else {
+	        window.open('http://localhost:3000/#/errorPage?_k=se8ue5', "_self");
+	      }
+	    }, function (errorMessage) {
+	      console.log(errorMessage);
+	    });
+	  },
+	  handleLogin: function handleLogin(e) {
+	    var _this2 = this;
+
 	    var password = this.refs.password.value;
-	    var email = this.refs.email.value;
-	    backendApi.getRefreshToken(email, password).then(function (response) {
-	      console.log('Refresh token: ' + response);
+	    var username = this.refs.username.value;
+	    backendApi.getRefreshToken(username, password).then(function (response) {
+	      // console.log('Refresh token: ' + response);
 	      backendApi.getAccessToken(response).then(function (res) {
-	        console.log('Access token: ' + res);
-	        backendApi.loginUser(res, email).then(function (result) {
-	          if (response) {
-	            _this.refs.email.value = '';
-	            _this.refs.password.value = '';
-	            window.open('http://localhost:3000/#/profile?_k=se8ue5', "_self");
+	        // console.log('Access token: ' + res);
+	        backendApi.loginUser(res, username).then(function (result) {
+	          if (result) {
+	            _this2.refs.username.value = '';
+	            _this2.refs.password.value = '';
+	            _this2.setState({
+	              accessToken: res,
+	              username: username,
+	              trips: result
+	            });
+	            backendApi.getUserByUsername(res, username).then(function (user) {
+	              if (user) {
+	                _this2.setState({
+	                  user: user
+	                });
+	              } else {
+	                window.open('http://localhost:3000/#/errorPage?_k=se8ue5', "_self");
+	              }
+	            }, function (errorMessage) {
+	              console.log(errorMessage);
+	            });
 	          } else {
 	            throw new Error(res.data.message);
 	          }
 	        }, function (errorMessage) {
 	          console.log(errorMessage);
 	        });
-	      }, function (errorMessage) {
-	        console.log(errorMessage);
 	      });
-	    }, function (errorMessage) {
-	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
@@ -25369,8 +25400,14 @@
 	        React.createElement(
 	          'div',
 	          { className: 'loginForm' },
-	          React.createElement('input', { type: 'text', placeholder: 'Enter Email', ref: 'email', required: true })
+	          React.createElement('input', { type: 'text', placeholder: 'Enter Username', ref: 'username', required: true })
 	        )
+	      ),
+	      React.createElement(
+	        Link,
+	        { to: { pathname: "/profile", state: { trips: this.state.trips, user: this.state.user } },
+	          className: 'profileLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
+	        'My Profile'
 	      ),
 	      React.createElement(
 	        'div',
@@ -25631,6 +25668,8 @@
 
 	var GET_TRIPS_USER_URL = "http://localhost:8080/api/secure/trips";
 
+	var GET_USER_BY_USERNAME_URL = "http://localhost:8080/api/secure/users/";
+
 	module.exports = {
 	  getTemp: function getTemp(location) {
 	    var encodedLocation = encodeURIComponent(location);
@@ -25738,18 +25777,22 @@
 	      return console.log(e);
 	    });
 	  },
-	  loginUser: function loginUser(accessToken, email) {
+	  loginUser: function loginUser(accessToken, username) {
 	    var encodedAccessToken = decodeURIComponent(accessToken);
-	    var encodedEmail = decodeURIComponent(email);
+	    var encodedUsername = decodeURIComponent(username);
 	    var config = {
 	      headers: { 'Authorization': "bearer " + encodedAccessToken }
 	    };
-	    var tripsUserUrl = GET_TRIPS_USER_URL + '/' + encodedEmail;
+	    var tripsUserUrl = GET_TRIPS_USER_URL + '/' + encodedUsername;
 	    return axios.get(tripsUserUrl, config).then(function (res) {
 	      if (res.data.cod && res.data.message) {
 	        throw new Error(res.data.message);
 	      } else {
 	        return res.data;
+	      }
+	    }).catch(function (error) {
+	      if (error.response) {
+	        return error.response.status;
 	      }
 	    });
 	  },
@@ -25763,6 +25806,25 @@
 	        throw new Error(res.data.message);
 	      } else {
 	        return res;
+	      }
+	    });
+	  },
+	  getUserByUsername: function getUserByUsername(accessToken, username) {
+	    var encodedAccessToken = decodeURIComponent(accessToken);
+	    var encodedUsername = decodeURIComponent(username);
+	    var config = {
+	      headers: { 'Authorization': "bearer " + encodedAccessToken }
+	    };
+	    var tripsUserUrl = '' + GET_USER_BY_USERNAME_URL + encodedUsername;
+	    return axios.get(tripsUserUrl, config).then(function (res) {
+	      if (res.data.cod && res.data.message) {
+	        throw new Error(res.data.message);
+	      } else {
+	        return res.data;
+	      }
+	    }).catch(function (error) {
+	      if (error.response) {
+	        return error.response.status;
 	      }
 	    });
 	  }
@@ -29875,23 +29937,24 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      trips: []
+	      trips: [],
+	      user: []
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
-	    var _this = this;
-
-	    backendApi.getTrips([], [], 'price').then(function (response) {
-	      _this.setState({
-	        trips: response.data
-	      });
-	    }, function (errorMessage) {
-	      alert(errorMessage);
+	    // console.log("Trips profile: " + this.props.location.state.trips);
+	    this.setState({
+	      trips: this.props.location.state.trips,
+	      user: this.props.location.state.user
 	    });
 	  },
 	  render: function render() {
+	    var name = this.state.user.name;
+	    var age = this.state.user.age;
+	    var country = this.state.user.country;
+	    var profession = this.state.user.profession;
+	    var email = this.state.user.email;
 	    var trips = this.state.trips;
-
 	    return React.createElement(
 	      'section',
 	      { className: 'profileSection' },
@@ -29912,7 +29975,7 @@
 	        React.createElement(
 	          'div',
 	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          'name placeholder'
+	          name
 	        ),
 	        React.createElement(
 	          'h4',
@@ -29922,7 +29985,17 @@
 	        React.createElement(
 	          'div',
 	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          'age placeholder'
+	          age
+	        ),
+	        React.createElement(
+	          'h4',
+	          { className: 'h3-title-profile' },
+	          'Email'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'profile-placeholders', id: 'trip-card-price' },
+	          email
 	        ),
 	        React.createElement(
 	          'h4',
@@ -29932,7 +30005,7 @@
 	        React.createElement(
 	          'div',
 	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          'country placeholder'
+	          country
 	        ),
 	        React.createElement(
 	          'h4',
@@ -29942,7 +30015,7 @@
 	        React.createElement(
 	          'div',
 	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          'profession placeholder'
+	          profession
 	        )
 	      ),
 	      React.createElement(
@@ -30074,6 +30147,28 @@
 /* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
+
+	var React = __webpack_require__(8);
+
+	var ErrorPage = React.createClass({
+	  displayName: "ErrorPage",
+
+	  render: function render() {
+	    return React.createElement(
+	      "div",
+	      { className: "successMessageRegistration" },
+	      "User not logged in."
+	    );
+	  }
+	});
+
+	module.exports = ErrorPage;
+
+/***/ },
+/* 272 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -30084,7 +30179,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(272);
+	var TripByTag = __webpack_require__(273);
 
 	var MotherNatureTag = React.createClass({
 	  displayName: 'MotherNatureTag',
@@ -30125,7 +30220,7 @@
 	module.exports = MotherNatureTag;
 
 /***/ },
-/* 272 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30208,7 +30303,7 @@
 	module.exports = TripByTag;
 
 /***/ },
-/* 273 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30221,7 +30316,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(272);
+	var TripByTag = __webpack_require__(273);
 
 	var InTheMountainTag = React.createClass({
 	  displayName: 'InTheMountainTag',
@@ -30262,7 +30357,7 @@
 	module.exports = InTheMountainTag;
 
 /***/ },
-/* 274 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30275,7 +30370,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(272);
+	var TripByTag = __webpack_require__(273);
 
 	var ArchitecturalWondersTag = React.createClass({
 	  displayName: 'ArchitecturalWondersTag',
@@ -30316,7 +30411,7 @@
 	module.exports = ArchitecturalWondersTag;
 
 /***/ },
-/* 275 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30329,7 +30424,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(272);
+	var TripByTag = __webpack_require__(273);
 
 	var BikingAndHikingTag = React.createClass({
 	  displayName: 'BikingAndHikingTag',
@@ -30370,7 +30465,7 @@
 	module.exports = BikingAndHikingTag;
 
 /***/ },
-/* 276 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30383,7 +30478,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(272);
+	var TripByTag = __webpack_require__(273);
 
 	var HistoryAndMisteryTag = React.createClass({
 	  displayName: 'HistoryAndMisteryTag',
@@ -30424,7 +30519,7 @@
 	module.exports = HistoryAndMisteryTag;
 
 /***/ },
-/* 277 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30437,7 +30532,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(272);
+	var TripByTag = __webpack_require__(273);
 
 	var InspiringArtTag = React.createClass({
 	  displayName: 'InspiringArtTag',
@@ -30478,7 +30573,7 @@
 	module.exports = InspiringArtTag;
 
 /***/ },
-/* 278 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30491,7 +30586,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(272);
+	var TripByTag = __webpack_require__(273);
 
 	var IcecoldTag = React.createClass({
 	  displayName: 'IcecoldTag',
@@ -30532,7 +30627,7 @@
 	module.exports = IcecoldTag;
 
 /***/ },
-/* 279 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30545,7 +30640,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(272);
+	var TripByTag = __webpack_require__(273);
 
 	var PhotographyBombTag = React.createClass({
 	  displayName: 'PhotographyBombTag',
@@ -30586,7 +30681,7 @@
 	module.exports = PhotographyBombTag;
 
 /***/ },
-/* 280 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30599,7 +30694,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(272);
+	var TripByTag = __webpack_require__(273);
 
 	var FascinatingFaunaTag = React.createClass({
 	  displayName: 'FascinatingFaunaTag',
@@ -30640,7 +30735,7 @@
 	module.exports = FascinatingFaunaTag;
 
 /***/ },
-/* 281 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30653,7 +30748,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(272);
+	var TripByTag = __webpack_require__(273);
 
 	var FarFarEastTag = React.createClass({
 	  displayName: 'FarFarEastTag',
@@ -30694,7 +30789,7 @@
 	module.exports = FarFarEastTag;
 
 /***/ },
-/* 282 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -31472,7 +31567,7 @@
 	module.exports = Barcelona;
 
 /***/ },
-/* 283 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -32207,7 +32302,7 @@
 	module.exports = Rome;
 
 /***/ },
-/* 284 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33050,7 +33145,7 @@
 	module.exports = Morocco;
 
 /***/ },
-/* 285 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33927,7 +34022,7 @@
 	module.exports = Persia;
 
 /***/ },
-/* 286 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34927,7 +35022,7 @@
 	module.exports = Mongolia;
 
 /***/ },
-/* 287 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35696,7 +35791,7 @@
 	module.exports = Everest;
 
 /***/ },
-/* 288 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36420,7 +36515,7 @@
 	module.exports = Antarctica;
 
 /***/ },
-/* 289 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37170,7 +37265,7 @@
 	module.exports = Brazil;
 
 /***/ },
-/* 290 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37894,7 +37989,7 @@
 	module.exports = Petra;
 
 /***/ },
-/* 291 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38623,7 +38718,7 @@
 	module.exports = Zambia;
 
 /***/ },
-/* 292 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39352,16 +39447,16 @@
 	module.exports = Rwanda;
 
 /***/ },
-/* 293 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(294);
+	var content = __webpack_require__(295);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39378,10 +39473,10 @@
 	}
 
 /***/ },
-/* 294 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
@@ -39392,7 +39487,7 @@
 
 
 /***/ },
-/* 295 */
+/* 296 */
 /***/ function(module, exports) {
 
 	/*
@@ -39448,7 +39543,7 @@
 
 
 /***/ },
-/* 296 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -39702,16 +39797,16 @@
 
 
 /***/ },
-/* 297 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(298);
+	var content = __webpack_require__(299);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39728,10 +39823,10 @@
 	}
 
 /***/ },
-/* 298 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
@@ -39742,16 +39837,16 @@
 
 
 /***/ },
-/* 299 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(300);
+	var content = __webpack_require__(301);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39768,30 +39863,30 @@
 	}
 
 /***/ },
-/* 300 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  /* margin: 10px;\r\n  margin-top: 47px; */\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1311px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1182px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 301 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(302);
+	var content = __webpack_require__(303);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39808,10 +39903,10 @@
 	}
 
 /***/ },
-/* 302 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
@@ -39822,16 +39917,16 @@
 
 
 /***/ },
-/* 303 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(304);
+	var content = __webpack_require__(305);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39848,10 +39943,10 @@
 	}
 
 /***/ },
-/* 304 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
@@ -39862,16 +39957,16 @@
 
 
 /***/ },
-/* 305 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(306);
+	var content = __webpack_require__(307);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39888,10 +39983,10 @@
 	}
 
 /***/ },
-/* 306 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
@@ -39902,16 +39997,16 @@
 
 
 /***/ },
-/* 307 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(308);
+	var content = __webpack_require__(309);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39928,30 +40023,30 @@
 	}
 
 /***/ },
-/* 308 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".loginContainer {\r\n  margin-left: 200px;\r\n  margin-right: 200px;\r\n  margin-top: 30px;\r\n  display: inline-block;\r\n}\r\n\r\nbutton {\r\n  background-color: #455A3B;\r\n  color: white;\r\n  padding: 14px 20px;\r\n  margin: 8px 0;\r\n  border: none;\r\n  cursor: pointer;\r\n  width: 100%;\r\n  opacity: 0.9;\r\n}\r\n\r\n/* Extra styles for the cancel button */\r\n.cancelbtn {\r\n  padding: 14px 20px;\r\n  color: white;\r\n}\r\n\r\nbutton > a {\r\n  color: white;\r\n}\r\n\r\n/* Float cancel and signup buttons and add an equal width */\r\n.cancelbtn, .signupbtn {\r\n  float: left;\r\n  width: 50%;\r\n}\r\n\r\n* {box-sizing: border-box}\r\n\r\n/* Full-width input fields */\r\n  input[type=text], input[type=password] {\r\n  width: 100%;\r\n  padding: 15px;\r\n  margin: 5px 0 22px 0;\r\n  display: inline-block;\r\n  border: none;\r\n  background: #f1f1f1;\r\n}\r\n\r\ninput[type=text]:focus, input[type=password]:focus {\r\n  background-color: #ddd;\r\n  outline: none;\r\n}\r\n\r\n.successMessageRegistration {\r\n  color: #455A3B;\r\n  font-weight: bold;\r\n  font-size: 32px;\r\n  text-align: center;\r\n}\r\n\r\n.loginForm {\r\n  display: inline-block;\r\n  margin-right: 10px;\r\n  float: right;\r\n  z-index: 1;\r\n  position: relative;\r\n}\r\n\r\n.loginButton {\r\n  margin-top: -5px;\r\n  z-index: 1;\r\n  position: relative;\r\n}\r\n\r\n.buttonLogin {\r\n  margin-left: 700px;\r\n  margin-right: 700px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.right {\r\n  float: right;\r\n  margin-top: -661px;\r\n  margin-right: 698px;\r\n}\r\n\r\n.additionalInfo {\r\n  margin-top: 15px;\r\n  margin-bottom: 5px;\r\n}\r\n\r\n.registrationForm {\r\n  margin-top: -24px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".loginContainer {\r\n  margin-left: 200px;\r\n  margin-right: 200px;\r\n  margin-top: 30px;\r\n  display: inline-block;\r\n}\r\n\r\nbutton {\r\n  background-color: #455A3B;\r\n  color: white;\r\n  padding: 14px 20px;\r\n  margin: 8px 0;\r\n  border: none;\r\n  cursor: pointer;\r\n  width: 100%;\r\n  opacity: 0.9;\r\n}\r\n\r\n/* Extra styles for the cancel button */\r\n.cancelbtn {\r\n  padding: 14px 20px;\r\n  color: white;\r\n}\r\n\r\nbutton > a {\r\n  color: white;\r\n}\r\n\r\n/* Float cancel and signup buttons and add an equal width */\r\n.cancelbtn, .signupbtn {\r\n  float: left;\r\n  width: 50%;\r\n}\r\n\r\n* {box-sizing: border-box}\r\n\r\n/* Full-width input fields */\r\n  input[type=text], input[type=password] {\r\n  width: 100%;\r\n  padding: 15px;\r\n  margin: 5px 0 22px 0;\r\n  display: inline-block;\r\n  border: none;\r\n  background: #f1f1f1;\r\n}\r\n\r\ninput[type=text]:focus, input[type=password]:focus {\r\n  background-color: #ddd;\r\n  outline: none;\r\n}\r\n\r\n.successMessageRegistration {\r\n  color: #455A3B;\r\n  font-weight: bold;\r\n  font-size: 32px;\r\n  text-align: center;\r\n}\r\n\r\n.loginForm {\r\n  display: inline-block;\r\n  margin-right: 10px;\r\n  float: right;\r\n  z-index: 1;\r\n  position: relative;\r\n}\r\n\r\n.loginButton {\r\n  margin-top: -5px;\r\n  z-index: 1;\r\n  position: relative;\r\n}\r\n\r\n.buttonLogin {\r\n  margin-left: 700px;\r\n  margin-right: 700px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.right {\r\n  float: right;\r\n  margin-top: -661px;\r\n  margin-right: 500px;\r\n}\r\n\r\n.additionalInfo {\r\n  margin-top: 15px;\r\n  margin-bottom: 5px;\r\n}\r\n\r\n.registrationForm {\r\n  margin-top: -24px;\r\n}\r\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 309 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(310);
+	var content = __webpack_require__(311);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39968,10 +40063,10 @@
 	}
 
 /***/ },
-/* 310 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
@@ -39982,16 +40077,16 @@
 
 
 /***/ },
-/* 311 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(312);
+	var content = __webpack_require__(313);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40008,10 +40103,10 @@
 	}
 
 /***/ },
-/* 312 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
@@ -40022,16 +40117,16 @@
 
 
 /***/ },
-/* 313 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(314);
+	var content = __webpack_require__(315);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40048,10 +40143,10 @@
 	}
 
 /***/ },
-/* 314 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
@@ -40062,16 +40157,16 @@
 
 
 /***/ },
-/* 315 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(316);
+	var content = __webpack_require__(317);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40088,10 +40183,10 @@
 	}
 
 /***/ },
-/* 316 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
@@ -40102,16 +40197,16 @@
 
 
 /***/ },
-/* 317 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(318);
+	var content = __webpack_require__(319);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40128,30 +40223,30 @@
 	}
 
 /***/ },
-/* 318 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".content-card-text-homepage {\r\n  background-color: #EAE0D7;\r\n  width: 400px;\r\n  margin-left: 122px;\r\n  display: inline-block;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-title-homepage {\r\n  text-align: center;\r\n}\r\n\r\n.homepage-transparentTitle {\r\n  font-size: 66px;\r\n  margin-top: -24px;\r\n  opacity: 0;\r\n}\r\n\r\n.h5-homepage {\r\n  color: #333 !important;\r\n  font-weight: bold;\r\n}\r\n\r\n.homepage-title {\r\n  color: #333 !important;\r\n  font-size: 66px;\r\n  font-weight: bold;\r\n}\r\n\r\n.logoImg {\r\n  width: 200px;\r\n  height: 200px;\r\n  align: center;\r\n}\r\n\r\nimg {\r\n  padding: 2px;\r\n}\r\n\r\n.imgStyle {\r\n  width: 400px;\r\n  height: 250px;\r\n}\r\n\r\n.imagesStyle {\r\n  padding-left: 250px;\r\n}\r\n\r\n.tags-subtitle, .home-subtitle {\r\n  font-size: 40px;\r\n  font-style: oblique;\r\n  color: #1b624f;\r\n  width: 100%;\r\n  text-align: center;\r\n  padding-top: 25px;\r\n  padding-bottom: 25px;\r\n}\r\n .photobooth-subtitle {\r\n   font-size: 40px;\r\n   font-style: oblique;\r\n   color: #1b624f;\r\n   width: 100%;\r\n   text-align: center;\r\n   padding-top: 25px;\r\n   padding-bottom: 25px;\r\n   margin-left: -135px;\r\n }\r\n\r\n.tagsStyle {\r\n\r\n}\r\n\r\n.links-column {\r\n  letter-spacing: .04em;\r\n  font-weight: 400;\r\n  margin: 0;\r\n  padding: 0;\r\n  list-style: none;\r\n}\r\n\r\n.tag-li {\r\n  background-color: #ccb48d;\r\n  border-radius: 8px;\r\n  margin: 0 6px 6px 0;\r\n  display: inline-block;\r\n  line-height: 0;\r\n  height: 45px;\r\n  width: 300px;\r\n}\r\n\r\n.tag-li>a {\r\n  color: white;\r\n}\r\n\r\n.tag-li:hover {\r\n  background-color: #455A3B; /* Green */\r\n  color: white;\r\n  transition-duration: 0.4s;\r\n}\r\n\r\n.photoDiv {\r\n}\r\n\r\n.place-tags-top-content-header {\r\n  padding: 0 0 7px;\r\n  margin-bottom: 7px;\r\n  text-align: center;\r\n}\r\n", ""]);
+	exports.push([module.id, ".content-card-text-homepage {\r\n  background-color: #EAE0D7;\r\n  width: 400px;\r\n  margin-left: 122px;\r\n  display: inline-block;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-title-homepage {\r\n  text-align: center;\r\n}\r\n\r\n.homepage-transparentTitle {\r\n  font-size: 66px;\r\n  margin-top: -24px;\r\n  opacity: 0;\r\n}\r\n\r\n.h5-homepage {\r\n  color: #333 !important;\r\n  font-weight: bold;\r\n}\r\n\r\n.homepage-title {\r\n  color: #333 !important;\r\n  font-size: 66px;\r\n  font-weight: bold;\r\n}\r\n\r\n.logoImg {\r\n  width: 200px;\r\n  height: 200px;\r\n  align: center;\r\n}\r\n\r\nimg {\r\n  padding: 2px;\r\n}\r\n\r\n.imgStyle {\r\n  width: 400px;\r\n  height: 250px;\r\n}\r\n\r\n.imagesStyle {\r\n  padding-left: 250px;\r\n}\r\n\r\n.tags-subtitle, .home-subtitle {\r\n  font-size: 40px;\r\n  font-style: oblique;\r\n  color: #1b624f;\r\n  width: 100%;\r\n  text-align: center;\r\n  padding-top: 25px;\r\n  padding-bottom: 25px;\r\n}\r\n .photobooth-subtitle {\r\n   font-size: 40px;\r\n   font-style: oblique;\r\n   color: #1b624f;\r\n   width: 100%;\r\n   text-align: center;\r\n   padding-top: 25px;\r\n   padding-bottom: 25px;\r\n   margin-left: -135px;\r\n }\r\n\r\n.tagsStyle {\r\n\r\n}\r\n\r\n.links-column {\r\n  letter-spacing: .04em;\r\n  font-weight: 400;\r\n  margin: 0;\r\n  padding: 0;\r\n  list-style: none;\r\n}\r\n\r\n.tag-li {\r\n  background-color: #ccb48d;\r\n  border-radius: 8px;\r\n  margin: 0 6px 6px 0;\r\n  display: inline-block;\r\n  line-height: 0;\r\n  height: 45px;\r\n  width: 300px;\r\n}\r\n\r\n.tag-li>a {\r\n  color: white;\r\n}\r\n\r\n.tag-li:hover {\r\n  background-color: #455A3B; /* Green */\r\n  color: white;\r\n  transition-duration: 0.4s;\r\n}\r\n\r\n.photoDiv {\r\n}\r\n\r\n.place-tags-top-content-header {\r\n  padding: 0 0 7px;\r\n  margin-bottom: 7px;\r\n  text-align: center;\r\n}\r\n\r\n.profileLink {\r\n  margin: 5px;\r\n  z-index: 1;\r\n  position: relative;\r\n  float: left;\r\n  color: white;\r\n  font-size: 30px;\r\n  margin-left: 23px;\r\n}\r\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 319 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(320);
+	var content = __webpack_require__(321);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40168,10 +40263,10 @@
 	}
 
 /***/ },
-/* 320 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
@@ -40182,16 +40277,16 @@
 
 
 /***/ },
-/* 321 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(322);
+	var content = __webpack_require__(323);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(296)(content, {});
+	var update = __webpack_require__(297)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40208,15 +40303,15 @@
 	}
 
 /***/ },
-/* 322 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(295)();
+	exports = module.exports = __webpack_require__(296)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".profileNav {\r\n  margin-top: 40px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\n\r\n.h3-title-profile {\r\n  color: #333;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".profileNav {\r\n  margin-top: 40px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\n\r\n.h3-title-profile {\r\n  color: #455A3B;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n", ""]);
 
 	// exports
 

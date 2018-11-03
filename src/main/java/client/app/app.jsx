@@ -11,6 +11,7 @@ var TripDescription = require('TripDescription');
 var Profile = require('Profile');
 var LoginForm = require('LoginForm');
 var SuccessRegistration = require('SuccessRegistration');
+var ErrorPage = require('ErrorPage');
 
 var MotherNatureTag = require('MotherNatureTag');
 var InTheMountainTag = require('InTheMountainTag');
@@ -89,6 +90,7 @@ ReactDOM.render(
       <Route path="tags/fauna" component={FascinatingFaunaTag}/>
 
       <Route path="successRegistration" component={SuccessRegistration}/>
+      <Route path="errorPage" component={ErrorPage}/>
       <IndexRoute component={HomePage}/>
     </Route>
   </Router>,

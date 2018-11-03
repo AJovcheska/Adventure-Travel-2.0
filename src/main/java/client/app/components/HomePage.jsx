@@ -1,37 +1,75 @@
 var React = require('react');
 var backendApi = require('backendApi');
-var {IndexLink} = require('react-router');
 var {browserHistory} = require('react-router');
+var {Link} = require('react-router');
 
 var Weather = React.createClass({
   getInitialState: function() {
     return {
-      isLoading: false
+      accessToken: '',
+      username: '',
+      trips: [],
+      user: []
     }
+  },
+  componentDidMount: function() {
+    this.setState({
+      accessToken: '',
+      username: '',
+      trips: [],
+      user: []
+    });
+  },
+  handleGetProfile: function(e) {
+    var {accessToken, username} = this.state;
+    console.log("Username: " + username);
+    console.log("Accesstoken: " + accessToken);
+    backendApi.loginUser(accessToken, username).then((result) => {
+      if (result) {
+        this.setState({
+          trips: result.data
+        });
+      } else {
+        window.open('http://localhost:3000/#/errorPage?_k=se8ue5', "_self");
+      }
+    }, function(errorMessage) {
+      console.log(errorMessage);
+    });
   },
   handleLogin: function(e) {
     var password = this.refs.password.value;
-    var email = this.refs.email.value;
-    backendApi.getRefreshToken(email, password).then((response) => {
-      console.log('Refresh token: ' + response);
+    var username = this.refs.username.value;
+    backendApi.getRefreshToken(username, password).then((response) => {
+      // console.log('Refresh token: ' + response);
       backendApi.getAccessToken(response).then((res) => {
-        console.log('Access token: ' + res);
-        backendApi.loginUser(res, email).then((result) => {
-          if (response) {
-            this.refs.email.value = '';
+        // console.log('Access token: ' + res);
+        backendApi.loginUser(res, username).then((result) => {
+          if (result) {
+            this.refs.username.value = '';
             this.refs.password.value = '';
-            window.open('http://localhost:3000/#/profile?_k=se8ue5', "_self");
+            this.setState({
+              accessToken: res,
+              username: username,
+              trips: result
+            });
+            backendApi.getUserByUsername(res, username).then((user) => {
+              if (user) {
+                this.setState({
+                  user: user
+                });
+              } else {
+                window.open('http://localhost:3000/#/errorPage?_k=se8ue5', "_self");
+              }
+            }, function(errorMessage) {
+              console.log(errorMessage);
+            });
           } else {
             throw new Error(res.data.message);
           }
         }, function(errorMessage) {
           console.log(errorMessage);
         });
-      }, function(errorMessage) {
-        console.log(errorMessage);
       });
-    }, function(errorMessage) {
-      console.log(errorMessage);
     });
   },
   render: function() {
@@ -52,7 +90,7 @@ var Weather = React.createClass({
       backgroundImage: `url(${whereWeTravelBackground})`
     };
     return (
-      <div >
+      <div>
         <form>
            <div className="loginForm loginButton">
              <button type="submit" onClick={this.handleLogin}>Login</button>
@@ -61,9 +99,13 @@ var Weather = React.createClass({
               <input type="password" placeholder="Enter Password" ref="password" required/>
            </div>
            <div className="loginForm">
-             <input type="text" placeholder="Enter Email" ref="email" required/>
+             <input type="text" placeholder="Enter Username" ref="username" required/>
            </div>
         </form>
+        <Link to={{ pathname: "/profile", state: { trips: this.state.trips, user: this.state.user }}}
+          className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
+          My Profile
+        </Link>
 
         <div style={masterImgStyle}>
           <h1 className="text-center page-title homepage-transparentTitle">Transparent title</h1>

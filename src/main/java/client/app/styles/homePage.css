@@ -106,3 +106,13 @@ img {
   margin-bottom: 7px;
   text-align: center;
 }
+
+.profileLink {
+  margin: 5px;
+  z-index: 1;
+  position: relative;
+  float: left;
+  color: white;
+  font-size: 30px;
+  margin-left: 23px;
+}

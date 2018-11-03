@@ -82,11 +82,9 @@
 }
 
 .card-grid {
-  /* margin: 10px;
-  margin-top: 47px; */
   display: inline-block;
   float: right;
-  width: 1311px;
+  width: 1182px;
 }
 
 .content-card-item {
