@@ -50,13 +50,13 @@ public class UserController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, value = "/users/{username}")
+    @RequestMapping(method = RequestMethod.GET, value = "/secure/users/{username}")
     public ResponseEntity<User> findByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userService.findByUsername(username));
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, value = "/users/login")
+    @RequestMapping(method = RequestMethod.GET, value = "/secure/users/login")
     public ResponseEntity<Boolean> checkIfUserExists(@RequestParam String username,
                                                      @RequestParam String password) {
         User user = userService.findByUsername(username);
