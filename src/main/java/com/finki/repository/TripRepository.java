@@ -25,4 +25,7 @@ public interface TripRepository {
     @Transactional(readOnly = true)
     List<TripDto> findTripsForUser(String user);
 
+    @Transactional(readOnly = true)
+    void deleteTripFromUser(String username, String id);
+
 }

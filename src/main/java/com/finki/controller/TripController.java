@@ -3,6 +3,7 @@ package com.finki.controller;
 import com.finki.domain.Trip;
 import com.finki.service.TripService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -70,5 +71,13 @@ public class TripController {
     @RequestMapping(method = RequestMethod.GET, value = "/nonsecured/trips/tag")
     public ResponseEntity<List<Trip>> getTripsByTag(@RequestParam String tag) {
         return ResponseEntity.ok(tripService.getByTag(tag));
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.DELETE, value = "/nonsecured/remove/trip", consumes = MediaType.ALL_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteTripFromUser(@RequestParam(value = "username") String username, @RequestParam(value = "id") String id) {
+        tripService.deleteTripFromUser(username, id);
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

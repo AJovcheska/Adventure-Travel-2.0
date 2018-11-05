@@ -60,6 +60,15 @@ public class TripRepositoryImpl implements TripRepository {
     }
 
     @Override
+    public void deleteTripFromUser(String username, String id) {
+        MapSqlParameterSource map = new MapSqlParameterSource();
+        map.addValue("username", username);
+        map.addValue("id", id);
+        jdbcTemplate.update(tripQueries.getDeleteTripFromUser(),
+                map);
+    }
+
+    @Override
     public List<TripDto> findSelectedTrips(List<String> regions, List<String> categories, String sortBy, boolean ascending) {
         String selectAll = tripQueries.getSelectAll();
         StringBuilder sb = new StringBuilder();

@@ -59,4 +59,8 @@ public class TripService {
         }
         return tripsByTag;
     }
+
+    public void deleteTripFromUser(String username, String id) {
+        tripRepository.deleteTripFromUser(username, id);
+    }
 }
