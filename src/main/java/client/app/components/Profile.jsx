@@ -94,9 +94,15 @@ var Profile = React.createClass({
             <div className="profile-placeholders" id="trip-card-price">{destination}</div>
         </span>;
     }
+
+    const whereWeTravelBackground = "../images/santis_swiss_alps_winter-wallpaper-1280x768.jpg";
+    var whereWeTravelImgStyle = {
+      backgroundImage: `url(${whereWeTravelBackground})`
+    };
     return (
-        <div className="profileSection">
-          <div className="profileNav">
+      <div>
+        <div className="profileSection" style={whereWeTravelImgStyle}>
+          <div className="profileNav" >
             <img src = {`../images/person.png`} className="profileImg"/>
             <h3 className="basicInfo">About</h3>
             <p className="h3-title-profile">Name</p>
@@ -157,17 +163,9 @@ var Profile = React.createClass({
                 <button type="submit" className="signupbtn" onClick={this.handleChangeData}>Edit info</button>
               </div>
             </div>
-            <div className="editInfoButton profileContainer favDestLabel">
-              <h3 className="basicInfo">Favourite destinations</h3>
-            </div>
           </div>
-
-            <div>
-              <div className="card-grid-profile trips-index-cards">
-                  <TripListProfile trips={trips} user={user}/>
-              </div>
-            </div>
         </div>
+      </div>
     );
   }
 });

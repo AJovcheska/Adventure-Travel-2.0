@@ -2,6 +2,7 @@ var React = require('react');
 var backendApi = require('backendApi');
 var {browserHistory} = require('react-router');
 var {Link} = require('react-router');
+var TripListProfile = require('TripListProfile');
 
 
 var Weather = React.createClass({
@@ -79,11 +80,79 @@ var Weather = React.createClass({
     if (isLoggedIn) {
         greeting = <Link to={{ pathname: "/profile", state: { trips: this.state.trips, user: this.state.user , accessToken: this.state.accessToken}}}
                          className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
-            See {this.state.user.username}'s profile
+            {this.state.user.username}'s profile
         </Link>;
     } else {
         greeting = <h1></h1>;
     }
+
+    var starterDestinations =
+      <div>
+        <div className="photoDiv" style={whereWeTravelImgStyle}>
+          <p className="home-subtitle">Where we travel</p>
+          <div className="content-card-text-homepage">
+            <img src="../images/Africa.jpg"/>
+            <h3 className="title-md content-card-title-homepage">
+              <span>Africa</span>
+            </h3>
+          </div>
+          <div className="content-card-text-homepage">
+            <img src="../images/antarctica.jpg"/>
+            <h3 className="title-md content-card-title-homepage">
+              <span>Antarctica</span>
+            </h3>
+          </div>
+          <div className="content-card-text-homepage">
+            <img src="../images/Asia.jpg"/>
+            <h3 className="title-md content-card-title-homepage">
+              <span>Asia</span>
+            </h3>
+          </div>
+          <div className="content-card-text-homepage">
+            <img src="../images/Europe.jpg"/>
+            <h3 className="title-md content-card-title-homepage">
+              <span>Europe</span>
+            </h3>
+          </div>
+          <div className="content-card-text-homepage">
+            <img src="../images/MiddleEast.jpg"></img>
+            <h3 className="title-md content-card-title-homepage">
+              <span>Middle East</span>
+            </h3>
+          </div>
+          <div className="content-card-text-homepage">
+            <img src="../images/NorthAmerica.jpg"/>
+            <h3 className="title-md content-card-title-homepage">
+              <span>North America</span>
+            </h3>
+          </div>
+          <div className="content-card-text-homepage">
+            <img src="../images/SouthAmerica.jpg"/>
+            <h3 className="title-md content-card-title-homepage">
+              <span>South America</span>
+            </h3>
+          </div>
+        </div>
+      </div>;
+
+    var profileDestinations =
+      <div>
+        <div className="editInfoButton profileContainer favDestLabel">
+          <h3 className="basicInfo">Favorite destinations</h3>
+        </div>
+        <div className="card-grid-profile trips-index-cards">
+          <TripListProfile trips={this.state.trips} user={this.state.user}/>
+        </div>
+      </div>;
+
+    var showOnScreen;
+    if (this.state.isLogged === true) {
+      showOnScreen = profileDestinations;
+    } else {
+      showOnScreen = starterDestinations;
+    }
+
+
     return (
       <div>
         <form>
@@ -98,60 +167,14 @@ var Weather = React.createClass({
            </div>
         </form>
 
-          {greeting}
+        {greeting}
         <div style={masterImgStyle}>
           <h1 className="text-center page-title homepage-transparentTitle">Transparent title</h1>
           <h1 className="text-center page-title homepage-title">Adventure Travel</h1>
           <h5 className="text-center page-title h5-homepage">Unusual trips and unique destinations</h5>
         </div>
 
-        <div>
-          <div className="photoDiv" style={whereWeTravelImgStyle}>
-            <p className="home-subtitle">Where we travel</p>
-            <div className="content-card-text-homepage">
-              <img src="../images/Africa.jpg"/>
-              <h3 className="title-md content-card-title-homepage">
-                <span>Africa</span>
-              </h3>
-            </div>
-            <div className="content-card-text-homepage">
-              <img src="../images/antarctica.jpg"/>
-              <h3 className="title-md content-card-title-homepage">
-                <span>Antarctica</span>
-              </h3>
-            </div>
-            <div className="content-card-text-homepage">
-              <img src="../images/Asia.jpg"/>
-              <h3 className="title-md content-card-title-homepage">
-                <span>Asia</span>
-              </h3>
-            </div>
-            <div className="content-card-text-homepage">
-              <img src="../images/Europe.jpg"/>
-              <h3 className="title-md content-card-title-homepage">
-                <span>Europe</span>
-              </h3>
-            </div>
-            <div className="content-card-text-homepage">
-              <img src="../images/MiddleEast.jpg"></img>
-              <h3 className="title-md content-card-title-homepage">
-                <span>Middle East</span>
-              </h3>
-            </div>
-            <div className="content-card-text-homepage">
-              <img src="../images/NorthAmerica.jpg"/>
-              <h3 className="title-md content-card-title-homepage">
-                <span>North America</span>
-              </h3>
-            </div>
-            <div className="content-card-text-homepage">
-              <img src="../images/SouthAmerica.jpg"/>
-              <h3 className="title-md content-card-title-homepage">
-                <span>South America</span>
-              </h3>
-            </div>
-          </div>
-        </div>
+        {showOnScreen}
 
         <div className="place-tags-top-content-header" style={whereWeTravelImgStyle}>
           <p className="tags-subtitle">Tags</p>

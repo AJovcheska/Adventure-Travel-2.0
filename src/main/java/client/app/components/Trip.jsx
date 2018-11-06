@@ -37,7 +37,7 @@ var Trip = React.createClass({
               <div>{departure_date}</div>
             </div>
             <div className="trip-fees" id="trip-card-price">${price},00</div>
-            <div className="trip-rating" id="trip-card-rating">{rating}</div>
+            <div className="trip-rating" id="trip-card-rating">{rating} stars</div>
           </div>
           <div className="content-card-footer">
             <Link to={`/${this.props.id}`} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>

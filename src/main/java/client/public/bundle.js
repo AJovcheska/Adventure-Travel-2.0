@@ -25282,6 +25282,8 @@
 	var _require2 = __webpack_require__(166),
 	    Link = _require2.Link;
 
+	var TripListProfile = __webpack_require__(269);
+
 	var Weather = React.createClass({
 	  displayName: 'Weather',
 
@@ -25363,13 +25365,151 @@
 	        Link,
 	        { to: { pathname: "/profile", state: { trips: this.state.trips, user: this.state.user, accessToken: this.state.accessToken } },
 	          className: 'profileLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
-	        'See ',
 	        this.state.user.username,
 	        '\'s profile'
 	      );
 	    } else {
 	      greeting = React.createElement('h1', null);
 	    }
+
+	    var starterDestinations = React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'div',
+	        { className: 'photoDiv', style: whereWeTravelImgStyle },
+	        React.createElement(
+	          'p',
+	          { className: 'home-subtitle' },
+	          'Where we travel'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'content-card-text-homepage' },
+	          React.createElement('img', { src: '../images/Africa.jpg' }),
+	          React.createElement(
+	            'h3',
+	            { className: 'title-md content-card-title-homepage' },
+	            React.createElement(
+	              'span',
+	              null,
+	              'Africa'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'content-card-text-homepage' },
+	          React.createElement('img', { src: '../images/antarctica.jpg' }),
+	          React.createElement(
+	            'h3',
+	            { className: 'title-md content-card-title-homepage' },
+	            React.createElement(
+	              'span',
+	              null,
+	              'Antarctica'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'content-card-text-homepage' },
+	          React.createElement('img', { src: '../images/Asia.jpg' }),
+	          React.createElement(
+	            'h3',
+	            { className: 'title-md content-card-title-homepage' },
+	            React.createElement(
+	              'span',
+	              null,
+	              'Asia'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'content-card-text-homepage' },
+	          React.createElement('img', { src: '../images/Europe.jpg' }),
+	          React.createElement(
+	            'h3',
+	            { className: 'title-md content-card-title-homepage' },
+	            React.createElement(
+	              'span',
+	              null,
+	              'Europe'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'content-card-text-homepage' },
+	          React.createElement('img', { src: '../images/MiddleEast.jpg' }),
+	          React.createElement(
+	            'h3',
+	            { className: 'title-md content-card-title-homepage' },
+	            React.createElement(
+	              'span',
+	              null,
+	              'Middle East'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'content-card-text-homepage' },
+	          React.createElement('img', { src: '../images/NorthAmerica.jpg' }),
+	          React.createElement(
+	            'h3',
+	            { className: 'title-md content-card-title-homepage' },
+	            React.createElement(
+	              'span',
+	              null,
+	              'North America'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'content-card-text-homepage' },
+	          React.createElement('img', { src: '../images/SouthAmerica.jpg' }),
+	          React.createElement(
+	            'h3',
+	            { className: 'title-md content-card-title-homepage' },
+	            React.createElement(
+	              'span',
+	              null,
+	              'South America'
+	            )
+	          )
+	        )
+	      )
+	    );
+
+	    var profileDestinations = React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'div',
+	        { className: 'editInfoButton profileContainer favDestLabel' },
+	        React.createElement(
+	          'h3',
+	          { className: 'basicInfo' },
+	          'Favorite destinations'
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'card-grid-profile trips-index-cards' },
+	        React.createElement(TripListProfile, { trips: this.state.trips, user: this.state.user })
+	      )
+	    );
+
+	    var showOnScreen;
+	    if (this.state.isLogged === true) {
+	      showOnScreen = profileDestinations;
+	    } else {
+	      showOnScreen = starterDestinations;
+	    }
+
 	    return React.createElement(
 	      'div',
 	      null,
@@ -25416,117 +25556,7 @@
 	          'Unusual trips and unique destinations'
 	        )
 	      ),
-	      React.createElement(
-	        'div',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'photoDiv', style: whereWeTravelImgStyle },
-	          React.createElement(
-	            'p',
-	            { className: 'home-subtitle' },
-	            'Where we travel'
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'content-card-text-homepage' },
-	            React.createElement('img', { src: '../images/Africa.jpg' }),
-	            React.createElement(
-	              'h3',
-	              { className: 'title-md content-card-title-homepage' },
-	              React.createElement(
-	                'span',
-	                null,
-	                'Africa'
-	              )
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'content-card-text-homepage' },
-	            React.createElement('img', { src: '../images/antarctica.jpg' }),
-	            React.createElement(
-	              'h3',
-	              { className: 'title-md content-card-title-homepage' },
-	              React.createElement(
-	                'span',
-	                null,
-	                'Antarctica'
-	              )
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'content-card-text-homepage' },
-	            React.createElement('img', { src: '../images/Asia.jpg' }),
-	            React.createElement(
-	              'h3',
-	              { className: 'title-md content-card-title-homepage' },
-	              React.createElement(
-	                'span',
-	                null,
-	                'Asia'
-	              )
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'content-card-text-homepage' },
-	            React.createElement('img', { src: '../images/Europe.jpg' }),
-	            React.createElement(
-	              'h3',
-	              { className: 'title-md content-card-title-homepage' },
-	              React.createElement(
-	                'span',
-	                null,
-	                'Europe'
-	              )
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'content-card-text-homepage' },
-	            React.createElement('img', { src: '../images/MiddleEast.jpg' }),
-	            React.createElement(
-	              'h3',
-	              { className: 'title-md content-card-title-homepage' },
-	              React.createElement(
-	                'span',
-	                null,
-	                'Middle East'
-	              )
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'content-card-text-homepage' },
-	            React.createElement('img', { src: '../images/NorthAmerica.jpg' }),
-	            React.createElement(
-	              'h3',
-	              { className: 'title-md content-card-title-homepage' },
-	              React.createElement(
-	                'span',
-	                null,
-	                'North America'
-	              )
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'content-card-text-homepage' },
-	            React.createElement('img', { src: '../images/SouthAmerica.jpg' }),
-	            React.createElement(
-	              'h3',
-	              { className: 'title-md content-card-title-homepage' },
-	              React.createElement(
-	                'span',
-	                null,
-	                'South America'
-	              )
-	            )
-	          )
-	        )
-	      ),
+	      showOnScreen,
 	      React.createElement(
 	        'div',
 	        { className: 'place-tags-top-content-header', style: whereWeTravelImgStyle },
@@ -27854,7 +27884,8 @@
 	          React.createElement(
 	            'div',
 	            { className: 'trip-rating', id: 'trip-card-rating' },
-	            rating
+	            rating,
+	            ' stars'
 	          )
 	        ),
 	        React.createElement(
@@ -29918,235 +29949,226 @@
 	        )
 	      );
 	    }
+
+	    var whereWeTravelBackground = "../images/santis_swiss_alps_winter-wallpaper-1280x768.jpg";
+	    var whereWeTravelImgStyle = {
+	      backgroundImage: 'url(' + whereWeTravelBackground + ')'
+	    };
 	    return React.createElement(
 	      'div',
-	      { className: 'profileSection' },
+	      null,
 	      React.createElement(
 	        'div',
-	        { className: 'profileNav' },
-	        React.createElement('img', { src: '../images/person.png', className: 'profileImg' }),
-	        React.createElement(
-	          'h3',
-	          { className: 'basicInfo' },
-	          'About'
-	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'h3-title-profile' },
-	          'Name'
-	        ),
+	        { className: 'profileSection', style: whereWeTravelImgStyle },
 	        React.createElement(
 	          'div',
-	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          name
-	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'h3-title-profile' },
-	          'Age'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          age
-	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'h3-title-profile' },
-	          'Email'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          email
-	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'h3-title-profile' },
-	          'Country'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          country
-	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'h3-title-profile' },
-	          'Profession'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          profession
-	        ),
-	        show
-	      ),
-	      React.createElement(
-	        'div',
-	        null,
-	        React.createElement(
-	          'div',
-	          { className: 'profileContainer rightProfile' },
-	          React.createElement(
-	            'p',
-	            null,
-	            'Personalize your experience.'
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'additionalInfo' },
-	            React.createElement(
-	              'p',
-	              { className: 'additionalQuestionLabel' },
-	              React.createElement(
-	                'b',
-	                null,
-	                'What do you enjoy doing most on your trips?'
-	              )
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Extreme Sports', checked: this.state.entertainment === 'Extreme Sports', onChange: this.onEntertainmentChange },
-	              'Extreme sports'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Sightseeing', checked: this.state.entertainment === 'Sightseeing', onChange: this.onEntertainmentChange },
-	              'Sightseeing'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Food Tasting', checked: this.state.entertainment === 'Food Tasting', onChange: this.onEntertainmentChange },
-	              'Food tasting'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Wildlife encounters', checked: this.state.entertainment === 'Wildlife encounters', onChange: this.onEntertainmentChange },
-	              'Wildlife encounters'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Exploring history', checked: this.state.entertainment === 'Exploring history', onChange: this.onEntertainmentChange },
-	              'Exploring history'
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'additionalInfo' },
-	            React.createElement(
-	              'p',
-	              { className: 'additionalQuestionLabel' },
-	              React.createElement(
-	                'b',
-	                null,
-	                'Who do you usually travel with?'
-	              )
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Alone', checked: this.state.tripCompanion === 'Alone', onChange: this.onCompanionChange },
-	              'Alone'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Partner', checked: this.state.tripCompanion === 'Partner', onChange: this.onCompanionChange },
-	              'Partner'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Family', checked: this.state.tripCompanion === 'Family', onChange: this.onCompanionChange },
-	              'Family'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Friends', checked: this.state.tripCompanion === 'Friends', onChange: this.onCompanionChange },
-	              'Friends'
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'additionalInfo' },
-	            React.createElement(
-	              'p',
-	              { className: 'additionalQuestionLabel' },
-	              React.createElement(
-	                'b',
-	                null,
-	                'How long do you consider your trip should last?'
-	              )
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: '1 Week', checked: this.state.tripLength === '1 Week', onChange: this.onTripLengthChange },
-	              '1 week'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: '2 - 4 Weeks', checked: this.state.tripLength === '2 - 4 Weeks', onChange: this.onTripLengthChange },
-	              '2-4 weeks'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: '1 Month or more', checked: this.state.tripLength === '1 Month or more', onChange: this.onTripLengthChange },
-	              '1 month or more'
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'additionalInfo' },
-	            React.createElement(
-	              'p',
-	              { className: 'additionalQuestionLabel' },
-	              React.createElement(
-	                'b',
-	                null,
-	                'Which of these places you prefer to travel to?'
-	              )
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Beach', checked: this.state.destination === 'Beach', onChange: this.onDestinationChange },
-	              'Beach'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'Mountain', checked: this.state.destination === 'Mountain', onChange: this.onDestinationChange },
-	              'Mountains'
-	            ),
-	            React.createElement(
-	              'input',
-	              { type: 'radio', value: 'City', checked: this.state.destination === 'City', onChange: this.onDestinationChange },
-	              'City'
-	            )
-	          ),
-	          React.createElement(
-	            'div',
-	            { className: 'editInfoButton' },
-	            React.createElement(
-	              'button',
-	              { type: 'submit', className: 'signupbtn', onClick: this.handleChangeData },
-	              'Edit info'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'editInfoButton profileContainer favDestLabel' },
+	          { className: 'profileNav' },
+	          React.createElement('img', { src: '../images/person.png', className: 'profileImg' }),
 	          React.createElement(
 	            'h3',
 	            { className: 'basicInfo' },
-	            'Favourite destinations'
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        null,
+	            'About'
+	          ),
+	          React.createElement(
+	            'p',
+	            { className: 'h3-title-profile' },
+	            'Name'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'profile-placeholders', id: 'trip-card-price' },
+	            name
+	          ),
+	          React.createElement(
+	            'p',
+	            { className: 'h3-title-profile' },
+	            'Age'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'profile-placeholders', id: 'trip-card-price' },
+	            age
+	          ),
+	          React.createElement(
+	            'p',
+	            { className: 'h3-title-profile' },
+	            'Email'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'profile-placeholders', id: 'trip-card-price' },
+	            email
+	          ),
+	          React.createElement(
+	            'p',
+	            { className: 'h3-title-profile' },
+	            'Country'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'profile-placeholders', id: 'trip-card-price' },
+	            country
+	          ),
+	          React.createElement(
+	            'p',
+	            { className: 'h3-title-profile' },
+	            'Profession'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'profile-placeholders', id: 'trip-card-price' },
+	            profession
+	          ),
+	          show
+	        ),
 	        React.createElement(
 	          'div',
-	          { className: 'card-grid-profile trips-index-cards' },
-	          React.createElement(TripListProfile, { trips: trips, user: user })
+	          null,
+	          React.createElement(
+	            'div',
+	            { className: 'profileContainer rightProfile' },
+	            React.createElement(
+	              'p',
+	              null,
+	              'Personalize your experience.'
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'additionalInfo' },
+	              React.createElement(
+	                'p',
+	                { className: 'additionalQuestionLabel' },
+	                React.createElement(
+	                  'b',
+	                  null,
+	                  'What do you enjoy doing most on your trips?'
+	                )
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Extreme Sports', checked: this.state.entertainment === 'Extreme Sports', onChange: this.onEntertainmentChange },
+	                'Extreme sports'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Sightseeing', checked: this.state.entertainment === 'Sightseeing', onChange: this.onEntertainmentChange },
+	                'Sightseeing'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Food Tasting', checked: this.state.entertainment === 'Food Tasting', onChange: this.onEntertainmentChange },
+	                'Food tasting'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Wildlife encounters', checked: this.state.entertainment === 'Wildlife encounters', onChange: this.onEntertainmentChange },
+	                'Wildlife encounters'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Exploring history', checked: this.state.entertainment === 'Exploring history', onChange: this.onEntertainmentChange },
+	                'Exploring history'
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'additionalInfo' },
+	              React.createElement(
+	                'p',
+	                { className: 'additionalQuestionLabel' },
+	                React.createElement(
+	                  'b',
+	                  null,
+	                  'Who do you usually travel with?'
+	                )
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Alone', checked: this.state.tripCompanion === 'Alone', onChange: this.onCompanionChange },
+	                'Alone'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Partner', checked: this.state.tripCompanion === 'Partner', onChange: this.onCompanionChange },
+	                'Partner'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Family', checked: this.state.tripCompanion === 'Family', onChange: this.onCompanionChange },
+	                'Family'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Friends', checked: this.state.tripCompanion === 'Friends', onChange: this.onCompanionChange },
+	                'Friends'
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'additionalInfo' },
+	              React.createElement(
+	                'p',
+	                { className: 'additionalQuestionLabel' },
+	                React.createElement(
+	                  'b',
+	                  null,
+	                  'How long do you consider your trip should last?'
+	                )
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: '1 Week', checked: this.state.tripLength === '1 Week', onChange: this.onTripLengthChange },
+	                '1 week'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: '2 - 4 Weeks', checked: this.state.tripLength === '2 - 4 Weeks', onChange: this.onTripLengthChange },
+	                '2-4 weeks'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: '1 Month or more', checked: this.state.tripLength === '1 Month or more', onChange: this.onTripLengthChange },
+	                '1 month or more'
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'additionalInfo' },
+	              React.createElement(
+	                'p',
+	                { className: 'additionalQuestionLabel' },
+	                React.createElement(
+	                  'b',
+	                  null,
+	                  'Which of these places you prefer to travel to?'
+	                )
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Beach', checked: this.state.destination === 'Beach', onChange: this.onDestinationChange },
+	                'Beach'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'Mountain', checked: this.state.destination === 'Mountain', onChange: this.onDestinationChange },
+	                'Mountains'
+	              ),
+	              React.createElement(
+	                'input',
+	                { type: 'radio', value: 'City', checked: this.state.destination === 'City', onChange: this.onDestinationChange },
+	                'City'
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'editInfoButton' },
+	              React.createElement(
+	                'button',
+	                { type: 'submit', className: 'signupbtn', onClick: this.handleChangeData },
+	                'Edit info'
+	              )
+	            )
+	          )
 	        )
 	      )
 	    );
@@ -30286,7 +30308,8 @@
 	          React.createElement(
 	            'div',
 	            { className: 'trip-rating', id: 'trip-card-rating' },
-	            rating
+	            rating,
+	            ' stars'
 	          )
 	        ),
 	        React.createElement(
@@ -40152,7 +40175,7 @@
 
 
 	// module
-	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n  height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1196px;\r\n  margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n  margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n  height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n  margin-left: -3px;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n  height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1196px;\r\n  margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n  margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n  height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n", ""]);
 
 	// exports
 
