@@ -13,4 +13,6 @@ public interface UserRepo {
     User findByUsername(String email);
 
     void addAuthority(String username);
+
+    void editAdditionalInfo(String tripCompanion, String entertainment, String destination, String tripLength, String username);
 }

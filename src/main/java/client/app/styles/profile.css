@@ -1,5 +1,8 @@
 .profileNav {
-  margin-top: 40px;
+  display: inline-block;
+  float: left;
+  margin-left: 200px;
+  margin-top: 30px;
 }
 
 .basicInfo {
@@ -12,7 +15,7 @@
   margin-bottom: 12px;
   margin-left: -21px;
 }
-
+profileLink
 .h3-title-profile {
   color: #455A3B;
   display: block !important;
@@ -23,4 +26,31 @@
 
 .profile-placeholders {
   margin-left: 15px;
+}
+
+.additionalQuestionLabel {
+  font-size: 15px;
+}
+
+.editInfoButton {
+  margin: auto;
+  width: 50%;
+}
+
+.rightProfile {
+  float: right;
+  display: inline-block;
+  border: dashed;
+  padding: 10px;
+}
+
+.profileContainer {
+  margin-right: 200px;
+  margin-top: 50px;
+  display: inline-block;
+}
+
+.favDestLabel {
+  text-align: center;
+  width: 100%;
 }

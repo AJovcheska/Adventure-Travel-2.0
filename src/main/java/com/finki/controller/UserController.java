@@ -65,4 +65,11 @@ public class UserController {
         }
         return ResponseEntity.ok(false);
     }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.PUT, value = "/nonsecured/update")
+    public ResponseEntity updateAdditionalInfo(@RequestBody User user) {
+        userService.updateAdditionalInfo(user.getTripCompanion(), user.getEntertainment(), user.getDestination(), user.getTripLength(), user.getUsername());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

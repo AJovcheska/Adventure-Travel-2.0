@@ -21,4 +21,7 @@ public class UserQueries {
 
     @Value("${add-authority}")
     private String addAuthority;
+
+    @Value("${edit-additional-info}")
+    private String editAdditionalInfo;
 }

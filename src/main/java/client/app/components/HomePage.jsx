@@ -3,38 +3,16 @@ var backendApi = require('backendApi');
 var {browserHistory} = require('react-router');
 var {Link} = require('react-router');
 
+
 var Weather = React.createClass({
   getInitialState: function() {
     return {
       accessToken: '',
       username: '',
       trips: [],
-      user: []
+      user: [],
+      isLogged: false
     }
-  },
-  componentDidMount: function() {
-    this.setState({
-      accessToken: '',
-      username: '',
-      trips: [],
-      user: []
-    });
-  },
-  handleGetProfile: function(e) {
-    var {accessToken, username} = this.state;
-    console.log("Username: " + username);
-    console.log("Accesstoken: " + accessToken);
-    backendApi.loginUser(accessToken, username).then((result) => {
-      if (result) {
-        this.setState({
-          trips: result.data
-        });
-      } else {
-        window.open('http://localhost:3000/#/errorPage?_k=se8ue5', "_self");
-      }
-    }, function(errorMessage) {
-      console.log(errorMessage);
-    });
   },
   handleLogin: function(e) {
     var password = this.refs.password.value;
@@ -52,13 +30,19 @@ var Weather = React.createClass({
               username: username,
               trips: result
             });
+            console.log(username);
+            console.log(res);
             backendApi.getUserByUsername(res, username).then((user) => {
-              if (user) {
+              console.log('Here ' + user);
+              if (user !== 401) {
                 this.setState({
-                  user: user
+                  user: user,
+                  isLogged: true
                 });
               } else {
-                window.open('http://localhost:3000/#/errorPage?_k=se8ue5', "_self");
+                this.setState({
+                  isLogged: false
+                });
               }
             }, function(errorMessage) {
               console.log(errorMessage);
@@ -89,6 +73,17 @@ var Weather = React.createClass({
     var whereWeTravelImgStyle = {
       backgroundImage: `url(${whereWeTravelBackground})`
     };
+
+    var isLoggedIn = this.state.isLogged;
+    let greeting;
+    if (isLoggedIn) {
+        greeting = <Link to={{ pathname: "/profile", state: { trips: this.state.trips, user: this.state.user , accessToken: this.state.accessToken}}}
+                         className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
+            See {this.state.user.username}'s profile
+        </Link>;
+    } else {
+        greeting = <h1></h1>;
+    }
     return (
       <div>
         <form>
@@ -102,11 +97,8 @@ var Weather = React.createClass({
              <input type="text" placeholder="Enter Username" ref="username" required/>
            </div>
         </form>
-        <Link to={{ pathname: "/profile", state: { trips: this.state.trips, user: this.state.user }}}
-          className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
-          My Profile
-        </Link>
 
+          {greeting}
         <div style={masterImgStyle}>
           <h1 className="text-center page-title homepage-transparentTitle">Transparent title</h1>
           <h1 className="text-center page-title homepage-title">Adventure Travel</h1>

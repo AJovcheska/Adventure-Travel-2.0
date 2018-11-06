@@ -33,10 +33,6 @@ public class UserRepositoryImpl implements UserRepo {
         map.addValue("email", user.getEmail());
         map.addValue("sex", user.getSex());
         map.addValue("profession", user.getProfession());
-        map.addValue("trip_companion", user.getTripCompanion());
-        map.addValue("entertainment", user.getEntertainment());
-        map.addValue("trip_length", user.getTripLength());
-        map.addValue("destination", user.getDestination());
         map.addValue("activated", true);
         jdbcTemplate.update(userQueries.getAddUser(), map);
     }
@@ -63,5 +59,14 @@ public class UserRepositoryImpl implements UserRepo {
         jdbcTemplate.update(userQueries.getAddUser(), map);
     }
 
-
+    @Override
+    public void editAdditionalInfo(String tripCompanion, String entertainment, String destination, String tripLength, String username) {
+        MapSqlParameterSource map = new MapSqlParameterSource();
+        map.addValue("username", username);
+        map.addValue("trip_companion", tripCompanion);
+        map.addValue("entertainment", entertainment);
+        map.addValue("destination", destination);
+        map.addValue("trip_length", tripLength);
+        jdbcTemplate.update(userQueries.getEditAdditionalInfo(), map);
+    }
 }

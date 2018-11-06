@@ -18,6 +18,10 @@ const GET_TRIPS_USER_URL = "http://localhost:8080/api/secure/trips";
 
 const GET_USER_BY_USERNAME_URL = "http://localhost:8080/api/secure/users/";
 
+const DELETE_TRIP_URL = "http://localhost:8080/api/nonsecured/remove/trip?";
+
+const UPDATE_INFO_URL = "http://localhost:8080/api/nonsecured/update?";
+
 module.exports = {
   getTemp: function (location) {
     var encodedLocation = encodeURIComponent(location);
@@ -70,7 +74,7 @@ module.exports = {
     });
   },
   registerUser: function(username,name, age, password, country, email, sex,
-    profession, tripCompanion, entertainment, tripLength, destination) {
+    profession) {
     return axios.post(REGISTER_USER_URL,
       {
         username: username,
@@ -80,11 +84,7 @@ module.exports = {
         country: country,
         email: email,
         sex: sex,
-        profession: profession,
-        tripCompanion: tripCompanion,
-        entertainment: entertainment,
-        tripLength: tripLength,
-        destination:destination
+        profession: profession
       },
       { headers: {"Content-Type": "application/json"}
       }) .then(r => console.log(r.status))
@@ -174,5 +174,35 @@ module.exports = {
         return error.response.status;
       }
     });
+  },
+  removeTripFromUser: function(username, id) {
+    var encodedId = decodeURIComponent(id);
+    var encodedUsername = decodeURIComponent(username);
+
+    var params = new URLSearchParams();
+    params.append("username", encodedUsername);
+    params.append("id", encodedId);
+    return axios.delete(DELETE_TRIP_URL,
+      {
+        params: params
+      });
+  },
+  updateAdditionalInfo: function(username, destination, entertainment, tripLength, tripCompanion) {
+    var encodedUsername = decodeURIComponent(username);
+    var encodedDestination = decodeURIComponent(destination);
+    var encodedEntertainment = decodeURIComponent(entertainment);
+    var encodedtripLength = decodeURIComponent(tripLength);
+    var encodedtripCompanion = decodeURIComponent(tripCompanion);
+    var url = `${UPDATE_INFO_URL}username=${encodedUsername}&entertainment=${encodedEntertainment}&destination=${encodedDestination}&tripLength=${encodedtripLength}&tripCompanion=${encodedtripCompanion}`;
+    return axios.put(UPDATE_INFO_URL, {
+      username: username,
+      destination: destination,
+      entertainment: entertainment,
+      tripLength: tripLength,
+      tripCompanion: tripCompanion
+    },
+    { headers: {"Content-Type": "application/json"}
+    }) .then(r => console.log(r.status))
+      .catch(e => console.log(e));
   }
 }

@@ -12,7 +12,7 @@
 
 .homepage-transparentTitle {
   font-size: 66px;
-  margin-top: -24px;
+  margin-top: -32px;
   opacity: 0;
 }
 
@@ -112,7 +112,7 @@ img {
   z-index: 1;
   position: relative;
   float: left;
-  color: white;
+  color: #e2d5b4;
   font-size: 30px;
   margin-left: 23px;
 }

@@ -111,39 +111,38 @@
 	var RegistrationForm = __webpack_require__(259);
 	var TripDescription = __webpack_require__(267);
 	var Profile = __webpack_require__(268);
-	var LoginForm = __webpack_require__(269);
-	var SuccessRegistration = __webpack_require__(270);
-	var ErrorPage = __webpack_require__(271);
+	var LoginForm = __webpack_require__(271);
+	var SuccessRegistration = __webpack_require__(272);
+	var ErrorPage = __webpack_require__(273);
 
-	var MotherNatureTag = __webpack_require__(272);
-	var InTheMountainTag = __webpack_require__(274);
-	var ArchitecturalWondersTag = __webpack_require__(275);
-	var BikingAndHikingTag = __webpack_require__(276);
-	var HistoryAndMisteryTag = __webpack_require__(277);
-	var InspiringArtTag = __webpack_require__(278);
-	var IcecoldTag = __webpack_require__(279);
-	var PhotographyBombTag = __webpack_require__(280);
-	var FascinatingFaunaTag = __webpack_require__(281);
-	var FarFarEastTag = __webpack_require__(282);
+	var MotherNatureTag = __webpack_require__(274);
+	var InTheMountainTag = __webpack_require__(276);
+	var ArchitecturalWondersTag = __webpack_require__(277);
+	var BikingAndHikingTag = __webpack_require__(278);
+	var HistoryAndMisteryTag = __webpack_require__(279);
+	var InspiringArtTag = __webpack_require__(280);
+	var IcecoldTag = __webpack_require__(281);
+	var PhotographyBombTag = __webpack_require__(282);
+	var FascinatingFaunaTag = __webpack_require__(283);
+	var FarFarEastTag = __webpack_require__(284);
 
-	var Barcelona = __webpack_require__(283);
-	var Rome = __webpack_require__(284);
-	var Morocco = __webpack_require__(285);
-	var Persia = __webpack_require__(286);
-	var Mongolia = __webpack_require__(287);
-	var Everest = __webpack_require__(288);
-	var Antarctica = __webpack_require__(289);
-	var Brazil = __webpack_require__(290);
-	var Petra = __webpack_require__(291);
-	var Zambia = __webpack_require__(292);
-	var Rwanda = __webpack_require__(293);
+	var Barcelona = __webpack_require__(285);
+	var Rome = __webpack_require__(286);
+	var Morocco = __webpack_require__(287);
+	var Persia = __webpack_require__(288);
+	var Mongolia = __webpack_require__(289);
+	var Everest = __webpack_require__(290);
+	var Antarctica = __webpack_require__(291);
+	var Brazil = __webpack_require__(292);
+	var Petra = __webpack_require__(293);
+	var Zambia = __webpack_require__(294);
+	var Rwanda = __webpack_require__(295);
 
 	// Load foundation
-	__webpack_require__(294);
+	__webpack_require__(296);
 	$(document).foundation();
 
 	// app css
-	__webpack_require__(298);
 	__webpack_require__(300);
 	__webpack_require__(302);
 	__webpack_require__(304);
@@ -156,6 +155,7 @@
 	__webpack_require__(318);
 	__webpack_require__(320);
 	__webpack_require__(322);
+	__webpack_require__(324);
 
 	ReactDOM.render(React.createElement(
 	  Router,
@@ -25290,40 +25290,12 @@
 	      accessToken: '',
 	      username: '',
 	      trips: [],
-	      user: []
+	      user: [],
+	      isLogged: false
 	    };
 	  },
-	  componentDidMount: function componentDidMount() {
-	    this.setState({
-	      accessToken: '',
-	      username: '',
-	      trips: [],
-	      user: []
-	    });
-	  },
-	  handleGetProfile: function handleGetProfile(e) {
-	    var _this = this;
-
-	    var _state = this.state,
-	        accessToken = _state.accessToken,
-	        username = _state.username;
-
-	    console.log("Username: " + username);
-	    console.log("Accesstoken: " + accessToken);
-	    backendApi.loginUser(accessToken, username).then(function (result) {
-	      if (result) {
-	        _this.setState({
-	          trips: result.data
-	        });
-	      } else {
-	        window.open('http://localhost:3000/#/errorPage?_k=se8ue5', "_self");
-	      }
-	    }, function (errorMessage) {
-	      console.log(errorMessage);
-	    });
-	  },
 	  handleLogin: function handleLogin(e) {
-	    var _this2 = this;
+	    var _this = this;
 
 	    var password = this.refs.password.value;
 	    var username = this.refs.username.value;
@@ -25333,20 +25305,26 @@
 	        // console.log('Access token: ' + res);
 	        backendApi.loginUser(res, username).then(function (result) {
 	          if (result) {
-	            _this2.refs.username.value = '';
-	            _this2.refs.password.value = '';
-	            _this2.setState({
+	            _this.refs.username.value = '';
+	            _this.refs.password.value = '';
+	            _this.setState({
 	              accessToken: res,
 	              username: username,
 	              trips: result
 	            });
+	            console.log(username);
+	            console.log(res);
 	            backendApi.getUserByUsername(res, username).then(function (user) {
-	              if (user) {
-	                _this2.setState({
-	                  user: user
+	              console.log('Here ' + user);
+	              if (user !== 401) {
+	                _this.setState({
+	                  user: user,
+	                  isLogged: true
 	                });
 	              } else {
-	                window.open('http://localhost:3000/#/errorPage?_k=se8ue5', "_self");
+	                _this.setState({
+	                  isLogged: false
+	                });
 	              }
 	            }, function (errorMessage) {
 	              console.log(errorMessage);
@@ -25377,6 +25355,21 @@
 	    var whereWeTravelImgStyle = {
 	      backgroundImage: 'url(' + whereWeTravelBackground + ')'
 	    };
+
+	    var isLoggedIn = this.state.isLogged;
+	    var greeting = void 0;
+	    if (isLoggedIn) {
+	      greeting = React.createElement(
+	        Link,
+	        { to: { pathname: "/profile", state: { trips: this.state.trips, user: this.state.user, accessToken: this.state.accessToken } },
+	          className: 'profileLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
+	        'See ',
+	        this.state.user.username,
+	        '\'s profile'
+	      );
+	    } else {
+	      greeting = React.createElement('h1', null);
+	    }
 	    return React.createElement(
 	      'div',
 	      null,
@@ -25403,12 +25396,7 @@
 	          React.createElement('input', { type: 'text', placeholder: 'Enter Username', ref: 'username', required: true })
 	        )
 	      ),
-	      React.createElement(
-	        Link,
-	        { to: { pathname: "/profile", state: { trips: this.state.trips, user: this.state.user } },
-	          className: 'profileLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
-	        'My Profile'
-	      ),
+	      greeting,
 	      React.createElement(
 	        'div',
 	        { style: masterImgStyle },
@@ -25670,6 +25658,10 @@
 
 	var GET_USER_BY_USERNAME_URL = "http://localhost:8080/api/secure/users/";
 
+	var DELETE_TRIP_URL = "http://localhost:8080/api/nonsecured/remove/trip?";
+
+	var UPDATE_INFO_URL = "http://localhost:8080/api/nonsecured/update?";
+
 	module.exports = {
 	  getTemp: function getTemp(location) {
 	    var encodedLocation = encodeURIComponent(location);
@@ -25719,7 +25711,7 @@
 	      }
 	    });
 	  },
-	  registerUser: function registerUser(username, name, age, password, country, email, sex, profession, tripCompanion, entertainment, tripLength, destination) {
+	  registerUser: function registerUser(username, name, age, password, country, email, sex, profession) {
 	    return axios.post(REGISTER_USER_URL, {
 	      username: username,
 	      name: name,
@@ -25728,11 +25720,7 @@
 	      country: country,
 	      email: email,
 	      sex: sex,
-	      profession: profession,
-	      tripCompanion: tripCompanion,
-	      entertainment: entertainment,
-	      tripLength: tripLength,
-	      destination: destination
+	      profession: profession
 	    }, { headers: { "Content-Type": "application/json" }
 	    }).then(function (r) {
 	      return console.log(r.status);
@@ -25826,6 +25814,37 @@
 	      if (error.response) {
 	        return error.response.status;
 	      }
+	    });
+	  },
+	  removeTripFromUser: function removeTripFromUser(username, id) {
+	    var encodedId = decodeURIComponent(id);
+	    var encodedUsername = decodeURIComponent(username);
+
+	    var params = new URLSearchParams();
+	    params.append("username", encodedUsername);
+	    params.append("id", encodedId);
+	    return axios.delete(DELETE_TRIP_URL, {
+	      params: params
+	    });
+	  },
+	  updateAdditionalInfo: function updateAdditionalInfo(username, destination, entertainment, tripLength, tripCompanion) {
+	    var encodedUsername = decodeURIComponent(username);
+	    var encodedDestination = decodeURIComponent(destination);
+	    var encodedEntertainment = decodeURIComponent(entertainment);
+	    var encodedtripLength = decodeURIComponent(tripLength);
+	    var encodedtripCompanion = decodeURIComponent(tripCompanion);
+	    var url = UPDATE_INFO_URL + 'username=' + encodedUsername + '&entertainment=' + encodedEntertainment + '&destination=' + encodedDestination + '&tripLength=' + encodedtripLength + '&tripCompanion=' + encodedtripCompanion;
+	    return axios.put(UPDATE_INFO_URL, {
+	      username: username,
+	      destination: destination,
+	      entertainment: entertainment,
+	      tripLength: tripLength,
+	      tripCompanion: tripCompanion
+	    }, { headers: { "Content-Type": "application/json" }
+	    }).then(function (r) {
+	      return console.log(r.status);
+	    }).catch(function (e) {
+	      return console.log(e);
 	    });
 	  }
 	};
@@ -27578,7 +27597,8 @@
 	  render: function render() {
 	    var Background = "../images/a_hobbit_house-wallpaper-2560x1600.jpg";
 	    var ImgStyle = {
-	      backgroundImage: 'url(' + Background + ')'
+	      backgroundImage: 'url(' + Background + ')',
+	      height: '2100px'
 	    };
 	    var trips = this.state.trips;
 
@@ -28084,11 +28104,7 @@
 	      country: '',
 	      region: '',
 	      sex: 'male',
-	      selectedOption: null,
-	      travelCompanion: null,
-	      entertainment: null,
-	      tripLength: null,
-	      destination: null
+	      selectedOption: null
 	    };
 	  },
 	  handleRegistration: function handleRegistration(e) {
@@ -28102,12 +28118,9 @@
 	    var sex = this.state.sex;
 	    var profession = this.refs.profession.value;
 	    var email = this.refs.email.value;
-	    var tripCompanion = this.state.tripCompanion;
-	    var entertainment = this.state.entertainment;
-	    var tripLength = this.state.tripLength;
-	    var destination = this.state.destination;
 
-	    backendApi.registerUser(username, name, age, password, country, email, sex, profession, tripCompanion, entertainment, tripLength, destination).then(function (response) {
+	    backendApi.registerUser(username, name, age, password, country, email, sex, profession).then(function (response) {
+	      console.log(response);
 	      if (response.data) {
 	        _this.refs.username.value = '';
 	        _this.refs.email.value = '';
@@ -28118,11 +28131,7 @@
 	        _this.refs.profession.value = '';
 	        _this.setState({
 	          sex: 'male',
-	          region: '',
-	          travelCompanion: null,
-	          tripLength: null,
-	          entertainment: null,
-	          destination: null
+	          region: ''
 	        });
 	        window.open('http://localhost:3000/#/successRegistration?_k=se8ue5', "_self");
 	      } else {
@@ -28148,26 +28157,6 @@
 	      sex: e.currentTarget.value
 	    });
 	  },
-	  onCompanionChange: function onCompanionChange(e) {
-	    this.setState({
-	      travelCompanion: e.currentTarget.value
-	    });
-	  },
-	  onTripLengthChange: function onTripLengthChange(e) {
-	    this.setState({
-	      tripLength: e.currentTarget.value
-	    });
-	  },
-	  onEntertainmentChange: function onEntertainmentChange(e) {
-	    this.setState({
-	      entertainment: e.currentTarget.value
-	    });
-	  },
-	  onDestinationChange: function onDestinationChange(e) {
-	    this.setState({
-	      destination: e.currentTarget.value
-	    });
-	  },
 	  handleChange: function handleChange(selectedOption) {
 	    this.setState({ selectedOption: selectedOption });
 	    console.log('Option selected:', selectedOption);
@@ -28184,7 +28173,6 @@
 	        country = _state.country,
 	        region = _state.region;
 
-	    var colors = ['orange', 'red', 'blue', 'purple'];
 	    return React.createElement(
 	      'form',
 	      { style: masterImgStyle, className: 'registrationForm' },
@@ -28298,150 +28286,23 @@
 	      ),
 	      React.createElement(
 	        'div',
-	        { className: 'loginContainer right' },
-	        React.createElement(
-	          'p',
-	          null,
-	          'Answer these questions to help us make your experience here better.'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'additionalInfo' },
-	          React.createElement(
-	            'label',
-	            { 'for': 'travelCompanion' },
-	            React.createElement(
-	              'b',
-	              null,
-	              'Who do you usually travel with?'
-	            )
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'alone', checked: this.state.travelCompanion === 'alone', onChange: this.onCompanionChange },
-	            'Alone'
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'partner', checked: this.state.travelCompanion === 'partner', onChange: this.onCompanionChange },
-	            'Partner'
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'family', checked: this.state.travelCompanion === 'family', onChange: this.onCompanionChange },
-	            'Family'
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'friends', checked: this.state.travelCompanion === 'friends', onChange: this.onCompanionChange },
-	            'Friends'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'additionalInfo' },
-	          React.createElement(
-	            'label',
-	            { 'for': 'travelCompanion' },
-	            React.createElement(
-	              'b',
-	              null,
-	              'What do you enjoy doing most on your trips?'
-	            )
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'extremeSports', checked: this.state.entertainment === 'extremeSports', onChange: this.onEntertainmentChange },
-	            'Extreme sports'
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'sightseeing', checked: this.state.entertainment === 'sightseeing', onChange: this.onEntertainmentChange },
-	            'Sightseeing'
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'foodTasting', checked: this.state.entertainment === 'foodTasting', onChange: this.onEntertainmentChange },
-	            'Food tasting'
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'wildlife', checked: this.state.entertainment === 'wildlife', onChange: this.onEntertainmentChange },
-	            'Wildlife encounters'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'additionalInfo' },
-	          React.createElement(
-	            'label',
-	            { 'for': 'travelCompanion' },
-	            React.createElement(
-	              'b',
-	              null,
-	              'How long do you consider your trip should last?'
-	            )
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'oneWeek', checked: this.state.tripLength === 'oneWeek', onChange: this.onTripLengthChange },
-	            '1 week'
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'twoWeeks', checked: this.state.tripLength === 'twoWeeks', onChange: this.onTripLengthChange },
-	            '2-4 weeks'
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'oneMonth', checked: this.state.tripLength === 'oneMonth', onChange: this.onTripLengthChange },
-	            '1 month or more'
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'additionalInfo' },
-	          React.createElement(
-	            'label',
-	            { 'for': 'idealTrip' },
-	            React.createElement(
-	              'b',
-	              null,
-	              'Which of these places you prefer to travel to?'
-	            )
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'beach', checked: this.state.destination === 'beach', onChange: this.onDestinationChange },
-	            'Beach'
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'mountain', checked: this.state.destination === 'mountain', onChange: this.onDestinationChange },
-	            'Mountains'
-	          ),
-	          React.createElement(
-	            'input',
-	            { type: 'radio', value: 'city', checked: this.state.destination === 'city', onChange: this.onDestinationChange },
-	            'City'
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'clearfix buttonLogin' },
+	        { className: 'buttonReg' },
 	        React.createElement(
 	          'button',
-	          { type: 'button', 'class': 'cancelbtn' },
+	          { type: 'button', className: 'cancelbtn' },
 	          React.createElement(
 	            IndexLink,
 	            { to: '/' },
 	            'Cancel'
 	          )
-	        ),
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'buttonReg' },
 	        React.createElement(
 	          'button',
-	          { type: 'submit', 'class': 'signupbtn', onClick: this.handleRegistration },
+	          { type: 'submit', className: 'signupbtn', onClick: this.handleRegistration },
 	          'Sign Up'
 	        )
 	      )
@@ -29930,7 +29791,7 @@
 
 	var React = __webpack_require__(8);
 	var backendApi = __webpack_require__(227);
-	var TripList = __webpack_require__(257);
+	var TripListProfile = __webpack_require__(269);
 
 	var Profile = React.createClass({
 	  displayName: 'Profile',
@@ -29938,14 +29799,60 @@
 	  getInitialState: function getInitialState() {
 	    return {
 	      trips: [],
-	      user: []
+	      user: '',
+	      tripCompanion: null,
+	      entertainment: null,
+	      tripLength: null,
+	      destination: null
 	    };
 	  },
+	  handleChangeData: function handleChangeData() {
+	    var _this = this;
+
+	    var tripCompanion = this.state.tripCompanion;
+	    var entertainment = this.state.entertainment;
+	    var tripLength = this.state.tripLength;
+	    var destination = this.state.destination;
+	    var username = this.props.location.state.user.username;
+	    var accessToken = this.props.location.state.accessToken;
+
+	    console.log(username);
+
+	    backendApi.updateAdditionalInfo(username, destination, entertainment, tripLength, tripCompanion).then(function (response) {
+	      backendApi.getUserByUsername(accessToken, username).then(function (response) {
+	        console.log('Response from getting user ' + response.status);
+	        _this.setState({
+	          user: response
+	        });
+	      });
+	    }, function (errorMessage) {
+	      console.log(errorMessage);
+	    });
+	  },
 	  componentDidMount: function componentDidMount() {
-	    // console.log("Trips profile: " + this.props.location.state.trips);
 	    this.setState({
 	      trips: this.props.location.state.trips,
 	      user: this.props.location.state.user
+	    });
+	  },
+	  onCompanionChange: function onCompanionChange(e) {
+	    this.setState({
+	      tripCompanion: e.currentTarget.value
+	    });
+	  },
+	  onTripLengthChange: function onTripLengthChange(e) {
+	    this.setState({
+	      tripLength: e.currentTarget.value
+	    });
+	  },
+	  onEntertainmentChange: function onEntertainmentChange(e) {
+	    this.setState({
+	      entertainment: e.currentTarget.value
+	    });
+	  },
+	  onDestinationChange: function onDestinationChange(e) {
+	    this.setState({
+	      destination: e.currentTarget.value
 	    });
 	  },
 	  render: function render() {
@@ -29955,11 +29862,67 @@
 	    var profession = this.state.user.profession;
 	    var email = this.state.user.email;
 	    var trips = this.state.trips;
+	    var user = this.state.user;
+
+	    var destination = this.state.user.destination;
+	    var entertainment = this.state.user.entertainment;
+	    var tripLength = this.state.user.tripLength;
+	    var tripCompanion = this.state.user.tripCompanion;
+
+	    var show;
+	    if (destination === '') {
+	      show = '';
+	    } else {
+	      show = React.createElement(
+	        'span',
+	        null,
+	        React.createElement(
+	          'p',
+	          { className: 'h3-title-profile' },
+	          'Trip companion'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'profile-placeholders', id: 'trip-card-price' },
+	          tripCompanion
+	        ),
+	        React.createElement(
+	          'p',
+	          { className: 'h3-title-profile' },
+	          'Entertainment'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'profile-placeholders', id: 'trip-card-price' },
+	          entertainment
+	        ),
+	        React.createElement(
+	          'p',
+	          { className: 'h3-title-profile' },
+	          'Trip length'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'profile-placeholders', id: 'trip-card-price' },
+	          tripLength
+	        ),
+	        React.createElement(
+	          'p',
+	          { className: 'h3-title-profile' },
+	          'Destination'
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'profile-placeholders', id: 'trip-card-price' },
+	          destination
+	        )
+	      );
+	    }
 	    return React.createElement(
-	      'section',
+	      'div',
 	      { className: 'profileSection' },
 	      React.createElement(
-	        'nav',
+	        'div',
 	        { className: 'profileNav' },
 	        React.createElement('img', { src: '../images/person.png', className: 'profileImg' }),
 	        React.createElement(
@@ -29968,7 +29931,7 @@
 	          'About'
 	        ),
 	        React.createElement(
-	          'h4',
+	          'p',
 	          { className: 'h3-title-profile' },
 	          'Name'
 	        ),
@@ -29978,7 +29941,7 @@
 	          name
 	        ),
 	        React.createElement(
-	          'h4',
+	          'p',
 	          { className: 'h3-title-profile' },
 	          'Age'
 	        ),
@@ -29988,7 +29951,7 @@
 	          age
 	        ),
 	        React.createElement(
-	          'h4',
+	          'p',
 	          { className: 'h3-title-profile' },
 	          'Email'
 	        ),
@@ -29998,7 +29961,7 @@
 	          email
 	        ),
 	        React.createElement(
-	          'h4',
+	          'p',
 	          { className: 'h3-title-profile' },
 	          'Country'
 	        ),
@@ -30008,7 +29971,7 @@
 	          country
 	        ),
 	        React.createElement(
-	          'h4',
+	          'p',
 	          { className: 'h3-title-profile' },
 	          'Profession'
 	        ),
@@ -30016,15 +29979,174 @@
 	          'div',
 	          { className: 'profile-placeholders', id: 'trip-card-price' },
 	          profession
-	        )
+	        ),
+	        show
 	      ),
 	      React.createElement(
-	        'article',
+	        'div',
 	        null,
 	        React.createElement(
 	          'div',
-	          { className: 'card-grid trips-index-cards' },
-	          React.createElement(TripList, { trips: trips })
+	          { className: 'profileContainer rightProfile' },
+	          React.createElement(
+	            'p',
+	            null,
+	            'Personalize your experience.'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'additionalInfo' },
+	            React.createElement(
+	              'p',
+	              { className: 'additionalQuestionLabel' },
+	              React.createElement(
+	                'b',
+	                null,
+	                'What do you enjoy doing most on your trips?'
+	              )
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Extreme Sports', checked: this.state.entertainment === 'Extreme Sports', onChange: this.onEntertainmentChange },
+	              'Extreme sports'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Sightseeing', checked: this.state.entertainment === 'Sightseeing', onChange: this.onEntertainmentChange },
+	              'Sightseeing'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Food Tasting', checked: this.state.entertainment === 'Food Tasting', onChange: this.onEntertainmentChange },
+	              'Food tasting'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Wildlife encounters', checked: this.state.entertainment === 'Wildlife encounters', onChange: this.onEntertainmentChange },
+	              'Wildlife encounters'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Exploring history', checked: this.state.entertainment === 'Exploring history', onChange: this.onEntertainmentChange },
+	              'Exploring history'
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'additionalInfo' },
+	            React.createElement(
+	              'p',
+	              { className: 'additionalQuestionLabel' },
+	              React.createElement(
+	                'b',
+	                null,
+	                'Who do you usually travel with?'
+	              )
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Alone', checked: this.state.tripCompanion === 'Alone', onChange: this.onCompanionChange },
+	              'Alone'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Partner', checked: this.state.tripCompanion === 'Partner', onChange: this.onCompanionChange },
+	              'Partner'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Family', checked: this.state.tripCompanion === 'Family', onChange: this.onCompanionChange },
+	              'Family'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Friends', checked: this.state.tripCompanion === 'Friends', onChange: this.onCompanionChange },
+	              'Friends'
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'additionalInfo' },
+	            React.createElement(
+	              'p',
+	              { className: 'additionalQuestionLabel' },
+	              React.createElement(
+	                'b',
+	                null,
+	                'How long do you consider your trip should last?'
+	              )
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: '1 Week', checked: this.state.tripLength === '1 Week', onChange: this.onTripLengthChange },
+	              '1 week'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: '2 - 4 Weeks', checked: this.state.tripLength === '2 - 4 Weeks', onChange: this.onTripLengthChange },
+	              '2-4 weeks'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: '1 Month or more', checked: this.state.tripLength === '1 Month or more', onChange: this.onTripLengthChange },
+	              '1 month or more'
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'additionalInfo' },
+	            React.createElement(
+	              'p',
+	              { className: 'additionalQuestionLabel' },
+	              React.createElement(
+	                'b',
+	                null,
+	                'Which of these places you prefer to travel to?'
+	              )
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Beach', checked: this.state.destination === 'Beach', onChange: this.onDestinationChange },
+	              'Beach'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'Mountain', checked: this.state.destination === 'Mountain', onChange: this.onDestinationChange },
+	              'Mountains'
+	            ),
+	            React.createElement(
+	              'input',
+	              { type: 'radio', value: 'City', checked: this.state.destination === 'City', onChange: this.onDestinationChange },
+	              'City'
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'editInfoButton' },
+	            React.createElement(
+	              'button',
+	              { type: 'submit', className: 'signupbtn', onClick: this.handleChangeData },
+	              'Edit info'
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'editInfoButton profileContainer favDestLabel' },
+	          React.createElement(
+	            'h3',
+	            { className: 'basicInfo' },
+	            'Favourite destinations'
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'card-grid-profile trips-index-cards' },
+	          React.createElement(TripListProfile, { trips: trips, user: user })
 	        )
 	      )
 	    );
@@ -30035,6 +30157,165 @@
 
 /***/ },
 /* 269 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var React = __webpack_require__(8);
+	var ProfileTrip = __webpack_require__(270);
+
+	var TripListProfile = React.createClass({
+	  displayName: 'TripListProfile',
+
+	  render: function render() {
+	    var _props = this.props,
+	        trips = _props.trips,
+	        user = _props.user;
+
+	    var renderTrips = function renderTrips() {
+	      return trips.map(function (trip) {
+	        return React.createElement(ProfileTrip, _extends({ key: trip.ID }, trip, user));
+	      });
+	    };
+
+	    return React.createElement(
+	      'div',
+	      null,
+	      renderTrips()
+	    );
+	  }
+	});
+
+	module.exports = TripListProfile;
+
+/***/ },
+/* 270 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(8);
+
+	var _require = __webpack_require__(166),
+	    Link = _require.Link;
+
+	var backendApi = __webpack_require__(227);
+
+	var ProfileTrip = React.createClass({
+	  displayName: 'ProfileTrip',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      trip: {}
+	    };
+	  },
+	  handleRemoveFromFavorites: function handleRemoveFromFavorites() {
+	    var id = this.props.id;
+	    var username = this.props.username;
+
+	    console.log("delete");
+	    backendApi.removeTripFromUser(username, id);
+	  },
+	  handleDescription: function handleDescription(event) {
+	    var _this = this;
+
+	    var id = this.props.id;
+
+
+	    backendApi.getTripById(id).then(function (response) {
+	      _this.setState({
+	        trip: response.data
+	      });
+	    }).catch(function (error) {
+	      console.log(error);
+	    });
+	  },
+	  render: function render() {
+	    var price = this.props.price;
+	    var title = this.props.title;
+	    var rating = this.props.rating;
+	    var departure_date = this.props.departure_date;
+	    var id = this.props.id;
+	    var username = this.props.username;
+
+	    return React.createElement(
+	      'div',
+	      { className: 'content-card-v2 content-card-item trip-card' },
+	      React.createElement(
+	        'figure',
+	        { className: 'content-card-figure js-content-card-figure' },
+	        React.createElement('img', { src: '../images/' + this.props.id + '.jpg', className: 'img-responsive content-card-img lazyloaded trip-img' })
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'content-card-text' },
+	        React.createElement(
+	          'h3',
+	          { className: 'content-card-v2-title', id: 'trip-card-title' },
+	          React.createElement(
+	            'span',
+	            null,
+	            React.createElement(
+	              'strong',
+	              null,
+	              title
+	            )
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'trip-info content-card-info' },
+	          React.createElement(
+	            'div',
+	            { className: 'trip-dates', id: 'trip-card-dates' },
+	            React.createElement(
+	              'div',
+	              null,
+	              departure_date
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'trip-fees', id: 'trip-card-price' },
+	            '$',
+	            price,
+	            ',00'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'trip-rating', id: 'trip-card-rating' },
+	            rating
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'content-card-footer' },
+	          React.createElement(
+	            Link,
+	            { to: '/' + this.props.id, className: 'detail-sm cta-text', onClick: this.handleDescription },
+	            'Learn more'
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'clearfix' },
+	        React.createElement(
+	          'button',
+	          { type: 'submit', 'class': 'signupbtn', onClick: this.handleRemoveFromFavorites },
+	          'Remove from favorites'
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = ProfileTrip;
+
+/***/ },
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30122,7 +30403,7 @@
 	module.exports = LoginForm;
 
 /***/ },
-/* 270 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -30144,7 +30425,7 @@
 	module.exports = SuccessRegistration;
 
 /***/ },
-/* 271 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -30166,7 +30447,7 @@
 	module.exports = ErrorPage;
 
 /***/ },
-/* 272 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30179,7 +30460,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(275);
 
 	var MotherNatureTag = React.createClass({
 	  displayName: 'MotherNatureTag',
@@ -30220,7 +30501,7 @@
 	module.exports = MotherNatureTag;
 
 /***/ },
-/* 273 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30303,7 +30584,7 @@
 	module.exports = TripByTag;
 
 /***/ },
-/* 274 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30316,7 +30597,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(275);
 
 	var InTheMountainTag = React.createClass({
 	  displayName: 'InTheMountainTag',
@@ -30357,7 +30638,7 @@
 	module.exports = InTheMountainTag;
 
 /***/ },
-/* 275 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30370,7 +30651,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(275);
 
 	var ArchitecturalWondersTag = React.createClass({
 	  displayName: 'ArchitecturalWondersTag',
@@ -30411,7 +30692,7 @@
 	module.exports = ArchitecturalWondersTag;
 
 /***/ },
-/* 276 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30424,7 +30705,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(275);
 
 	var BikingAndHikingTag = React.createClass({
 	  displayName: 'BikingAndHikingTag',
@@ -30465,7 +30746,7 @@
 	module.exports = BikingAndHikingTag;
 
 /***/ },
-/* 277 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30478,7 +30759,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(275);
 
 	var HistoryAndMisteryTag = React.createClass({
 	  displayName: 'HistoryAndMisteryTag',
@@ -30519,7 +30800,7 @@
 	module.exports = HistoryAndMisteryTag;
 
 /***/ },
-/* 278 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30532,7 +30813,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(275);
 
 	var InspiringArtTag = React.createClass({
 	  displayName: 'InspiringArtTag',
@@ -30573,7 +30854,7 @@
 	module.exports = InspiringArtTag;
 
 /***/ },
-/* 279 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30586,7 +30867,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(275);
 
 	var IcecoldTag = React.createClass({
 	  displayName: 'IcecoldTag',
@@ -30627,7 +30908,7 @@
 	module.exports = IcecoldTag;
 
 /***/ },
-/* 280 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30640,7 +30921,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(275);
 
 	var PhotographyBombTag = React.createClass({
 	  displayName: 'PhotographyBombTag',
@@ -30681,7 +30962,7 @@
 	module.exports = PhotographyBombTag;
 
 /***/ },
-/* 281 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30694,7 +30975,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(275);
 
 	var FascinatingFaunaTag = React.createClass({
 	  displayName: 'FascinatingFaunaTag',
@@ -30735,7 +31016,7 @@
 	module.exports = FascinatingFaunaTag;
 
 /***/ },
-/* 282 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30748,7 +31029,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(227);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(275);
 
 	var FarFarEastTag = React.createClass({
 	  displayName: 'FarFarEastTag',
@@ -30789,7 +31070,7 @@
 	module.exports = FarFarEastTag;
 
 /***/ },
-/* 283 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -31567,7 +31848,7 @@
 	module.exports = Barcelona;
 
 /***/ },
-/* 284 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -32302,7 +32583,7 @@
 	module.exports = Rome;
 
 /***/ },
-/* 285 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33145,7 +33426,7 @@
 	module.exports = Morocco;
 
 /***/ },
-/* 286 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34022,7 +34303,7 @@
 	module.exports = Persia;
 
 /***/ },
-/* 287 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35022,7 +35303,7 @@
 	module.exports = Mongolia;
 
 /***/ },
-/* 288 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35791,7 +36072,7 @@
 	module.exports = Everest;
 
 /***/ },
-/* 289 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -36515,7 +36796,7 @@
 	module.exports = Antarctica;
 
 /***/ },
-/* 290 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37265,7 +37546,7 @@
 	module.exports = Brazil;
 
 /***/ },
-/* 291 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -37989,7 +38270,7 @@
 	module.exports = Petra;
 
 /***/ },
-/* 292 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -38718,7 +38999,7 @@
 	module.exports = Zambia;
 
 /***/ },
-/* 293 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39447,16 +39728,16 @@
 	module.exports = Rwanda;
 
 /***/ },
-/* 294 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(295);
+	var content = __webpack_require__(297);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39473,10 +39754,10 @@
 	}
 
 /***/ },
-/* 295 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
@@ -39487,7 +39768,7 @@
 
 
 /***/ },
-/* 296 */
+/* 298 */
 /***/ function(module, exports) {
 
 	/*
@@ -39543,7 +39824,7 @@
 
 
 /***/ },
-/* 297 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -39797,16 +40078,16 @@
 
 
 /***/ },
-/* 298 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(299);
+	var content = __webpack_require__(301);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39823,10 +40104,10 @@
 	}
 
 /***/ },
-/* 299 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
@@ -39837,16 +40118,16 @@
 
 
 /***/ },
-/* 300 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(301);
+	var content = __webpack_require__(303);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39863,30 +40144,30 @@
 	}
 
 /***/ },
-/* 301 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1182px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n  height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1196px;\r\n  margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n  margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n  height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 302 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(303);
+	var content = __webpack_require__(305);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39903,10 +40184,10 @@
 	}
 
 /***/ },
-/* 303 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
@@ -39917,16 +40198,16 @@
 
 
 /***/ },
-/* 304 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(305);
+	var content = __webpack_require__(307);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39943,10 +40224,10 @@
 	}
 
 /***/ },
-/* 305 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
@@ -39957,16 +40238,16 @@
 
 
 /***/ },
-/* 306 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(307);
+	var content = __webpack_require__(309);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -39983,10 +40264,10 @@
 	}
 
 /***/ },
-/* 307 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
@@ -39997,16 +40278,16 @@
 
 
 /***/ },
-/* 308 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(309);
+	var content = __webpack_require__(311);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40023,30 +40304,30 @@
 	}
 
 /***/ },
-/* 309 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".loginContainer {\r\n  margin-left: 200px;\r\n  margin-right: 200px;\r\n  margin-top: 30px;\r\n  display: inline-block;\r\n}\r\n\r\nbutton {\r\n  background-color: #455A3B;\r\n  color: white;\r\n  padding: 14px 20px;\r\n  margin: 8px 0;\r\n  border: none;\r\n  cursor: pointer;\r\n  width: 100%;\r\n  opacity: 0.9;\r\n}\r\n\r\n/* Extra styles for the cancel button */\r\n.cancelbtn {\r\n  padding: 14px 20px;\r\n  color: white;\r\n}\r\n\r\nbutton > a {\r\n  color: white;\r\n}\r\n\r\n/* Float cancel and signup buttons and add an equal width */\r\n.cancelbtn, .signupbtn {\r\n  float: left;\r\n  width: 50%;\r\n}\r\n\r\n* {box-sizing: border-box}\r\n\r\n/* Full-width input fields */\r\n  input[type=text], input[type=password] {\r\n  width: 100%;\r\n  padding: 15px;\r\n  margin: 5px 0 22px 0;\r\n  display: inline-block;\r\n  border: none;\r\n  background: #f1f1f1;\r\n}\r\n\r\ninput[type=text]:focus, input[type=password]:focus {\r\n  background-color: #ddd;\r\n  outline: none;\r\n}\r\n\r\n.successMessageRegistration {\r\n  color: #455A3B;\r\n  font-weight: bold;\r\n  font-size: 32px;\r\n  text-align: center;\r\n}\r\n\r\n.loginForm {\r\n  display: inline-block;\r\n  margin-right: 10px;\r\n  float: right;\r\n  z-index: 1;\r\n  position: relative;\r\n}\r\n\r\n.loginButton {\r\n  margin-top: -5px;\r\n  z-index: 1;\r\n  position: relative;\r\n}\r\n\r\n.buttonLogin {\r\n  margin-left: 700px;\r\n  margin-right: 700px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.right {\r\n  float: right;\r\n  margin-top: -661px;\r\n  margin-right: 500px;\r\n}\r\n\r\n.additionalInfo {\r\n  margin-top: 15px;\r\n  margin-bottom: 5px;\r\n}\r\n\r\n.registrationForm {\r\n  margin-top: -24px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".loginContainer {\r\n  margin-left: 200px;\r\n  margin-right: 400px;\r\n  margin-top: 30px;\r\n  display: inline-block;\r\n}\r\n\r\nbutton {\r\n  background-color: #455A3B;\r\n  color: white;\r\n  padding: 14px 20px;\r\n  margin: 8px 0;\r\n  border: none;\r\n  cursor: pointer;\r\n  width: 100%;\r\n  opacity: 0.9;\r\n}\r\n\r\n/* Extra styles for the cancel button */\r\n.cancelbtn {\r\n  padding: 14px 20px;\r\n  color: white;\r\n}\r\n\r\nbutton > a {\r\n  color: white;\r\n}\r\n\r\n/* Float cancel and signup buttons and add an equal width */\r\n.cancelbtn .signupbtn{\r\n  margin-left: -450px;\r\n}\r\n\r\n\r\n* {box-sizing: border-box}\r\n\r\n/* Full-width input fields */\r\n  input[type=text], input[type=password] {\r\n  width: 100%;\r\n  padding: 15px;\r\n  margin: 5px 0 22px 0;\r\n  display: inline-block;\r\n  border: none;\r\n  background: #f1f1f1;\r\n}\r\n\r\ninput[type=text]:focus, input[type=password]:focus {\r\n  background-color: #ddd;\r\n  outline: none;\r\n}\r\n\r\n.successMessageRegistration {\r\n  color: #455A3B;\r\n  font-weight: bold;\r\n  font-size: 32px;\r\n  text-align: center;\r\n}\r\n\r\n.loginForm {\r\n  display: inline-block;\r\n  margin-right: 10px;\r\n  float: right;\r\n  z-index: 1;\r\n  position: relative;\r\n}\r\n\r\n.loginButton {\r\n  margin-top: -5px;\r\n  z-index: 1;\r\n  position: relative;\r\n}\r\n\r\n.buttonLogin {\r\n  margin-left: 700px;\r\n  margin-right: 700px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.buttonReg {\r\n  width: 300px;\r\n  margin-left: 234px;\r\n}\r\n\r\n.right {\r\n  float: right;\r\n  display: inline-block;\r\n}\r\n\r\n.additionalInfo {\r\n  margin-top: 15px;\r\n  margin-bottom: 5px;\r\n}\r\n\r\n.registrationForm {\r\n  margin-top: -24px;\r\n}\r\n\r\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 310 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(311);
+	var content = __webpack_require__(313);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40063,10 +40344,10 @@
 	}
 
 /***/ },
-/* 311 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
@@ -40077,16 +40358,16 @@
 
 
 /***/ },
-/* 312 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(313);
+	var content = __webpack_require__(315);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40103,10 +40384,10 @@
 	}
 
 /***/ },
-/* 313 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
@@ -40117,16 +40398,16 @@
 
 
 /***/ },
-/* 314 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(315);
+	var content = __webpack_require__(317);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40143,10 +40424,10 @@
 	}
 
 /***/ },
-/* 315 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
@@ -40157,16 +40438,16 @@
 
 
 /***/ },
-/* 316 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(317);
+	var content = __webpack_require__(319);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40183,10 +40464,10 @@
 	}
 
 /***/ },
-/* 317 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
@@ -40197,16 +40478,16 @@
 
 
 /***/ },
-/* 318 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(319);
+	var content = __webpack_require__(321);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40223,30 +40504,30 @@
 	}
 
 /***/ },
-/* 319 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".content-card-text-homepage {\r\n  background-color: #EAE0D7;\r\n  width: 400px;\r\n  margin-left: 122px;\r\n  display: inline-block;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-title-homepage {\r\n  text-align: center;\r\n}\r\n\r\n.homepage-transparentTitle {\r\n  font-size: 66px;\r\n  margin-top: -24px;\r\n  opacity: 0;\r\n}\r\n\r\n.h5-homepage {\r\n  color: #333 !important;\r\n  font-weight: bold;\r\n}\r\n\r\n.homepage-title {\r\n  color: #333 !important;\r\n  font-size: 66px;\r\n  font-weight: bold;\r\n}\r\n\r\n.logoImg {\r\n  width: 200px;\r\n  height: 200px;\r\n  align: center;\r\n}\r\n\r\nimg {\r\n  padding: 2px;\r\n}\r\n\r\n.imgStyle {\r\n  width: 400px;\r\n  height: 250px;\r\n}\r\n\r\n.imagesStyle {\r\n  padding-left: 250px;\r\n}\r\n\r\n.tags-subtitle, .home-subtitle {\r\n  font-size: 40px;\r\n  font-style: oblique;\r\n  color: #1b624f;\r\n  width: 100%;\r\n  text-align: center;\r\n  padding-top: 25px;\r\n  padding-bottom: 25px;\r\n}\r\n .photobooth-subtitle {\r\n   font-size: 40px;\r\n   font-style: oblique;\r\n   color: #1b624f;\r\n   width: 100%;\r\n   text-align: center;\r\n   padding-top: 25px;\r\n   padding-bottom: 25px;\r\n   margin-left: -135px;\r\n }\r\n\r\n.tagsStyle {\r\n\r\n}\r\n\r\n.links-column {\r\n  letter-spacing: .04em;\r\n  font-weight: 400;\r\n  margin: 0;\r\n  padding: 0;\r\n  list-style: none;\r\n}\r\n\r\n.tag-li {\r\n  background-color: #ccb48d;\r\n  border-radius: 8px;\r\n  margin: 0 6px 6px 0;\r\n  display: inline-block;\r\n  line-height: 0;\r\n  height: 45px;\r\n  width: 300px;\r\n}\r\n\r\n.tag-li>a {\r\n  color: white;\r\n}\r\n\r\n.tag-li:hover {\r\n  background-color: #455A3B; /* Green */\r\n  color: white;\r\n  transition-duration: 0.4s;\r\n}\r\n\r\n.photoDiv {\r\n}\r\n\r\n.place-tags-top-content-header {\r\n  padding: 0 0 7px;\r\n  margin-bottom: 7px;\r\n  text-align: center;\r\n}\r\n\r\n.profileLink {\r\n  margin: 5px;\r\n  z-index: 1;\r\n  position: relative;\r\n  float: left;\r\n  color: white;\r\n  font-size: 30px;\r\n  margin-left: 23px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".content-card-text-homepage {\r\n  background-color: #EAE0D7;\r\n  width: 400px;\r\n  margin-left: 122px;\r\n  display: inline-block;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-title-homepage {\r\n  text-align: center;\r\n}\r\n\r\n.homepage-transparentTitle {\r\n  font-size: 66px;\r\n  margin-top: -32px;\r\n  opacity: 0;\r\n}\r\n\r\n.h5-homepage {\r\n  color: #333 !important;\r\n  font-weight: bold;\r\n}\r\n\r\n.homepage-title {\r\n  color: #333 !important;\r\n  font-size: 66px;\r\n  font-weight: bold;\r\n}\r\n\r\n.logoImg {\r\n  width: 200px;\r\n  height: 200px;\r\n  align: center;\r\n}\r\n\r\nimg {\r\n  padding: 2px;\r\n}\r\n\r\n.imgStyle {\r\n  width: 400px;\r\n  height: 250px;\r\n}\r\n\r\n.imagesStyle {\r\n  padding-left: 250px;\r\n}\r\n\r\n.tags-subtitle, .home-subtitle {\r\n  font-size: 40px;\r\n  font-style: oblique;\r\n  color: #1b624f;\r\n  width: 100%;\r\n  text-align: center;\r\n  padding-top: 25px;\r\n  padding-bottom: 25px;\r\n}\r\n .photobooth-subtitle {\r\n   font-size: 40px;\r\n   font-style: oblique;\r\n   color: #1b624f;\r\n   width: 100%;\r\n   text-align: center;\r\n   padding-top: 25px;\r\n   padding-bottom: 25px;\r\n   margin-left: -135px;\r\n }\r\n\r\n.tagsStyle {\r\n\r\n}\r\n\r\n.links-column {\r\n  letter-spacing: .04em;\r\n  font-weight: 400;\r\n  margin: 0;\r\n  padding: 0;\r\n  list-style: none;\r\n}\r\n\r\n.tag-li {\r\n  background-color: #ccb48d;\r\n  border-radius: 8px;\r\n  margin: 0 6px 6px 0;\r\n  display: inline-block;\r\n  line-height: 0;\r\n  height: 45px;\r\n  width: 300px;\r\n}\r\n\r\n.tag-li>a {\r\n  color: white;\r\n}\r\n\r\n.tag-li:hover {\r\n  background-color: #455A3B; /* Green */\r\n  color: white;\r\n  transition-duration: 0.4s;\r\n}\r\n\r\n.photoDiv {\r\n}\r\n\r\n.place-tags-top-content-header {\r\n  padding: 0 0 7px;\r\n  margin-bottom: 7px;\r\n  text-align: center;\r\n}\r\n\r\n.profileLink {\r\n  margin: 5px;\r\n  z-index: 1;\r\n  position: relative;\r\n  float: left;\r\n  color: #e2d5b4;\r\n  font-size: 30px;\r\n  margin-left: 23px;\r\n}\r\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 320 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(321);
+	var content = __webpack_require__(323);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40263,10 +40544,10 @@
 	}
 
 /***/ },
-/* 321 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
@@ -40277,16 +40558,16 @@
 
 
 /***/ },
-/* 322 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(323);
+	var content = __webpack_require__(325);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(297)(content, {});
+	var update = __webpack_require__(299)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -40303,15 +40584,15 @@
 	}
 
 /***/ },
-/* 323 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(296)();
+	exports = module.exports = __webpack_require__(298)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".profileNav {\r\n  margin-top: 40px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\n\r\n.h3-title-profile {\r\n  color: #455A3B;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".profileNav {\r\n  display: inline-block;\r\n  float: left;\r\n  margin-left: 200px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\nprofileLink\r\n.h3-title-profile {\r\n  color: #455A3B;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n\r\n.additionalQuestionLabel {\r\n  font-size: 15px;\r\n}\r\n\r\n.editInfoButton {\r\n  margin: auto;\r\n  width: 50%;\r\n}\r\n\r\n.rightProfile {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n}\r\n\r\n.profileContainer {\r\n  margin-right: 200px;\r\n  margin-top: 50px;\r\n  display: inline-block;\r\n}\r\n\r\n.favDestLabel {\r\n  text-align: center;\r\n  width: 100%;\r\n}", ""]);
 
 	// exports
 

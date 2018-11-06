@@ -9,11 +9,7 @@ var RegistrationForm = React.createClass({
       country: '',
       region: '',
       sex: 'male',
-      selectedOption: null,
-      travelCompanion: null,
-      entertainment: null,
-      tripLength: null,
-      destination: null
+      selectedOption: null
     };
   },
   handleRegistration: function(e) {
@@ -25,13 +21,10 @@ var RegistrationForm = React.createClass({
     var sex = this.state.sex;
     var profession = this.refs.profession.value;
     var email = this.refs.email.value;
-    var tripCompanion = this.state.tripCompanion;
-    var entertainment = this.state.entertainment;
-    var tripLength = this.state.tripLength;
-    var destination = this.state.destination;
 
-    backendApi.registerUser(username, name, age, password, country, email, sex, profession,
-      tripCompanion, entertainment, tripLength, destination).then((response) => {
+    backendApi.registerUser(username,name, age, password, country, email, sex,
+      profession).then((response) => {
+      console.log(response);
       if (response.data) {
         this.refs.username.value='';
         this.refs.email.value = '';
@@ -42,11 +35,7 @@ var RegistrationForm = React.createClass({
         this.refs.profession.value = '';
         this.setState({
           sex: 'male',
-          region: '',
-          travelCompanion: null,
-          tripLength: null,
-          entertainment: null,
-          destination: null
+          region: ''
         });
         window.open('http://localhost:3000/#/successRegistration?_k=se8ue5', "_self");
       } else {
@@ -72,26 +61,6 @@ var RegistrationForm = React.createClass({
      sex: e.currentTarget.value
    });
   },
-  onCompanionChange: function(e) {
-    this.setState({
-      travelCompanion: e.currentTarget.value
-    });
-  },
-  onTripLengthChange: function(e) {
-    this.setState({
-      tripLength: e.currentTarget.value
-    });
-  },
-  onEntertainmentChange: function(e) {
-    this.setState({
-      entertainment: e.currentTarget.value
-    });
-  },
-  onDestinationChange: function(e) {
-    this.setState({
-      destination: e.currentTarget.value
-    });
-  },
   handleChange: function(selectedOption) {
     this.setState({ selectedOption });
     console.log(`Option selected:`, selectedOption);
@@ -103,79 +72,48 @@ var RegistrationForm = React.createClass({
     };
 
     const {country, region} = this.state;
-    let colors = ['orange', 'red', 'blue', 'purple']
     return (
       <form style={masterImgStyle} className="registrationForm">
         <div>
-           <div className="loginContainer">
-             <h1>Sign Up</h1>
+         <div className="loginContainer">
+           <h1>Sign Up</h1>
 
-             <label for="username"><b>Username *</b></label>
-             <input type="text" placeholder="Enter Username" ref="username" required/>
+           <label for="username"><b>Username *</b></label>
+           <input type="text" placeholder="Enter Username" ref="username" required/>
 
-             <label for="email"><b>Email *</b></label>
-             <input type="text" placeholder="Enter Email" ref="email" required/>
+           <label for="email"><b>Email *</b></label>
+           <input type="text" placeholder="Enter Email" ref="email" required/>
 
-             <label for="password"><b>Password *</b></label>
-             <input type="password" placeholder="Enter Password" ref="password" required/>
+           <label for="password"><b>Password *</b></label>
+           <input type="password" placeholder="Enter Password" ref="password" required/>
 
-             <label for="name"><b>Name *</b></label>
-             <input type="text" placeholder="Enter Name" ref="name" required/>
+           <label for="name"><b>Name *</b></label>
+           <input type="text" placeholder="Enter Name" ref="name" required/>
 
-             <label for="age"><b>Age *</b></label>
-             <input type="text" placeholder="Enter Age" ref="age" required/>
+           <label for="age"><b>Age *</b></label>
+           <input type="text" placeholder="Enter Age" ref="age" required/>
 
-             <label for="country"><b>Country *</b></label>
-             <CountryDropdown value={country} ref= "country" onChange={(val) => this.selectCountry(val)} required/>
+           <label for="country"><b>Country *</b></label>
+           <CountryDropdown value={country} ref= "country" onChange={(val) => this.selectCountry(val)} required/>
 
-             <div>
-               <label for="sex"><b>Sex</b></label>
-               <input type="radio" value="male" checked={this.state.sex=== 'male'} onChange={this.onSiteChanged} required>Male</input>
-               <input type="radio" value="female" checked={this.state.sex === 'female'} onChange={this.onSiteChanged} required>Female</input>
-             </div>
-
-             <label for="profession"><b>Profession *</b></label>
-             <input type="text" placeholder="Enter Profession" ref="profession" required/>
+           <div>
+             <label for="sex"><b>Sex</b></label>
+             <input type="radio" value="male" checked={this.state.sex=== 'male'} onChange={this.onSiteChanged} required>Male</input>
+             <input type="radio" value="female" checked={this.state.sex === 'female'} onChange={this.onSiteChanged} required>Female</input>
            </div>
+
+           <label for="profession"><b>Profession *</b></label>
+           <input type="text" placeholder="Enter Profession" ref="profession" required/>
          </div>
-         <div className="loginContainer right">
-           <p>Answer these questions to help us make your experience here better.</p>
-           <div className="additionalInfo">
-             <label for="travelCompanion"><b>Who do you usually travel with?</b></label>
-             <input type="radio" value="alone" checked={this.state.travelCompanion=== 'alone'} onChange={this.onCompanionChange}>Alone</input>
-             <input type="radio" value="partner" checked={this.state.travelCompanion === 'partner'} onChange={this.onCompanionChange}>Partner</input>
-             <input type="radio" value="family" checked={this.state.travelCompanion === 'family'} onChange={this.onCompanionChange}>Family</input>
-             <input type="radio" value="friends" checked={this.state.travelCompanion === 'friends'} onChange={this.onCompanionChange}>Friends</input>
-           </div>
-
-           <div className="additionalInfo">
-             <label for="travelCompanion"><b>What do you enjoy doing most on your trips?</b></label>
-             <input type="radio" value="extremeSports" checked={this.state.entertainment=== 'extremeSports'} onChange={this.onEntertainmentChange}>Extreme sports</input>
-             <input type="radio" value="sightseeing" checked={this.state.entertainment === 'sightseeing'} onChange={this.onEntertainmentChange}>Sightseeing</input>
-             <input type="radio" value="foodTasting" checked={this.state.entertainment === 'foodTasting'} onChange={this.onEntertainmentChange}>Food tasting</input>
-             <input type="radio" value="wildlife" checked={this.state.entertainment === 'wildlife'} onChange={this.onEntertainmentChange}>Wildlife encounters</input>
-           </div>
-
-           <div className="additionalInfo">
-             <label for="travelCompanion"><b>How long do you consider your trip should last?</b></label>
-             <input type="radio" value="oneWeek" checked={this.state.tripLength=== 'oneWeek'} onChange={this.onTripLengthChange}>1 week</input>
-             <input type="radio" value="twoWeeks" checked={this.state.tripLength === 'twoWeeks'} onChange={this.onTripLengthChange}>2-4 weeks</input>
-             <input type="radio" value="oneMonth" checked={this.state.tripLength === 'oneMonth'} onChange={this.onTripLengthChange}>1 month or more</input>
-           </div>
-
-           <div className="additionalInfo">
-             <label for="idealTrip"><b>Which of these places you prefer to travel to?</b></label>
-             <input type="radio" value="beach" checked={this.state.destination=== 'beach'} onChange={this.onDestinationChange}>Beach</input>
-             <input type="radio" value="mountain" checked={this.state.destination === 'mountain'} onChange={this.onDestinationChange}>Mountains</input>
-             <input type="radio" value="city" checked={this.state.destination === 'city'} onChange={this.onDestinationChange}>City</input>
-           </div>
-         </div>
-         <div className="clearfix buttonLogin">
-           <button type="button" class="cancelbtn">
-              <IndexLink to="/">Cancel</IndexLink>
-           </button>
-           <button type="submit" class="signupbtn" onClick={this.handleRegistration}>Sign Up</button>
-         </div>
+        </div>
+        <div className="buttonReg">
+            <button type="button" className="cancelbtn">
+                <IndexLink to="/">Cancel</IndexLink>
+            </button>
+        </div>
+        <div className="buttonReg">
+            <button type="submit" className="signupbtn" onClick={this.handleRegistration}>Sign Up</button>
+        </div>
       </form>
     );
   }

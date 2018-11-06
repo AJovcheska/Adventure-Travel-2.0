@@ -90,7 +90,8 @@ var Destinations = React.createClass({
   render: function() {
     const Background = "../images/a_hobbit_house-wallpaper-2560x1600.jpg";
     var ImgStyle = {
-      backgroundImage: `url(${Background})`
+      backgroundImage: `url(${Background})`,
+      height: `2100px`
     };
     var {trips} = this.state;
     return (

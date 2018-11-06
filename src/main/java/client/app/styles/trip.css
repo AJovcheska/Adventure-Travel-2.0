@@ -65,6 +65,7 @@
 .content-card-text {
   padding: 20px;
   background-color: white;
+  height: 200px;
 }
 
 .trips-index-cards {
@@ -84,7 +85,12 @@
 .card-grid {
   display: inline-block;
   float: right;
-  width: 1182px;
+  width: 1196px;
+  margin-top: -500px;
+}
+
+.card-grid-profile {
+  margin-left: 200px;
 }
 
 .content-card-item {
@@ -97,6 +103,7 @@
 .trip-img {
   width: 303px !important;
   margin-left: -41px !important;
+  height: 165px;
 }
 
 body.trips.all {

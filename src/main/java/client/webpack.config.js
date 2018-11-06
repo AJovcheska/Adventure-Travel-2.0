@@ -42,6 +42,8 @@ module.exports = {
       Dropdown: 'app/components/Dropdown.jsx',
       LoginForm: 'app/components/LoginForm.jsx',
       ErrorPage: 'app/components/ErrorPage.jsx',
+      ProfileTrip: 'app/components/ProfileTrip.jsx',
+      TripListProfile: 'app/components/TripListProfile.jsx',
 
       // tags
       MotherNatureTag: 'app/components/tags/MotherNatureTag.jsx',

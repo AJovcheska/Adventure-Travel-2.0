@@ -29,4 +29,8 @@ public class UserService {
     public User findByUsername(String username) {
         return userRepo.findByUsername(username);
     }
+
+    public void updateAdditionalInfo(String tripCompanion, String entertainment, String destination, String tripLength, String username) {
+        userRepo.editAdditionalInfo(tripCompanion, entertainment, destination, tripLength, username);
+    }
 }
