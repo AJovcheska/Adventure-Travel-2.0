@@ -27464,26 +27464,6 @@
 	      user: this.props.user
 	    };
 	  },
-	  componentDidMount: function componentDidMount() {
-	    var _this = this;
-
-	    var username = this.props.user.username;
-
-	    console.log("Username " + username);
-	    backendApi.getTripsByUser(username).then(function (result) {
-	      console.log(result);
-	      if (result) {
-	        _this.setState({
-	          trips: result,
-	          user: _this.props.user
-	        });
-	      } else {
-	        throw new Error(res.data.message);
-	      }
-	    }, function (errorMessage) {
-	      console.log(errorMessage);
-	    });
-	  },
 	  render: function render() {
 	    var _props = this.props,
 	        trips = _props.trips,

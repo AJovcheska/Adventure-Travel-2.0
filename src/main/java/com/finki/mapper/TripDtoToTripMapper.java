@@ -19,6 +19,7 @@ public final class TripDtoToTripMapper {
         trip.setDepartureDate(tripDto.getDepartureDate());
         trip.setEndDateToSign(tripDto.getEndDateToSign());
         trip.setPrice(tripDto.getPrice());
+        trip.setDestination(tripDto.getDestination());
         return trip;
     }
 }
