@@ -1,6 +1,5 @@
 var React = require('react');
 var ProfileTrip = require('ProfileTrip');
-var backendApi = require('backendApi');
 
 var TripListProfile = React.createClass({
   getInitialState: function () {

@@ -69,8 +69,7 @@ public class TripController {
     @RequestMapping(method = RequestMethod.GET, value = "/secure/trips/{username}")
     public ResponseEntity<List<Trip>> getTripsForUser(@PathVariable String username) {
         List<Trip> tripsForUser = tripService.findTripsForUser(username);
-//        List<Trip> trips = preferenceCalculator.orderTripsByPreferences(username, tripsForUser);
-        return ResponseEntity.ok(tripsForUser);
+        return ResponseEntity.ok(preferenceCalculator.orderTripsByPreferences(username, tripsForUser));
     }
 
     @ResponseBody
