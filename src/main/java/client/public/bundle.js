@@ -25287,6 +25287,11 @@
 	var Weather = React.createClass({
 	  displayName: 'Weather',
 
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      username: ''
+	    };
+	  },
 	  getInitialState: function getInitialState() {
 	    return {
 	      accessToken: '',
@@ -25296,8 +25301,24 @@
 	      isLogged: false
 	    };
 	  },
-	  handleLogin: function handleLogin(e) {
+	  componentDidMount: function componentDidMount() {
 	    var _this = this;
+
+	    if (this.state.username != null && this.state.username != '') {
+	      backendApi.getTripsByUser(this.state.username).then(function (result) {
+	        if (result) {
+	          console.log(result);
+	          _this.setState({
+	            username: _this.state.username,
+	            trips: result,
+	            isLogged: true
+	          });
+	        }
+	      });
+	    }
+	  },
+	  handleLogin: function handleLogin(e) {
+	    var _this2 = this;
 
 	    var password = this.refs.password.value;
 	    var username = this.refs.username.value;
@@ -25305,9 +25326,9 @@
 	      backendApi.getAccessToken(response).then(function (res) {
 	        backendApi.loginUser(res, username).then(function (result) {
 	          if (result) {
-	            _this.refs.username.value = '';
-	            _this.refs.password.value = '';
-	            _this.setState({
+	            _this2.refs.username.value = '';
+	            _this2.refs.password.value = '';
+	            _this2.setState({
 	              accessToken: res,
 	              username: username,
 	              trips: result
@@ -25316,12 +25337,12 @@
 	            console.log(res);
 	            backendApi.getUserByUsername(res, username).then(function (user) {
 	              if (user !== 401) {
-	                _this.setState({
+	                _this2.setState({
 	                  user: user,
 	                  isLogged: true
 	                });
 	              } else {
-	                _this.setState({
+	                _this2.setState({
 	                  isLogged: false
 	                });
 	              }
@@ -25335,6 +25356,18 @@
 	          console.log(errorMessage);
 	        });
 	      });
+	    });
+	  },
+	  handleToggle: function handleToggle(id) {
+	    var updatedTrips = this.state.trips.map(function (trip) {
+	      if (trip.id === id) {
+	        trip.deleted = !trip.deleted;
+	      }
+	      return todo;
+	    });
+
+	    this.setState({
+	      trips: updatedTrips
 	    });
 	  },
 	  render: function render() {
@@ -25498,7 +25531,7 @@
 	      React.createElement(
 	        'div',
 	        { className: 'card-grid-profile trips-index-cards' },
-	        React.createElement(TripListProfile, { trips: this.state.trips, user: this.state.user })
+	        React.createElement(TripListProfile, { trips: this.state.trips, user: this.state.user, onClick: this.handleToggle })
 	      )
 	    );
 
@@ -25871,6 +25904,16 @@
 	    params.append("id", encodedId);
 	    return axios.delete(DELETE_TRIP_URL, {
 	      params: params
+	    }).then(function (res) {
+	      if (res.data.cod && res.data.message) {
+	        throw new Error(res.data.message);
+	      } else {
+	        return res;
+	      }
+	    }).catch(function (error) {
+	      if (error.response) {
+	        return error.response.status;
+	      }
 	    });
 	  },
 	  updateAdditionalInfo: function updateAdditionalInfo(username, destination, entertainment, tripLength, tripCompanion) {
@@ -30141,10 +30184,6 @@
 	      );
 	    }
 
-	    var whereWeTravelBackground = "../images/santis_swiss_alps_winter-wallpaper-1280x768.jpg";
-	    var whereWeTravelImgStyle = {
-	      backgroundImage: 'url(' + whereWeTravelBackground + ')'
-	    };
 	    return React.createElement(
 	      'div',
 	      null,
@@ -40656,7 +40695,7 @@
 
 
 	// module
-	exports.push([module.id, ".profileNav {\r\n  display: inline-block;\r\n  float: left;\r\n  margin-left: 200px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\nprofileLink\r\n.h3-title-profile {\r\n  color: #455A3B;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n\r\n.additionalQuestionLabel {\r\n  font-size: 15px;\r\n}\r\n\r\n.editInfoButton {\r\n  margin: auto;\r\n  width: 50%;\r\n}\r\n\r\n.rightProfile {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n}\r\n\r\n.profileContainer {\r\n  margin-right: 200px;\r\n  margin-top: 50px;\r\n  display: inline-block;\r\n}\r\n\r\n.favDestLabel {\r\n  text-align: center;\r\n  width: 100%;\r\n}", ""]);
+	exports.push([module.id, ".profileNav {\r\n  display: inline-block;\r\n  float: left;\r\n  margin-left: 200px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\nprofileLink\r\n.h3-title-profile {\r\n  color: #455A3B;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n\r\n.additionalQuestionLabel {\r\n  font-size: 15px;\r\n}\r\n\r\n.editInfoButton {\r\n  margin: auto;\r\n  width: 50%;\r\n}\r\n\r\n.rightProfile {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n}\r\n\r\n.profileContainer {\r\n  margin-right: 200px;\r\n  margin-top: 25px;\r\n  display: inline-block;\r\n}\r\n\r\n.favDestLabel {\r\n  text-align: center;\r\n  width: 100%;\r\n}", ""]);
 
 	// exports
 

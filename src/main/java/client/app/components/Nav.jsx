@@ -21,7 +21,7 @@ var Nav = React.createClass({
         </div>
         <div className="top-bar-right">
             <Link to="/registration" className = "registerLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>Register</Link>
-      </div>
+        </div>
       </div>
     );
   }

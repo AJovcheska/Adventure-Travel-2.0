@@ -5,6 +5,11 @@ var {Link} = require('react-router');
 var TripListProfile = require('TripListProfile');
 
 var Weather = React.createClass({
+  getDefaultProps: function() {
+    return {
+      username: ''
+    };
+  },
   getInitialState: function () {
     return {
       accessToken: '',
@@ -12,6 +17,20 @@ var Weather = React.createClass({
       trips: [],
       user: [],
       isLogged: false
+    }
+  },
+  componentDidMount: function() {
+    if (this.state.username != null && this.state.username != '') {
+      backendApi.getTripsByUser(this.state.username).then((result) => {
+        if (result) {
+          console.log(result);
+          this.setState({
+            username: this.state.username,
+            trips: result,
+            isLogged: true
+          });
+        }
+      });
     }
   },
   handleLogin: function (e) {
@@ -51,6 +70,18 @@ var Weather = React.createClass({
           console.log(errorMessage);
         });
       });
+    });
+  },
+  handleToggle: function(id) {
+    var updatedTrips = this.state.trips.map((trip) => {
+      if (trip.id === id) {
+        trip.deleted = !trip.deleted;
+      }
+      return todo;
+    });
+
+    this.setState({
+      trips: updatedTrips
     });
   },
   render: function () {
@@ -140,7 +171,7 @@ var Weather = React.createClass({
           <h3 className="basicInfo">Favorite destinations</h3>
         </div>
         <div className="card-grid-profile trips-index-cards">
-          <TripListProfile trips={this.state.trips} user={this.state.user}/>
+          <TripListProfile trips={this.state.trips} user={this.state.user} onClick={this.handleToggle}/>
         </div>
       </div>;
 

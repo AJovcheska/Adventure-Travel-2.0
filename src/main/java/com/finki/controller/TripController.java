@@ -88,8 +88,8 @@ public class TripController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.DELETE, value = "/nonsecured/remove/trip", consumes = MediaType.ALL_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteTripFromUser(@RequestParam(value = "username") String username, @RequestParam(value = "id") String id) {
+    public ResponseEntity deleteTripFromUser(@RequestParam(value = "username") String username, @RequestParam(value = "id") String id) {
         tripService.deleteTripFromUser(username, id);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

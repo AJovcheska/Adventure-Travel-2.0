@@ -202,7 +202,17 @@ module.exports = {
     return axios.delete(DELETE_TRIP_URL,
       {
         params: params
-      });
+      }).then(function (res) {
+      if (res.data.cod && res.data.message) {
+        throw new Error(res.data.message);
+      } else {
+        return res;
+      }
+    }).catch(function (error) {
+      if (error.response) {
+        return error.response.status;
+      }
+    });
   },
   updateAdditionalInfo: function(username, destination, entertainment, tripLength, tripCompanion) {
     var encodedUsername = decodeURIComponent(username);

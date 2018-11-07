@@ -99,14 +99,10 @@ var Profile = React.createClass({
         </span>;
     }
 
-    const whereWeTravelBackground = "../images/santis_swiss_alps_winter-wallpaper-1280x768.jpg";
-    var whereWeTravelImgStyle = {
-      backgroundImage: `url(${whereWeTravelBackground})`
-    };
     return (
       <div>
         <div className="profileSection">
-          <div className="profileNav" >
+          <div className="profileNav">
             <img src = {`../images/person.png`} className="profileImg"/>
             <h3 className="basicInfo">About</h3>
             <p className="h3-title-profile">Name</p>
