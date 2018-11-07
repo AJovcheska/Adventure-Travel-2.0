@@ -16,6 +16,8 @@ const GET_TOKEN_URL = "http://localhost:8080/api/oauth/token";
 
 const GET_TRIPS_USER_URL = "http://localhost:8080/api/secure/trips";
 
+const GET_TRIPS_USER_NONSECURE_URL = "http://localhost:8080/api/nonsecured/trips";
+
 const GET_USER_BY_USERNAME_URL = "http://localhost:8080/api/secure/users/";
 
 const DELETE_TRIP_URL = "http://localhost:8080/api/nonsecured/remove/trip?";
@@ -131,6 +133,21 @@ module.exports = {
         };
     var tripsUserUrl = `${GET_TRIPS_USER_URL}/${encodedUsername}`;
     return axios.get(tripsUserUrl, config).then(function (res) {
+      if (res.data.cod && res.data.message) {
+        throw new Error(res.data.message);
+      } else {
+        return res.data;
+      }
+    }).catch(function (error) {
+      if (error.response) {
+        return error.response.status;
+      }
+    });
+  },
+  getTripsByUser: function(username) {
+    var encodedUsername = decodeURIComponent(username);
+    var tripsUserUrl = `${GET_TRIPS_USER_NONSECURE_URL}/${encodedUsername}`;
+    return axios.get(tripsUserUrl).then(function (res) {
       if (res.data.cod && res.data.message) {
         throw new Error(res.data.message);
       } else {

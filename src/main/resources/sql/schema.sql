@@ -58,6 +58,7 @@ create table trip (
   rating decimal (3, 0),
   departure_date date,
   end_date_to_sign date,
+  destination varchar2(70),
 
   primary key (id)
 );

@@ -2,6 +2,7 @@ package com.finki.controller;
 
 import com.finki.domain.Trip;
 import com.finki.service.TripService;
+import com.finki.util.PreferenceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +22,9 @@ public class TripController {
 
     @Autowired
     private TripService tripService;
+
+    @Autowired
+    private PreferenceCalculator preferenceCalculator;
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
@@ -64,7 +68,16 @@ public class TripController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, value = "/secure/trips/{username}")
     public ResponseEntity<List<Trip>> getTripsForUser(@PathVariable String username) {
-        return ResponseEntity.ok(tripService.findTripsForUser(username));
+        List<Trip> tripsForUser = tripService.findTripsForUser(username);
+//        List<Trip> trips = preferenceCalculator.orderTripsByPreferences(username, tripsForUser);
+        return ResponseEntity.ok(tripsForUser);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, value = "/nonsecured/trips/{username}")
+    public ResponseEntity<List<Trip>> getTripsUser(@PathVariable String username) {
+        List<Trip> tripsForUser = tripService.findTripsForUser(username);
+        return ResponseEntity.ok(tripsForUser);
     }
 
     @ResponseBody

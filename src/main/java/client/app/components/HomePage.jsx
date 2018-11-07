@@ -6,7 +6,7 @@ var TripListProfile = require('TripListProfile');
 
 
 var Weather = React.createClass({
-  getInitialState: function() {
+  getInitialState: function () {
     return {
       accessToken: '',
       username: '',
@@ -15,13 +15,11 @@ var Weather = React.createClass({
       isLogged: false
     }
   },
-  handleLogin: function(e) {
+  handleLogin: function (e) {
     var password = this.refs.password.value;
     var username = this.refs.username.value;
     backendApi.getRefreshToken(username, password).then((response) => {
-      // console.log('Refresh token: ' + response);
       backendApi.getAccessToken(response).then((res) => {
-        // console.log('Access token: ' + res);
         backendApi.loginUser(res, username).then((result) => {
           if (result) {
             this.refs.username.value = '';
@@ -45,19 +43,19 @@ var Weather = React.createClass({
                   isLogged: false
                 });
               }
-            }, function(errorMessage) {
+            }, function (errorMessage) {
               console.log(errorMessage);
             });
           } else {
             throw new Error(res.data.message);
           }
-        }, function(errorMessage) {
+        }, function (errorMessage) {
           console.log(errorMessage);
         });
       });
     });
   },
-  render: function() {
+  render: function () {
     const photoboothBackground = "../images/bgd2.jpg";
     var photoBoothStyle = {
       backgroundImage: `url(${photoboothBackground})`
@@ -78,12 +76,15 @@ var Weather = React.createClass({
     var isLoggedIn = this.state.isLogged;
     let greeting;
     if (isLoggedIn) {
-        greeting = <Link to={{ pathname: "/profile", state: { trips: this.state.trips, user: this.state.user , accessToken: this.state.accessToken}}}
-                         className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
-            {this.state.user.username}'s profile
+      greeting =
+        <Link to={{
+          pathname: "/profile",
+          state: {trips: this.state.trips, user: this.state.user, accessToken: this.state.accessToken}
+        }} className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
+          {this.state.user.username}'s profile
         </Link>;
     } else {
-        greeting = <h1></h1>;
+      greeting = <h1></h1>;
     }
 
     var starterDestinations =
@@ -156,15 +157,15 @@ var Weather = React.createClass({
     return (
       <div>
         <form>
-           <div className="loginForm loginButton">
-             <button type="submit" onClick={this.handleLogin}>Login</button>
-           </div>
-           <div className="loginForm">
-              <input type="password" placeholder="Enter Password" ref="password" required/>
-           </div>
-           <div className="loginForm">
-             <input type="text" placeholder="Enter Username" ref="username" required/>
-           </div>
+          <div className="loginForm loginButton">
+            <button type="submit" onClick={this.handleLogin}>Login</button>
+          </div>
+          <div className="loginForm">
+            <input type="password" placeholder="Enter Password" ref="password" required/>
+          </div>
+          <div className="loginForm">
+            <input type="text" placeholder="Enter Username" ref="username" required/>
+          </div>
         </form>
 
         {greeting}
@@ -178,16 +179,23 @@ var Weather = React.createClass({
 
         <div className="place-tags-top-content-header" style={whereWeTravelImgStyle}>
           <p className="tags-subtitle">Tags</p>
-          <button className="tag-li"><a href="http://localhost:3000/?#/tags/architecturalwonders?_k=ym0gl7">Architectural wonders</a></button>
-          <button className="tag-li"><a href="http://localhost:3000/?#/tags/mothernature?_k=ym0gl7">Mother nature</a></button>
+          <button className="tag-li"><a href="http://localhost:3000/?#/tags/architecturalwonders?_k=ym0gl7">Architectural
+            wonders</a></button>
+          <button className="tag-li"><a href="http://localhost:3000/?#/tags/mothernature?_k=ym0gl7">Mother nature</a>
+          </button>
           <button className="tag-li"><a href="http://localhost:3000/?#/tags/art?_k=ym0gl7">Inspiring art</a></button>
           <button className="tag-li"><a href="http://localhost:3000/?#/tags/ice?_k=ym0gl7">Ice & cold</a></button>
-          <button className="tag-li"><a href="http://localhost:3000/?#/tags/fauna?_k=ym0gl7">Fascinating fauna</a></button>
+          <button className="tag-li"><a href="http://localhost:3000/?#/tags/fauna?_k=ym0gl7">Fascinating fauna</a>
+          </button>
           <button className="tag-li"><a href="http://localhost:3000/?#/tags/east?_k=ym0gl7">Far far East</a></button>
-          <button className="tag-li"><a href="http://localhost:3000/?#/tags/history?_k=ym0gl7">History and mistery</a></button>
-          <button className="tag-li"><a href="http://localhost:3000/?#/tags/inthemountain?_k=ym0gl7">In the mountains</a></button>
-          <button className="tag-li"><a href="http://localhost:3000/?#/tags/biking?_k=ym0gl7">Biking and hiking</a></button>
-          <button className="tag-li"><a href="http://localhost:3000/?#/tags/photobomb?_k=ym0gl7">Photography bomb</a></button>
+          <button className="tag-li"><a href="http://localhost:3000/?#/tags/history?_k=ym0gl7">History and mistery</a>
+          </button>
+          <button className="tag-li"><a href="http://localhost:3000/?#/tags/inthemountain?_k=ym0gl7">In the
+            mountains</a></button>
+          <button className="tag-li"><a href="http://localhost:3000/?#/tags/biking?_k=ym0gl7">Biking and hiking</a>
+          </button>
+          <button className="tag-li"><a href="http://localhost:3000/?#/tags/photobomb?_k=ym0gl7">Photography bomb</a>
+          </button>
         </div>
       </div>
     );

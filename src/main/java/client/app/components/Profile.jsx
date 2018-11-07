@@ -27,7 +27,11 @@ var Profile = React.createClass({
       backendApi.getUserByUsername(accessToken, username).then((response) =>{
         console.log('Response from getting user ' + response.status);
         this.setState({
-          user: response
+          user: response,
+          tripCompanion: null,
+          entertainment: null,
+          tripLength: null,
+          destination: null
         });
       });
     }, function(errorMessage) {
@@ -101,7 +105,7 @@ var Profile = React.createClass({
     };
     return (
       <div>
-        <div className="profileSection" style={whereWeTravelImgStyle}>
+        <div className="profileSection">
           <div className="profileNav" >
             <img src = {`../images/person.png`} className="profileImg"/>
             <h3 className="basicInfo">About</h3>
@@ -122,7 +126,6 @@ var Profile = React.createClass({
 
             {show}
           </div>
-
 
           <div>
             <div className="profileContainer rightProfile">
@@ -154,9 +157,11 @@ var Profile = React.createClass({
 
               <div className="additionalInfo">
                 <p className="additionalQuestionLabel"><b>Which of these places you prefer to travel to?</b></p>
-                <input type="radio" value="Beach" checked={this.state.destination === 'Beach'} onChange={this.onDestinationChange}>Beach</input>
+                <input type="radio" value="Tropical place" checked={this.state.destination === 'Tropical place'} onChange={this.onDestinationChange}>Tropical place</input>
                 <input type="radio" value="Mountain" checked={this.state.destination === 'Mountain'} onChange={this.onDestinationChange}>Mountains</input>
                 <input type="radio" value="City" checked={this.state.destination === 'City'} onChange={this.onDestinationChange}>City</input>
+                <input type="radio" value="Historical place" checked={this.state.destination === 'Historical place'} onChange={this.onDestinationChange}>Historical place</input>
+                <input type="radio" value="Cold place" checked={this.state.destination === 'Cold place'} onChange={this.onDestinationChange}>Cold place</input>
               </div>
 
               <div className="editInfoButton">

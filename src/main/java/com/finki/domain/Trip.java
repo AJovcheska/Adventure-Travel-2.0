@@ -29,4 +29,6 @@ public class Trip {
     private Date departureDate;
 
     private Date endDateToSign;
+
+    private String destination;
 }

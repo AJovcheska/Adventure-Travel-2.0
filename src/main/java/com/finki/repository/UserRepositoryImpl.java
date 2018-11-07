@@ -61,12 +61,39 @@ public class UserRepositoryImpl implements UserRepo {
 
     @Override
     public void editAdditionalInfo(String tripCompanion, String entertainment, String destination, String tripLength, String username) {
+        String baseQuery = "update user set ";
         MapSqlParameterSource map = new MapSqlParameterSource();
+        if (tripCompanion != null) {
+            baseQuery += "trip_companion=:trip_companion";
+            if (entertainment != null || destination != null || tripLength != null) {
+                baseQuery += ", ";
+            }
+            map.addValue("trip_companion", tripCompanion);
+
+        }
+        if (entertainment != null) {
+            baseQuery += "entertainment=:entertainment";
+            if (destination != null || tripLength != null) {
+                baseQuery += ", ";
+            }
+            map.addValue("entertainment", entertainment);
+
+        }
+        if (tripLength != null) {
+            baseQuery += "trip_length=:trip_length";
+            if (destination != null) {
+                baseQuery += ", ";
+            }
+            map.addValue("trip_length", tripLength);
+
+        }
+        if (destination != null) {
+            baseQuery += "destination=:destination ";
+            map.addValue("destination", destination);
+
+        }
+        baseQuery += " where username=:username";
         map.addValue("username", username);
-        map.addValue("trip_companion", tripCompanion);
-        map.addValue("entertainment", entertainment);
-        map.addValue("destination", destination);
-        map.addValue("trip_length", tripLength);
-        jdbcTemplate.update(userQueries.getEditAdditionalInfo(), map);
+        jdbcTemplate.update(baseQuery, map);
     }
 }
