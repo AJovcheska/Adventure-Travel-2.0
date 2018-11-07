@@ -4,7 +4,6 @@ var {browserHistory} = require('react-router');
 var {Link} = require('react-router');
 var TripListProfile = require('TripListProfile');
 
-
 var Weather = React.createClass({
   getInitialState: function () {
     return {
@@ -32,7 +31,6 @@ var Weather = React.createClass({
             console.log(username);
             console.log(res);
             backendApi.getUserByUsername(res, username).then((user) => {
-              console.log('Here ' + user);
               if (user !== 401) {
                 this.setState({
                   user: user,
@@ -152,7 +150,6 @@ var Weather = React.createClass({
     } else {
       showOnScreen = starterDestinations;
     }
-
 
     return (
       <div>

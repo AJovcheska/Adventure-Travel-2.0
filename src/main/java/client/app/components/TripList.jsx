@@ -13,7 +13,7 @@ var TripList = React.createClass({
     };
 
     return (
-      <div card-grid trips-index-cards>
+      <div>
         {renderTrips()}
       </div>
     );

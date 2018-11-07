@@ -25315,7 +25315,6 @@
 	            console.log(username);
 	            console.log(res);
 	            backendApi.getUserByUsername(res, username).then(function (user) {
-	              console.log('Here ' + user);
 	              if (user !== 401) {
 	                _this.setState({
 	                  user: user,
@@ -28080,6 +28079,11 @@
 	            'Learn more'
 	          )
 	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'clearfix' },
+	        React.createElement('button', { className: 'tmpBtn', onClick: this.handleRemoveFromFavorites })
 	      )
 	    );
 	  }
@@ -28112,7 +28116,7 @@
 
 	    return React.createElement(
 	      'div',
-	      { 'card-grid': true, 'trips-index-cards': true },
+	      null,
 	      renderTrips()
 	    );
 	  }
@@ -40212,7 +40216,7 @@
 
 
 	// module
-	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n  margin-left: -3px;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n  height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1196px;\r\n  margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n  margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n  height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n  margin-left: -3px;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n  height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1196px;\r\n  margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n  margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n  height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n\r\n.tmpBtn {\r\n  opacity: 0;\r\n  margin: -16px;\r\n}\r\n", ""]);
 
 	// exports
 

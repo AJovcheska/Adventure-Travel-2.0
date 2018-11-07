@@ -43,6 +43,10 @@ var Trip = React.createClass({
             <Link to={`/${this.props.id}`} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>
           </div>
         </div>
+        <div className="clearfix">
+          <button className="tmpBtn" onClick={this.handleRemoveFromFavorites}>
+          </button>
+        </div>
       </div>
     );
   }
