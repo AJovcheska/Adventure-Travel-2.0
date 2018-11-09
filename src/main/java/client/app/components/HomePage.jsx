@@ -2,14 +2,8 @@ var React = require('react');
 var backendApi = require('backendApi');
 var {browserHistory} = require('react-router');
 var {Link} = require('react-router');
-var TripListProfile = require('TripListProfile');
 
-var Weather = React.createClass({
-  getDefaultProps: function() {
-    return {
-      username: ''
-    };
-  },
+var HomePage = React.createClass({
   getInitialState: function () {
     return {
       accessToken: '',
@@ -17,20 +11,6 @@ var Weather = React.createClass({
       trips: [],
       user: [],
       isLogged: false
-    }
-  },
-  componentDidMount: function() {
-    if (this.state.username != null && this.state.username != '') {
-      backendApi.getTripsByUser(this.state.username).then((result) => {
-        if (result) {
-          console.log(result);
-          this.setState({
-            username: this.state.username,
-            trips: result,
-            isLogged: true
-          });
-        }
-      });
     }
   },
   handleLogin: function (e) {
@@ -72,18 +52,6 @@ var Weather = React.createClass({
       });
     });
   },
-  handleToggle: function(id) {
-    var updatedTrips = this.state.trips.map((trip) => {
-      if (trip.id === id) {
-        trip.deleted = !trip.deleted;
-      }
-      return todo;
-    });
-
-    this.setState({
-      trips: updatedTrips
-    });
-  },
   render: function () {
     const photoboothBackground = "../images/bgd2.jpg";
     var photoBoothStyle = {
@@ -116,72 +84,6 @@ var Weather = React.createClass({
       greeting = <h1></h1>;
     }
 
-    var starterDestinations =
-      <div>
-        <div className="photoDiv" style={whereWeTravelImgStyle}>
-          <p className="home-subtitle">Where we travel</p>
-          <div className="content-card-text-homepage">
-            <img src="../images/Africa.jpg"/>
-            <h3 className="title-md content-card-title-homepage">
-              <span>Africa</span>
-            </h3>
-          </div>
-          <div className="content-card-text-homepage">
-            <img src="../images/antarctica.jpg"/>
-            <h3 className="title-md content-card-title-homepage">
-              <span>Antarctica</span>
-            </h3>
-          </div>
-          <div className="content-card-text-homepage">
-            <img src="../images/Asia.jpg"/>
-            <h3 className="title-md content-card-title-homepage">
-              <span>Asia</span>
-            </h3>
-          </div>
-          <div className="content-card-text-homepage">
-            <img src="../images/Europe.jpg"/>
-            <h3 className="title-md content-card-title-homepage">
-              <span>Europe</span>
-            </h3>
-          </div>
-          <div className="content-card-text-homepage">
-            <img src="../images/MiddleEast.jpg"></img>
-            <h3 className="title-md content-card-title-homepage">
-              <span>Middle East</span>
-            </h3>
-          </div>
-          <div className="content-card-text-homepage">
-            <img src="../images/NorthAmerica.jpg"/>
-            <h3 className="title-md content-card-title-homepage">
-              <span>North America</span>
-            </h3>
-          </div>
-          <div className="content-card-text-homepage">
-            <img src="../images/SouthAmerica.jpg"/>
-            <h3 className="title-md content-card-title-homepage">
-              <span>South America</span>
-            </h3>
-          </div>
-        </div>
-      </div>;
-
-    var profileDestinations =
-      <div>
-        <div className="editInfoButton profileContainer favDestLabel">
-          <h3 className="basicInfo">Favorite destinations</h3>
-        </div>
-        <div className="card-grid-profile trips-index-cards">
-          <TripListProfile trips={this.state.trips} user={this.state.user} onClick={this.handleToggle}/>
-        </div>
-      </div>;
-
-    var showOnScreen;
-    if (this.state.isLogged === true) {
-      showOnScreen = profileDestinations;
-    } else {
-      showOnScreen = starterDestinations;
-    }
-
     return (
       <div>
         <form>
@@ -203,7 +105,53 @@ var Weather = React.createClass({
           <h5 className="text-center page-title h5-homepage">Unusual trips and unique destinations</h5>
         </div>
 
-        {showOnScreen}
+        <div>
+          <div className="photoDiv" style={whereWeTravelImgStyle}>
+            <p className="home-subtitle">Where we travel</p>
+            <div className="content-card-text-homepage">
+              <img src="../images/Africa.jpg"/>
+              <h3 className="title-md content-card-title-homepage">
+                <span>Africa</span>
+              </h3>
+            </div>
+            <div className="content-card-text-homepage">
+              <img src="../images/antarctica.jpg"/>
+              <h3 className="title-md content-card-title-homepage">
+                <span>Antarctica</span>
+              </h3>
+            </div>
+            <div className="content-card-text-homepage">
+              <img src="../images/Asia.jpg"/>
+              <h3 className="title-md content-card-title-homepage">
+                <span>Asia</span>
+              </h3>
+            </div>
+            <div className="content-card-text-homepage">
+              <img src="../images/Europe.jpg"/>
+              <h3 className="title-md content-card-title-homepage">
+                <span>Europe</span>
+              </h3>
+            </div>
+            <div className="content-card-text-homepage">
+              <img src="../images/MiddleEast.jpg"></img>
+              <h3 className="title-md content-card-title-homepage">
+                <span>Middle East</span>
+              </h3>
+            </div>
+            <div className="content-card-text-homepage">
+              <img src="../images/NorthAmerica.jpg"/>
+              <h3 className="title-md content-card-title-homepage">
+                <span>North America</span>
+              </h3>
+            </div>
+            <div className="content-card-text-homepage">
+              <img src="../images/SouthAmerica.jpg"/>
+              <h3 className="title-md content-card-title-homepage">
+                <span>South America</span>
+              </h3>
+            </div>
+          </div>
+        </div>
 
         <div className="place-tags-top-content-header" style={whereWeTravelImgStyle}>
           <p className="tags-subtitle">Tags</p>
@@ -230,4 +178,4 @@ var Weather = React.createClass({
   }
 });
 
-module.exports = Weather;
+module.exports = HomePage;

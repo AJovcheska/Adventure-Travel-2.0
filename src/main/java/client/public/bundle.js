@@ -25282,16 +25282,9 @@
 	var _require2 = __webpack_require__(166),
 	    Link = _require2.Link;
 
-	var TripListProfile = __webpack_require__(254);
+	var HomePage = React.createClass({
+	  displayName: 'HomePage',
 
-	var Weather = React.createClass({
-	  displayName: 'Weather',
-
-	  getDefaultProps: function getDefaultProps() {
-	    return {
-	      username: ''
-	    };
-	  },
 	  getInitialState: function getInitialState() {
 	    return {
 	      accessToken: '',
@@ -25301,24 +25294,8 @@
 	      isLogged: false
 	    };
 	  },
-	  componentDidMount: function componentDidMount() {
-	    var _this = this;
-
-	    if (this.state.username != null && this.state.username != '') {
-	      backendApi.getTripsByUser(this.state.username).then(function (result) {
-	        if (result) {
-	          console.log(result);
-	          _this.setState({
-	            username: _this.state.username,
-	            trips: result,
-	            isLogged: true
-	          });
-	        }
-	      });
-	    }
-	  },
 	  handleLogin: function handleLogin(e) {
-	    var _this2 = this;
+	    var _this = this;
 
 	    var password = this.refs.password.value;
 	    var username = this.refs.username.value;
@@ -25326,9 +25303,9 @@
 	      backendApi.getAccessToken(response).then(function (res) {
 	        backendApi.loginUser(res, username).then(function (result) {
 	          if (result) {
-	            _this2.refs.username.value = '';
-	            _this2.refs.password.value = '';
-	            _this2.setState({
+	            _this.refs.username.value = '';
+	            _this.refs.password.value = '';
+	            _this.setState({
 	              accessToken: res,
 	              username: username,
 	              trips: result
@@ -25337,12 +25314,12 @@
 	            console.log(res);
 	            backendApi.getUserByUsername(res, username).then(function (user) {
 	              if (user !== 401) {
-	                _this2.setState({
+	                _this.setState({
 	                  user: user,
 	                  isLogged: true
 	                });
 	              } else {
-	                _this2.setState({
+	                _this.setState({
 	                  isLogged: false
 	                });
 	              }
@@ -25356,18 +25333,6 @@
 	          console.log(errorMessage);
 	        });
 	      });
-	    });
-	  },
-	  handleToggle: function handleToggle(id) {
-	    var updatedTrips = this.state.trips.map(function (trip) {
-	      if (trip.id === id) {
-	        trip.deleted = !trip.deleted;
-	      }
-	      return todo;
-	    });
-
-	    this.setState({
-	      trips: updatedTrips
 	    });
 	  },
 	  render: function render() {
@@ -25402,144 +25367,6 @@
 	      );
 	    } else {
 	      greeting = React.createElement('h1', null);
-	    }
-
-	    var starterDestinations = React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        'div',
-	        { className: 'photoDiv', style: whereWeTravelImgStyle },
-	        React.createElement(
-	          'p',
-	          { className: 'home-subtitle' },
-	          'Where we travel'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'content-card-text-homepage' },
-	          React.createElement('img', { src: '../images/Africa.jpg' }),
-	          React.createElement(
-	            'h3',
-	            { className: 'title-md content-card-title-homepage' },
-	            React.createElement(
-	              'span',
-	              null,
-	              'Africa'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'content-card-text-homepage' },
-	          React.createElement('img', { src: '../images/antarctica.jpg' }),
-	          React.createElement(
-	            'h3',
-	            { className: 'title-md content-card-title-homepage' },
-	            React.createElement(
-	              'span',
-	              null,
-	              'Antarctica'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'content-card-text-homepage' },
-	          React.createElement('img', { src: '../images/Asia.jpg' }),
-	          React.createElement(
-	            'h3',
-	            { className: 'title-md content-card-title-homepage' },
-	            React.createElement(
-	              'span',
-	              null,
-	              'Asia'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'content-card-text-homepage' },
-	          React.createElement('img', { src: '../images/Europe.jpg' }),
-	          React.createElement(
-	            'h3',
-	            { className: 'title-md content-card-title-homepage' },
-	            React.createElement(
-	              'span',
-	              null,
-	              'Europe'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'content-card-text-homepage' },
-	          React.createElement('img', { src: '../images/MiddleEast.jpg' }),
-	          React.createElement(
-	            'h3',
-	            { className: 'title-md content-card-title-homepage' },
-	            React.createElement(
-	              'span',
-	              null,
-	              'Middle East'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'content-card-text-homepage' },
-	          React.createElement('img', { src: '../images/NorthAmerica.jpg' }),
-	          React.createElement(
-	            'h3',
-	            { className: 'title-md content-card-title-homepage' },
-	            React.createElement(
-	              'span',
-	              null,
-	              'North America'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'content-card-text-homepage' },
-	          React.createElement('img', { src: '../images/SouthAmerica.jpg' }),
-	          React.createElement(
-	            'h3',
-	            { className: 'title-md content-card-title-homepage' },
-	            React.createElement(
-	              'span',
-	              null,
-	              'South America'
-	            )
-	          )
-	        )
-	      )
-	    );
-
-	    var profileDestinations = React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        'div',
-	        { className: 'editInfoButton profileContainer favDestLabel' },
-	        React.createElement(
-	          'h3',
-	          { className: 'basicInfo' },
-	          'Favorite destinations'
-	        )
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'card-grid-profile trips-index-cards' },
-	        React.createElement(TripListProfile, { trips: this.state.trips, user: this.state.user, onClick: this.handleToggle })
-	      )
-	    );
-
-	    var showOnScreen;
-	    if (this.state.isLogged === true) {
-	      showOnScreen = profileDestinations;
-	    } else {
-	      showOnScreen = starterDestinations;
 	    }
 
 	    return React.createElement(
@@ -25588,7 +25415,117 @@
 	          'Unusual trips and unique destinations'
 	        )
 	      ),
-	      showOnScreen,
+	      React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'photoDiv', style: whereWeTravelImgStyle },
+	          React.createElement(
+	            'p',
+	            { className: 'home-subtitle' },
+	            'Where we travel'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'content-card-text-homepage' },
+	            React.createElement('img', { src: '../images/Africa.jpg' }),
+	            React.createElement(
+	              'h3',
+	              { className: 'title-md content-card-title-homepage' },
+	              React.createElement(
+	                'span',
+	                null,
+	                'Africa'
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'content-card-text-homepage' },
+	            React.createElement('img', { src: '../images/antarctica.jpg' }),
+	            React.createElement(
+	              'h3',
+	              { className: 'title-md content-card-title-homepage' },
+	              React.createElement(
+	                'span',
+	                null,
+	                'Antarctica'
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'content-card-text-homepage' },
+	            React.createElement('img', { src: '../images/Asia.jpg' }),
+	            React.createElement(
+	              'h3',
+	              { className: 'title-md content-card-title-homepage' },
+	              React.createElement(
+	                'span',
+	                null,
+	                'Asia'
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'content-card-text-homepage' },
+	            React.createElement('img', { src: '../images/Europe.jpg' }),
+	            React.createElement(
+	              'h3',
+	              { className: 'title-md content-card-title-homepage' },
+	              React.createElement(
+	                'span',
+	                null,
+	                'Europe'
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'content-card-text-homepage' },
+	            React.createElement('img', { src: '../images/MiddleEast.jpg' }),
+	            React.createElement(
+	              'h3',
+	              { className: 'title-md content-card-title-homepage' },
+	              React.createElement(
+	                'span',
+	                null,
+	                'Middle East'
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'content-card-text-homepage' },
+	            React.createElement('img', { src: '../images/NorthAmerica.jpg' }),
+	            React.createElement(
+	              'h3',
+	              { className: 'title-md content-card-title-homepage' },
+	              React.createElement(
+	                'span',
+	                null,
+	                'North America'
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'content-card-text-homepage' },
+	            React.createElement('img', { src: '../images/SouthAmerica.jpg' }),
+	            React.createElement(
+	              'h3',
+	              { className: 'title-md content-card-title-homepage' },
+	              React.createElement(
+	                'span',
+	                null,
+	                'South America'
+	              )
+	            )
+	          )
+	        )
+	      ),
 	      React.createElement(
 	        'div',
 	        { className: 'place-tags-top-content-header', style: whereWeTravelImgStyle },
@@ -25692,7 +25629,7 @@
 	  }
 	});
 
-	module.exports = Weather;
+	module.exports = HomePage;
 
 /***/ },
 /* 227 */
@@ -30081,13 +30018,18 @@
 
 	    backendApi.updateAdditionalInfo(username, destination, entertainment, tripLength, tripCompanion).then(function (response) {
 	      backendApi.getUserByUsername(accessToken, username).then(function (response) {
-	        console.log('Response from getting user ' + response.status);
 	        _this.setState({
 	          user: response,
 	          tripCompanion: null,
 	          entertainment: null,
 	          tripLength: null,
 	          destination: null
+	        });
+	        backendApi.getTripsByUser(username).then(function (res) {
+	          console.log(res);
+	          _this.setState({
+	            trips: response
+	          });
 	        });
 	      });
 	    }, function (errorMessage) {
@@ -30144,7 +30086,7 @@
 	        React.createElement(
 	          'p',
 	          { className: 'h3-title-profile' },
-	          'Trip companion'
+	          'Travel companion'
 	        ),
 	        React.createElement(
 	          'div',
@@ -30164,7 +30106,7 @@
 	        React.createElement(
 	          'p',
 	          { className: 'h3-title-profile' },
-	          'Trip length'
+	          'Desirable trip duration'
 	        ),
 	        React.createElement(
 	          'div',
@@ -30174,7 +30116,7 @@
 	        React.createElement(
 	          'p',
 	          { className: 'h3-title-profile' },
-	          'Destination'
+	          'Favourite destination'
 	        ),
 	        React.createElement(
 	          'div',
@@ -30409,6 +30351,24 @@
 	              )
 	            )
 	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'editInfoButton profileContainer favDestLabel' },
+	          React.createElement(
+	            'h3',
+	            { className: 'basicInfo' },
+	            'Favourite destinations'
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'div',
+	          { className: 'card-grid-profile trips-index-cards' },
+	          React.createElement(TripListProfile, { trips: trips, user: user })
 	        )
 	      )
 	    );

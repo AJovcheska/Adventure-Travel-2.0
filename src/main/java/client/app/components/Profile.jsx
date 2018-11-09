@@ -25,13 +25,18 @@ var Profile = React.createClass({
 
     backendApi.updateAdditionalInfo(username, destination, entertainment, tripLength, tripCompanion).then((response) => {
       backendApi.getUserByUsername(accessToken, username).then((response) =>{
-        console.log('Response from getting user ' + response.status);
         this.setState({
           user: response,
           tripCompanion: null,
           entertainment: null,
           tripLength: null,
           destination: null
+        });
+        backendApi.getTripsByUser(username).then((res) =>{
+          console.log(res);
+          this.setState({
+            trips:response
+          });
         });
       });
     }, function(errorMessage) {
@@ -85,16 +90,16 @@ var Profile = React.createClass({
     }  else {
       show =
         <span>
-            <p className="h3-title-profile">Trip companion</p>
+            <p className="h3-title-profile">Travel companion</p>
             <div className="profile-placeholders" id="trip-card-price">{tripCompanion}</div>
 
             <p className="h3-title-profile">Entertainment</p>
             <div className="profile-placeholders" id="trip-card-price">{entertainment}</div>
 
-            <p className="h3-title-profile">Trip length</p>
+            <p className="h3-title-profile">Desirable trip duration</p>
             <div className="profile-placeholders" id="trip-card-price">{tripLength}</div>
 
-            <p className="h3-title-profile">Destination</p>
+            <p className="h3-title-profile">Favourite destination</p>
             <div className="profile-placeholders" id="trip-card-price">{destination}</div>
         </span>;
     }
@@ -164,6 +169,14 @@ var Profile = React.createClass({
                 <button type="submit" className="signupbtn" onClick={this.handleChangeData}>Edit info</button>
               </div>
             </div>
+          </div>
+          <div className="editInfoButton profileContainer favDestLabel">
+            <h3 className="basicInfo">Favourite destinations</h3>
+          </div>
+        </div>
+        <div>
+          <div className="card-grid-profile trips-index-cards">
+            <TripListProfile trips={trips} user={user}/>
           </div>
         </div>
       </div>
