@@ -2,18 +2,12 @@ var React = require('react');
 var ProfileTrip = require('ProfileTrip');
 
 var TripListProfile = React.createClass({
-  getInitialState: function () {
-    return {
-      trips: this.props.trips,
-      user: this.props.user
-    };
-  },
   render: function() {
     var {trips, user} = this.props;
     var renderTrips = () => {
       return trips.map((trip) => {
         return (
-          <ProfileTrip key={trip.ID} {...trip} {...user}/>
+          <ProfileTrip key={trip.ID} {...trip} {...user} onTripDelete={this.props.onTripDelete}/>
         );
       });
     };

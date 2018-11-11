@@ -70,6 +70,16 @@ var Profile = React.createClass({
       destination: e.currentTarget.value
     });
   },
+  handleTripDelete: function(tripId) {
+    backendApi.removeTripFromUser(this.props.location.state.user.username, tripId);
+    backendApi.getTripsByUser(this.props.location.state.user.username).then((res) => {
+      this.setState({
+        trips: res
+      });
+    }, function (errorMessage) {
+      console.log(errorMessage);
+    });
+  },
   render: function() {
     var name = this.state.user.name;
     var age = this.state.user.age;
@@ -176,7 +186,7 @@ var Profile = React.createClass({
         </div>
         <div>
           <div className="card-grid-profile trips-index-cards">
-            <TripListProfile trips={trips} user={user}/>
+            <TripListProfile trips={trips} user={user} onTripDelete={this.handleTripDelete}/>
           </div>
         </div>
       </div>
