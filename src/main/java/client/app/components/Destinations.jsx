@@ -1,6 +1,5 @@
 var React = require('react');
 var {Link} = require('react-router');
-var Footer = require('Footer');
 var Trip = require('Trip');
 var backendApi = require('backendApi');
 var TripList = require('TripList');

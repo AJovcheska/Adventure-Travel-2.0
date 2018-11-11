@@ -1,6 +1,5 @@
 var React = require('react');
 var Nav = require('Nav');
-var Footer = require('Footer');
 
 var Main = React.createClass({
   render: function() {

@@ -3,7 +3,6 @@ var ReactDOM = require('react-dom');
 var {Route, Router, IndexRoute, hashHistory} = require('react-router');
 var Main = require('Main');
 var HomePage = require('HomePage');
-var About = require('About');
 var Destinations = require('Destinations');
 var Questions = require('Questions');
 var RegistrationForm = require('RegistrationForm');

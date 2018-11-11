@@ -1,5 +1,4 @@
 var React = require('react');
-var Footer = require('Footer');
 
 var Questions = React.createClass({
   render: function() {
