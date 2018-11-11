@@ -10,18 +10,32 @@ var Profile = React.createClass({
       tripCompanion: null,
       entertainment: null,
       tripLength: null,
-      destination: null
+      destination: null,
+      additionalDataSet: false
     };
   },
-  handleChangeData: function() {
-    var tripCompanion = this.state.tripCompanion;
-    var entertainment = this.state.entertainment;
-    var tripLength = this.state.tripLength;
-    var destination = this.state.destination;
+  componentDidMount: function() {
+    this.setState({
+      trips: this.props.location.state.trips,
+      user: this.props.location.state.user
+    });
     var username = this.props.location.state.user.username;
     var accessToken = this.props.location.state.accessToken;
-
-    console.log(username);
+    backendApi.getUserByUsername(accessToken, username).then((response) =>{
+      this.setState({
+        user: response
+      });
+      if (response.destination !== '' && response.entertainment !== '' && response.tripCompanion !== '' && response.tripLength !=='') {
+        this.setState({
+          additionalDataSet: true
+        });
+      }
+    });
+  },
+  handleChangeData: function() {
+    var {tripCompanion, entertainment, tripLength, destination} = this.state;
+    var username = this.props.location.state.user.username;
+    var accessToken = this.props.location.state.accessToken;
 
     backendApi.updateAdditionalInfo(username, destination, entertainment, tripLength, tripCompanion).then((response) => {
       backendApi.getUserByUsername(accessToken, username).then((response) =>{
@@ -30,25 +44,13 @@ var Profile = React.createClass({
           tripCompanion: null,
           entertainment: null,
           tripLength: null,
-          destination: null
-        });
-        backendApi.getTripsByUser(username).then((res) =>{
-          console.log(res);
-          this.setState({
-            trips:response
-          });
+          destination: null,
+          additionalDataSet: true
         });
       });
     }, function(errorMessage) {
       console.log(errorMessage);
     });
-  },
-  componentDidMount: function() {
-    this.setState({
-      trips: this.props.location.state.trips,
-      user: this.props.location.state.user
-    });
-
   },
   onCompanionChange: function(e) {
     this.setState({
@@ -80,38 +82,26 @@ var Profile = React.createClass({
       console.log(errorMessage);
     });
   },
+  toggleAdditionalInfo: function() {
+    this.setState({
+      additionalDataSet: !this.state.additionalDataSet
+    });
+  },
   render: function() {
-    var name = this.state.user.name;
-    var age = this.state.user.age;
-    var country = this.state.user.country;
-    var profession = this.state.user.profession;
-    var email = this.state.user.email;
+    var {name, age, country, profession, email, destination, entertainment, tripLength, tripCompanion} = this.state.user;
+    var tripLengthToShow = tripLength === '' ? '/' : tripLength;
+    var entertainmentToShow = entertainment === '' ? '/' : entertainment;
+    var tripCompanionToShow = tripCompanion === '' ? '/' : tripCompanion;
+    var destinationToShow = destination === '' ? '/' : destination;
     var trips = this.state.trips;
     var user = this.state.user;
 
-    var destination = this.state.user.destination;
-    var entertainment = this.state.user.entertainment;
-    var tripLength = this.state.user.tripLength;
-    var tripCompanion = this.state.user.tripCompanion;
-
-    var show;
-    if (destination === '') {
-      show = '';
-    }  else {
-      show =
-        <span>
-            <p className="h3-title-profile">Travel companion</p>
-            <div className="profile-placeholders" id="trip-card-price">{tripCompanion}</div>
-
-            <p className="h3-title-profile">Entertainment</p>
-            <div className="profile-placeholders" id="trip-card-price">{entertainment}</div>
-
-            <p className="h3-title-profile">Desirable trip duration</p>
-            <div className="profile-placeholders" id="trip-card-price">{tripLength}</div>
-
-            <p className="h3-title-profile">Favourite destination</p>
-            <div className="profile-placeholders" id="trip-card-price">{destination}</div>
-        </span>;
+    var styleName;
+    var {additionalDataSet} = this.state;
+    if (additionalDataSet === false) {
+      styleName = "profileContainer rightProfile";
+    } else {
+      styleName = "profileContainer rightProfileHidden";
     }
 
     return (
@@ -135,11 +125,25 @@ var Profile = React.createClass({
             <p className="h3-title-profile">Profession</p>
             <div className="profile-placeholders" id="trip-card-price">{profession}</div>
 
-            {show}
+            <p className="h3-title-profile">Travel companion</p>
+            <div className="profile-placeholders" id="trip-card-price">{tripCompanionToShow}</div>
+
+            <p className="h3-title-profile">Entertainment</p>
+            <div className="profile-placeholders" id="trip-card-price">{entertainmentToShow}</div>
+
+            <p className="h3-title-profile">Desirable trip duration</p>
+            <div className="profile-placeholders" id="trip-card-price">{tripLengthToShow}</div>
+
+            <p className="h3-title-profile">Favourite destination</p>
+            <div className="profile-placeholders" id="trip-card-price">{destinationToShow}</div>
+
+            <div className="editInfoButton">
+              <button type="submit" className="signupbtn" onClick={this.toggleAdditionalInfo}>Edit additional info</button>
+            </div>
           </div>
 
           <div>
-            <div className="profileContainer rightProfile">
+            <div className={styleName}>
               <p>Personalize your experience.</p>
 
               <div className="additionalInfo">
@@ -175,11 +179,12 @@ var Profile = React.createClass({
                 <input type="radio" value="Cold place" checked={this.state.destination === 'Cold place'} onChange={this.onDestinationChange}>Cold place</input>
               </div>
 
-              <div className="editInfoButton">
-                <button type="submit" className="signupbtn" onClick={this.handleChangeData}>Edit info</button>
+              <div className="submitInfoButton">
+                <button type="submit" className="signupbtn" onClick={this.handleChangeData}>Submit additional information</button>
               </div>
             </div>
           </div>
+
           <div className="editInfoButton profileContainer favDestLabel">
             <h3 className="basicInfo">Favourite destinations</h3>
           </div>

@@ -132,15 +132,15 @@
 	var Mongolia = __webpack_require__(287);
 	var Everest = __webpack_require__(288);
 	var Antarctica = __webpack_require__(289);
-	var Brazil = __webpack_require__(290);
-	var Petra = __webpack_require__(291);
-	var Zambia = __webpack_require__(292);
-	var Rwanda = __webpack_require__(293);
+	var Brazil = __webpack_require__(325);
+	var Petra = __webpack_require__(326);
+	var Zambia = __webpack_require__(327);
+	var Rwanda = __webpack_require__(328);
 
-	var actions = __webpack_require__(294);
-	var store = __webpack_require__(295).configure();
+	var actions = __webpack_require__(324);
+	var store = __webpack_require__(329).configure();
 
-	var _require2 = __webpack_require__(314),
+	var _require2 = __webpack_require__(290),
 	    Provider = _require2.Provider;
 
 	store.subscribe(function () {
@@ -25477,6 +25477,8 @@
 
 	var UPDATE_INFO_URL = "http://localhost:8080/api/nonsecured/update?";
 
+	var ADD_TRIP_FOR_USER_URL = "http://localhost:8080/api/nonsecured/add/trip?";
+
 	module.exports = {
 	  getTemp: function getTemp(location) {
 	    var encodedLocation = encodeURIComponent(location);
@@ -25654,6 +25656,27 @@
 	    params.append("username", encodedUsername);
 	    params.append("id", encodedId);
 	    return axios.delete(DELETE_TRIP_URL, {
+	      params: params
+	    }).then(function (res) {
+	      if (res.data.cod && res.data.message) {
+	        throw new Error(res.data.message);
+	      } else {
+	        return res;
+	      }
+	    }).catch(function (error) {
+	      if (error.response) {
+	        return error.response.status;
+	      }
+	    });
+	  },
+	  addTripForUser: function addTripForUser(username, id) {
+	    var encodedId = decodeURIComponent(id);
+	    var encodedUsername = decodeURIComponent(username);
+
+	    var params = new URLSearchParams();
+	    params.append("username", encodedUsername);
+	    params.append("id", encodedId);
+	    return axios.put(ADD_TRIP_FOR_USER_URL, {
 	      params: params
 	    }).then(function (res) {
 	      if (res.data.cod && res.data.message) {
@@ -29553,45 +29576,55 @@
 	      tripCompanion: null,
 	      entertainment: null,
 	      tripLength: null,
-	      destination: null
+	      destination: null,
+	      additionalDataSet: false
 	    };
 	  },
-	  handleChangeData: function handleChangeData() {
+	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
-	    var tripCompanion = this.state.tripCompanion;
-	    var entertainment = this.state.entertainment;
-	    var tripLength = this.state.tripLength;
-	    var destination = this.state.destination;
+	    this.setState({
+	      trips: this.props.location.state.trips,
+	      user: this.props.location.state.user
+	    });
+	    var username = this.props.location.state.user.username;
+	    var accessToken = this.props.location.state.accessToken;
+	    backendApi.getUserByUsername(accessToken, username).then(function (response) {
+	      _this.setState({
+	        user: response
+	      });
+	      if (response.destination !== '' && response.entertainment !== '' && response.tripCompanion !== '' && response.tripLength !== '') {
+	        _this.setState({
+	          additionalDataSet: true
+	        });
+	      }
+	    });
+	  },
+	  handleChangeData: function handleChangeData() {
+	    var _this2 = this;
+
+	    var _state = this.state,
+	        tripCompanion = _state.tripCompanion,
+	        entertainment = _state.entertainment,
+	        tripLength = _state.tripLength,
+	        destination = _state.destination;
+
 	    var username = this.props.location.state.user.username;
 	    var accessToken = this.props.location.state.accessToken;
 
-	    console.log(username);
-
 	    backendApi.updateAdditionalInfo(username, destination, entertainment, tripLength, tripCompanion).then(function (response) {
 	      backendApi.getUserByUsername(accessToken, username).then(function (response) {
-	        _this.setState({
+	        _this2.setState({
 	          user: response,
 	          tripCompanion: null,
 	          entertainment: null,
 	          tripLength: null,
-	          destination: null
-	        });
-	        backendApi.getTripsByUser(username).then(function (res) {
-	          console.log(res);
-	          _this.setState({
-	            trips: response
-	          });
+	          destination: null,
+	          additionalDataSet: true
 	        });
 	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
-	    });
-	  },
-	  componentDidMount: function componentDidMount() {
-	    this.setState({
-	      trips: this.props.location.state.trips,
-	      user: this.props.location.state.user
 	    });
 	  },
 	  onCompanionChange: function onCompanionChange(e) {
@@ -29615,79 +29648,48 @@
 	    });
 	  },
 	  handleTripDelete: function handleTripDelete(tripId) {
-	    var _this2 = this;
+	    var _this3 = this;
 
 	    backendApi.removeTripFromUser(this.props.location.state.user.username, tripId);
 	    backendApi.getTripsByUser(this.props.location.state.user.username).then(function (res) {
-	      _this2.setState({
+	      _this3.setState({
 	        trips: res
 	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
+	  toggleAdditionalInfo: function toggleAdditionalInfo() {
+	    this.setState({
+	      additionalDataSet: !this.state.additionalDataSet
+	    });
+	  },
 	  render: function render() {
-	    var name = this.state.user.name;
-	    var age = this.state.user.age;
-	    var country = this.state.user.country;
-	    var profession = this.state.user.profession;
-	    var email = this.state.user.email;
+	    var _state$user = this.state.user,
+	        name = _state$user.name,
+	        age = _state$user.age,
+	        country = _state$user.country,
+	        profession = _state$user.profession,
+	        email = _state$user.email,
+	        destination = _state$user.destination,
+	        entertainment = _state$user.entertainment,
+	        tripLength = _state$user.tripLength,
+	        tripCompanion = _state$user.tripCompanion;
+
+	    var tripLengthToShow = tripLength === '' ? '/' : tripLength;
+	    var entertainmentToShow = entertainment === '' ? '/' : entertainment;
+	    var tripCompanionToShow = tripCompanion === '' ? '/' : tripCompanion;
+	    var destinationToShow = destination === '' ? '/' : destination;
 	    var trips = this.state.trips;
 	    var user = this.state.user;
 
-	    var destination = this.state.user.destination;
-	    var entertainment = this.state.user.entertainment;
-	    var tripLength = this.state.user.tripLength;
-	    var tripCompanion = this.state.user.tripCompanion;
+	    var styleName;
+	    var additionalDataSet = this.state.additionalDataSet;
 
-	    var show;
-	    if (destination === '') {
-	      show = '';
+	    if (additionalDataSet === false) {
+	      styleName = "profileContainer rightProfile";
 	    } else {
-	      show = React.createElement(
-	        'span',
-	        null,
-	        React.createElement(
-	          'p',
-	          { className: 'h3-title-profile' },
-	          'Travel companion'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          tripCompanion
-	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'h3-title-profile' },
-	          'Entertainment'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          entertainment
-	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'h3-title-profile' },
-	          'Desirable trip duration'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          tripLength
-	        ),
-	        React.createElement(
-	          'p',
-	          { className: 'h3-title-profile' },
-	          'Favourite destination'
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'profile-placeholders', id: 'trip-card-price' },
-	          destination
-	        )
-	      );
+	      styleName = "profileContainer rightProfileHidden";
 	    }
 
 	    return React.createElement(
@@ -29755,14 +29757,62 @@
 	            { className: 'profile-placeholders', id: 'trip-card-price' },
 	            profession
 	          ),
-	          show
+	          React.createElement(
+	            'p',
+	            { className: 'h3-title-profile' },
+	            'Travel companion'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'profile-placeholders', id: 'trip-card-price' },
+	            tripCompanionToShow
+	          ),
+	          React.createElement(
+	            'p',
+	            { className: 'h3-title-profile' },
+	            'Entertainment'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'profile-placeholders', id: 'trip-card-price' },
+	            entertainmentToShow
+	          ),
+	          React.createElement(
+	            'p',
+	            { className: 'h3-title-profile' },
+	            'Desirable trip duration'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'profile-placeholders', id: 'trip-card-price' },
+	            tripLengthToShow
+	          ),
+	          React.createElement(
+	            'p',
+	            { className: 'h3-title-profile' },
+	            'Favourite destination'
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'profile-placeholders', id: 'trip-card-price' },
+	            destinationToShow
+	          ),
+	          React.createElement(
+	            'div',
+	            { className: 'editInfoButton' },
+	            React.createElement(
+	              'button',
+	              { type: 'submit', className: 'signupbtn', onClick: this.toggleAdditionalInfo },
+	              'Edit additional info'
+	            )
+	          )
 	        ),
 	        React.createElement(
 	          'div',
 	          null,
 	          React.createElement(
 	            'div',
-	            { className: 'profileContainer rightProfile' },
+	            { className: styleName },
 	            React.createElement(
 	              'p',
 	              null,
@@ -29907,11 +29957,11 @@
 	            ),
 	            React.createElement(
 	              'div',
-	              { className: 'editInfoButton' },
+	              { className: 'submitInfoButton' },
 	              React.createElement(
 	                'button',
 	                { type: 'submit', className: 'signupbtn', onClick: this.handleChangeData },
-	                'Edit info'
+	                'Submit additional information'
 	              )
 	            )
 	          )
@@ -35868,502 +35918,521 @@
 /* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	var React = __webpack_require__(8);
 
+	var _require = __webpack_require__(290),
+	    connect = _require.connect;
+
+	var actions = __webpack_require__(324);
+	var backendApi = __webpack_require__(226);
+
+	function mapStateToProps(state) {
+	   return { username: state.username };
+	}
+
 	var Antarctica = React.createClass({
-	   displayName: "Antarctica",
+	   displayName: 'Antarctica',
 
 	   handleFavourites: function handleFavourites() {
-	      alert("2007");
+	      var _props = this.props,
+	          dispatch = _props.dispatch,
+	          username = _props.username;
+
+	      console.log('Username:', username);
+	      backendApi.addTripForUser(username, "2001").then(function (response) {
+	         console.log('Response form antarctica', response);
+	      }, function (errorMessage) {
+	         console.log(errorMessage);
+	      });
 	   },
 	   render: function render() {
 	      return React.createElement(
-	         "article",
-	         { className: "event-content trip-content" },
+	         'article',
+	         { className: 'event-content trip-content' },
 	         React.createElement(
-	            "div",
-	            { className: "container" },
+	            'div',
+	            { className: 'container' },
 	            React.createElement(
-	               "div",
-	               { className: "row" },
+	               'div',
+	               { className: 'row' },
 	               React.createElement(
-	                  "div",
-	                  { className: "col-md-8" },
+	                  'div',
+	                  { className: 'col-md-8' },
 	                  React.createElement(
-	                     "div",
-	                     { className: "row" },
+	                     'div',
+	                     { className: 'row' },
 	                     React.createElement(
-	                        "header",
-	                        { className: "item-header trip-header js-item-header" },
+	                        'header',
+	                        { className: 'item-header trip-header js-item-header' },
 	                        React.createElement(
-	                           "div",
-	                           { className: "col-md-12" },
+	                           'div',
+	                           { className: 'col-md-12' },
 	                           React.createElement(
-	                              "h2",
-	                              { className: "detail-sm item-supertitle" },
-	                              "Iran"
+	                              'h2',
+	                              { className: 'detail-sm item-supertitle' },
+	                              'Iran'
 	                           ),
 	                           React.createElement(
-	                              "h1",
-	                              { className: "title-lg item-title trip-title" },
-	                              "Antarctica Classic"
+	                              'h1',
+	                              { className: 'title-lg item-title trip-title' },
+	                              'Antarctica Classic'
 	                           )
 	                        )
 	                     )
 	                  ),
 	                  React.createElement(
-	                     "div",
-	                     { className: "row" },
+	                     'div',
+	                     { className: 'row' },
 	                     React.createElement(
-	                        "div",
-	                        { className: "content-body event-content-body col-md-11 trip-content-body" },
+	                        'div',
+	                        { className: 'content-body event-content-body col-md-11 trip-content-body' },
 	                        React.createElement(
-	                           "section",
-	                           { id: "event-body", className: "item-body" },
+	                           'section',
+	                           { id: 'event-body', className: 'item-body' },
 	                           React.createElement(
-	                              "h3",
-	                              { className: "event-body-subheading" },
-	                              "HIGHLIGHTS"
+	                              'h3',
+	                              { className: 'event-body-subheading' },
+	                              'HIGHLIGHTS'
 	                           ),
 	                           React.createElement(
-	                              "ul",
+	                              'ul',
 	                              null,
 	                              React.createElement(
-	                                 "li",
+	                                 'li',
 	                                 null,
-	                                 "A dazzling landscape of vivid emeralds and violets, intense crimson light and sweeping panoramas of blue ice"
+	                                 'A dazzling landscape of vivid emeralds and violets, intense crimson light and sweeping panoramas of blue ice'
 	                              ),
 	                              React.createElement(
-	                                 "li",
+	                                 'li',
 	                                 null,
-	                                 "Seabirds, whales, penguins and more..."
+	                                 'Seabirds, whales, penguins and more...'
 	                              )
 	                           ),
 	                           React.createElement(
-	                              "section",
-	                              { id: "event-trip-itinerary" },
+	                              'section',
+	                              { id: 'event-trip-itinerary' },
 	                              React.createElement(
-	                                 "h5",
-	                                 { className: "event-body-heading" },
-	                                 "Itinerary"
+	                                 'h5',
+	                                 { className: 'event-body-heading' },
+	                                 'Itinerary'
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day1" }),
+	                                 'div',
+	                                 { className: 'trip-day-wrap' },
+	                                 React.createElement('a', { name: 'day1' }),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 1"
+	                                    'div',
+	                                    { className: 'trip-day-nav-num trip-day-body-num' },
+	                                    'Day 1'
 	                                 ),
 	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Welcome to Ushuaia!"
+	                                    'h6',
+	                                    { className: 'trip-body-title trip-day-title' },
+	                                    'Welcome to Ushuaia!'
 	                                 ),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Sunday, April 21"
+	                                    'div',
+	                                    { className: 'event-body-subheading trip-day-dateline' },
+	                                    'Sunday, April 21'
 	                                 ),
 	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
+	                                    'ul',
+	                                    { className: 'tripsUl' },
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "Arrive in Ushuaia today and be transferred to your hotel. Enjoy the sights and sounds of the world's most southerly city."
+	                                       'Arrive in Ushuaia today and be transferred to your hotel. Enjoy the sights and sounds of the world\'s most southerly city.'
 	                                    )
 	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/Ushuaia.jpg" })
+	                                 React.createElement('img', { className: 'detail-image-css', src: '../images/Ushuaia.jpg' })
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day2" }),
+	                                 'div',
+	                                 { className: 'trip-day-wrap' },
+	                                 React.createElement('a', { name: 'day2' }),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 2"
+	                                    'div',
+	                                    { className: 'trip-day-nav-num trip-day-body-num' },
+	                                    'Day 2'
 	                                 ),
 	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Ushuaia - Drake Passage"
+	                                    'h6',
+	                                    { className: 'trip-body-title trip-day-title' },
+	                                    'Ushuaia - Drake Passage'
 	                                 ),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Monday, April 22"
+	                                    'div',
+	                                    { className: 'event-body-subheading trip-day-dateline' },
+	                                    'Monday, April 22'
 	                                 ),
 	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
+	                                    'ul',
+	                                    { className: 'tripsUl' },
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "Enjoy a free morning in Ushuaia where you can explore the town or the surrounding countryside. Embarkation on the Expedition begins in the afternoon at the port in Ushuaia, after which you'll depart the southernmost tip of the South American continent and sail through the Beagle Channel."
+	                                       'Enjoy a free morning in Ushuaia where you can explore the town or the surrounding countryside. Embarkation on the Expedition begins in the afternoon at the port in Ushuaia, after which you\'ll depart the southernmost tip of the South American continent and sail through the Beagle Channel.'
 	                                    ),
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "Running through the Tierra del Fuego Archipelago, the channel forms part of the border between Chile and neighbouring Argentina and this evening's sailing takes you south, towards the open waters of Drake Passage and the vast Southern Ocean."
+	                                       'Running through the Tierra del Fuego Archipelago, the channel forms part of the border between Chile and neighbouring Argentina and this evening\'s sailing takes you south, towards the open waters of Drake Passage and the vast Southern Ocean.'
 	                                    )
 	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/Drake-Passage.jpg" })
+	                                 React.createElement('img', { className: 'detail-image-css', src: '../images/Drake-Passage.jpg' })
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day3" }),
+	                                 'div',
+	                                 { className: 'trip-day-wrap' },
+	                                 React.createElement('a', { name: 'day3' }),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 3"
+	                                    'div',
+	                                    { className: 'trip-day-nav-num trip-day-body-num' },
+	                                    'Day 3'
 	                                 ),
 	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Ushuaia - Drake Passage"
+	                                    'h6',
+	                                    { className: 'trip-body-title trip-day-title' },
+	                                    'Ushuaia - Drake Passage'
 	                                 ),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Tuesday, April 23"
+	                                    'div',
+	                                    { className: 'event-body-subheading trip-day-dateline' },
+	                                    'Tuesday, April 23'
 	                                 ),
 	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
+	                                    'ul',
+	                                    { className: 'tripsUl' },
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "There will be daily lectures on board from resident polar experts and keep an eye out for the first sightings of icebergs."
+	                                       'There will be daily lectures on board from resident polar experts and keep an eye out for the first sightings of icebergs.'
 	                                    )
 	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/drakePassage2.jpg" })
+	                                 React.createElement('img', { className: 'detail-image-css', src: '../images/drakePassage2.jpg' })
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day4" }),
+	                                 'div',
+	                                 { className: 'trip-day-wrap' },
+	                                 React.createElement('a', { name: 'day4' }),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 4"
+	                                    'div',
+	                                    { className: 'trip-day-nav-num trip-day-body-num' },
+	                                    'Day 4'
 	                                 ),
 	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "South Shetland Islands"
+	                                    'h6',
+	                                    { className: 'trip-body-title trip-day-title' },
+	                                    'South Shetland Islands'
 	                                 ),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Wednesday, April 24"
+	                                    'div',
+	                                    { className: 'event-body-subheading trip-day-dateline' },
+	                                    'Wednesday, April 24'
 	                                 ),
 	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
+	                                    'ul',
+	                                    { className: 'tripsUl' },
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "Over the coming days you'll discover some of the most unique wildlife and experience some of the most inspiring scenery on the planet, as you head for the vast white wilderness of Antarctica. "
+	                                       'Over the coming days you\'ll discover some of the most unique wildlife and experience some of the most inspiring scenery on the planet, as you head for the vast white wilderness of Antarctica. '
 	                                    ),
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "Attempting two shore landings a day, there will be opportunities to encounter Gentoo, chinstrap and Ad\xE9lie penguin rookeries, see Weddell and leopard seals and hopefully come across orcas and humpbacks in the cold Antarctic waters. During the voyage you'll also have a chance to learn about the peninsula's remarkable history. "
+	                                       'Attempting two shore landings a day, there will be opportunities to encounter Gentoo, chinstrap and Ad\xE9lie penguin rookeries, see Weddell and leopard seals and hopefully come across orcas and humpbacks in the cold Antarctic waters. During the voyage you\'ll also have a chance to learn about the peninsula\'s remarkable history. '
 	                                    )
 	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/drakePassage3.jpg" })
+	                                 React.createElement('img', { className: 'detail-image-css', src: '../images/drakePassage3.jpg' })
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day5" }),
+	                                 'div',
+	                                 { className: 'trip-day-wrap' },
+	                                 React.createElement('a', { name: 'day5' }),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 5"
+	                                    'div',
+	                                    { className: 'trip-day-nav-num trip-day-body-num' },
+	                                    'Day 5'
 	                                 ),
 	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Antarctic Peninsula"
+	                                    'h6',
+	                                    { className: 'trip-body-title trip-day-title' },
+	                                    'Antarctic Peninsula'
 	                                 ),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Thursday, April 25"
+	                                    'div',
+	                                    { className: 'event-body-subheading trip-day-dateline' },
+	                                    'Thursday, April 25'
 	                                 ),
 	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
+	                                    'ul',
+	                                    { className: 'tripsUl' },
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent."
+	                                       'A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent.'
 	                                    )
 	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/Antarctic-Peninsula.jpg" })
+	                                 React.createElement('img', { className: 'detail-image-css', src: '../images/Antarctic-Peninsula.jpg' })
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day6" }),
+	                                 'div',
+	                                 { className: 'trip-day-wrap' },
+	                                 React.createElement('a', { name: 'day6' }),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 6"
+	                                    'div',
+	                                    { className: 'trip-day-nav-num trip-day-body-num' },
+	                                    'Day 6'
 	                                 ),
 	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Antarctic Peninsula"
+	                                    'h6',
+	                                    { className: 'trip-body-title trip-day-title' },
+	                                    'Antarctic Peninsula'
 	                                 ),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Friday, April 26"
+	                                    'div',
+	                                    { className: 'event-body-subheading trip-day-dateline' },
+	                                    'Friday, April 26'
 	                                 ),
 	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
+	                                    'ul',
+	                                    { className: 'tripsUl' },
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent."
+	                                       'A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent.'
 	                                    )
 	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/drakePassage4.jpg" })
+	                                 React.createElement('img', { className: 'detail-image-css', src: '../images/drakePassage4.jpg' })
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day7" }),
+	                                 'div',
+	                                 { className: 'trip-day-wrap' },
+	                                 React.createElement('a', { name: 'day7' }),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 7"
+	                                    'div',
+	                                    { className: 'trip-day-nav-num trip-day-body-num' },
+	                                    'Day 7'
 	                                 ),
 	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Antarctic Peninsula - Drake Passage"
+	                                    'h6',
+	                                    { className: 'trip-body-title trip-day-title' },
+	                                    'Antarctic Peninsula - Drake Passage'
 	                                 ),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Saturday, April 27"
+	                                    'div',
+	                                    { className: 'event-body-subheading trip-day-dateline' },
+	                                    'Saturday, April 27'
 	                                 ),
 	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
+	                                    'ul',
+	                                    { className: 'tripsUl' },
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure. "
+	                                       'Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure. '
 	                                    )
 	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/drakePassage5.jpg" })
+	                                 React.createElement('img', { className: 'detail-image-css', src: '../images/drakePassage5.jpg' })
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day8" }),
+	                                 'div',
+	                                 { className: 'trip-day-wrap' },
+	                                 React.createElement('a', { name: 'day8' }),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 8"
+	                                    'div',
+	                                    { className: 'trip-day-nav-num trip-day-body-num' },
+	                                    'Day 8'
 	                                 ),
 	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Antarctic Peninsula - Drake Passage"
+	                                    'h6',
+	                                    { className: 'trip-body-title trip-day-title' },
+	                                    'Antarctic Peninsula - Drake Passage'
 	                                 ),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Sunday, April 28"
+	                                    'div',
+	                                    { className: 'event-body-subheading trip-day-dateline' },
+	                                    'Sunday, April 28'
 	                                 ),
 	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
+	                                    'ul',
+	                                    { className: 'tripsUl' },
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure."
+	                                       'Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure.'
 	                                    )
 	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/drakePassage6.jpg" })
+	                                 React.createElement('img', { className: 'detail-image-css', src: '../images/drakePassage6.jpg' })
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day9" }),
+	                                 'div',
+	                                 { className: 'trip-day-wrap' },
+	                                 React.createElement('a', { name: 'day9' }),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 9"
+	                                    'div',
+	                                    { className: 'trip-day-nav-num trip-day-body-num' },
+	                                    'Day 9'
 	                                 ),
 	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Ushuaia"
+	                                    'h6',
+	                                    { className: 'trip-body-title trip-day-title' },
+	                                    'Ushuaia'
 	                                 ),
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Monday, April 29"
+	                                    'div',
+	                                    { className: 'event-body-subheading trip-day-dateline' },
+	                                    'Monday, April 29'
 	                                 ),
 	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
+	                                    'ul',
+	                                    { className: 'tripsUl' },
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "Disembark in Ushuaia early this morning, where your journey ends. Wild Frontiers can arrange departure transfers and further travel in Argentina."
+	                                       'Disembark in Ushuaia early this morning, where your journey ends. Wild Frontiers can arrange departure transfers and further travel in Argentina.'
 	                                    ),
 	                                    React.createElement(
-	                                       "li",
+	                                       'li',
 	                                       null,
-	                                       "Until the next adventure!"
+	                                       'Until the next adventure!'
 	                                    )
 	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/drakePassage7.jpg" })
+	                                 React.createElement('img', { className: 'detail-image-css', src: '../images/drakePassage7.jpg' })
 	                              )
 	                           )
 	                        ),
 	                        React.createElement(
-	                           "div",
-	                           { className: "row" },
+	                           'div',
+	                           { className: 'row' },
 	                           React.createElement(
-	                              "div",
-	                              { className: "col-xs-12" },
+	                              'div',
+	                              { className: 'col-xs-12' },
 	                              React.createElement(
-	                                 "section",
-	                                 { className: "event-fine-print" },
+	                                 'section',
+	                                 { className: 'event-fine-print' },
 	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-fine-print-body item-body" },
+	                                    'div',
+	                                    { className: 'event-fine-print-body item-body' },
 	                                    React.createElement(
-	                                       "div",
-	                                       { className: "title-sm" },
-	                                       "The Fine Print"
+	                                       'div',
+	                                       { className: 'title-sm' },
+	                                       'The Fine Print'
 	                                    ),
 	                                    React.createElement(
-	                                       "div",
-	                                       { className: "event-fine-print-body item-body" },
+	                                       'div',
+	                                       { className: 'event-fine-print-body item-body' },
 	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "YOUR ANTARCTICA TRIP INCLUDES"
+	                                          'h3',
+	                                          { className: 'event-body-subheading' },
+	                                          'YOUR ANTARCTICA TRIP INCLUDES'
 	                                       ),
 	                                       React.createElement(
-	                                          "ul",
-	                                          { className: "tripsUl" },
+	                                          'ul',
+	                                          { className: 'tripsUl' },
 	                                          React.createElement(
-	                                             "li",
+	                                             'li',
 	                                             null,
-	                                             "All lodging in double-accommodation rooms at a central hotel for the duration of the tour. (Single supplement for a private room is available for $725. Otherwise we'll work to place individuals of the same gender together.)"
+	                                             'All lodging in double-accommodation rooms at a central hotel for the duration of the tour. (Single supplement for a private room is available for $725. Otherwise we\'ll work to place individuals of the same gender together.)'
 	                                          ),
 	                                          React.createElement(
-	                                             "li",
+	                                             'li',
 	                                             null,
-	                                             "Daily breakfast at the hotel, four lunches, and three dinners."
+	                                             'Daily breakfast at the hotel, four lunches, and three dinners.'
 	                                          ),
 	                                          React.createElement(
-	                                             "li",
+	                                             'li',
 	                                             null,
-	                                             "Two expert guides, with a great depth and breadth of knowledge about Rome\u2019s history, arts, and culture."
+	                                             'Two expert guides, with a great depth and breadth of knowledge about Rome\u2019s history, arts, and culture.'
 	                                          ),
 	                                          React.createElement(
-	                                             "li",
+	                                             'li',
 	                                             null,
-	                                             "Admission to all proposed activities and events."
+	                                             'Admission to all proposed activities and events.'
 	                                          ),
 	                                          React.createElement(
-	                                             "li",
+	                                             'li',
 	                                             null,
-	                                             "A full briefing packet for each explorer, including logistical and contact information, recommended reading list, and packing list."
+	                                             'A full briefing packet for each explorer, including logistical and contact information, recommended reading list, and packing list.'
 	                                          )
 	                                       ),
 	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
+	                                          'h3',
+	                                          { className: 'event-body-subheading' },
 	                                          React.createElement(
-	                                             "strong",
+	                                             'strong',
 	                                             null,
-	                                             "ACTIVITY LEVEL"
+	                                             'ACTIVITY LEVEL'
 	                                          )
 	                                       ),
 	                                       React.createElement(
-	                                          "p",
+	                                          'p',
 	                                          null,
-	                                          "We recommend you have a medium fitness level to fully participate in this trip. You should be comfortable staying on your feet for long stretches at a time, and walking anywhere between 3 to 6 miles a day. We will be out and about most of each day, with time to rest at lunch and dinner, both of which will take place on the later side."
+	                                          'We recommend you have a medium fitness level to fully participate in this trip. You should be comfortable staying on your feet for long stretches at a time, and walking anywhere between 3 to 6 miles a day. We will be out and about most of each day, with time to rest at lunch and dinner, both of which will take place on the later side.'
 	                                       ),
 	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "PAYMENT"
+	                                          'h3',
+	                                          { className: 'event-body-subheading' },
+	                                          'PAYMENT'
 	                                       ),
 	                                       React.createElement(
-	                                          "p",
+	                                          'p',
 	                                          null,
-	                                          "You will be charged a $500 deposit to hold your space. This deposit is non-refundable after three days. ",
+	                                          'You will be charged a $500 deposit to hold your space. This deposit is non-refundable after three days. ',
 	                                          React.createElement(
-	                                             "strong",
+	                                             'strong',
 	                                             null,
-	                                             "The final payment of $2,975 will be due by December 3, 2018"
+	                                             'The final payment of $2,975 will be due by December 3, 2018'
 	                                          ),
-	                                          ". All reservations will be final after this date, and subject to our cancellation policy. By submitting your deposit, you agree to our ",
+	                                          '. All reservations will be final after this date, and subject to our cancellation policy. By submitting your deposit, you agree to our ',
 	                                          React.createElement(
-	                                             "a",
-	                                             { href: "https://docs.google.com/document/d/1VKyOQFEnVBAjrwRw1k8OqCSURFC7a6zrkSvXV7N4BN4/edit" },
+	                                             'a',
+	                                             { href: 'https://docs.google.com/document/d/1VKyOQFEnVBAjrwRw1k8OqCSURFC7a6zrkSvXV7N4BN4/edit' },
 	                                             React.createElement(
-	                                                "strong",
+	                                                'strong',
 	                                                null,
-	                                                "Terms & Conditions"
+	                                                'Terms & Conditions'
 	                                             )
 	                                          ),
-	                                          ". For those wishing to have a single room and/or extra nights, optional supplements will be included with the final payment. "
+	                                          '. For those wishing to have a single room and/or extra nights, optional supplements will be included with the final payment. '
 	                                       ),
 	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "TRAVELERS ARE RESPONSIBLE FOR"
+	                                          'h3',
+	                                          { className: 'event-body-subheading' },
+	                                          'TRAVELERS ARE RESPONSIBLE FOR'
 	                                       ),
 	                                       React.createElement(
-	                                          "ul",
-	                                          { className: "tripsUl" },
+	                                          'ul',
+	                                          { className: 'tripsUl' },
 	                                          React.createElement(
-	                                             "li",
+	                                             'li',
 	                                             null,
-	                                             "Flights or other transportation to and from Argentina."
+	                                             'Flights or other transportation to and from Argentina.'
 	                                          ),
 	                                          React.createElement(
-	                                             "li",
+	                                             'li',
 	                                             null,
-	                                             "Transportation from the Rome airport (or other origin) to the group's hotel."
+	                                             'Transportation from the Rome airport (or other origin) to the group\'s hotel.'
 	                                          ),
 	                                          React.createElement(
-	                                             "li",
+	                                             'li',
 	                                             null,
-	                                             "Travel insurance (recommended)."
+	                                             'Travel insurance (recommended).'
 	                                          ),
 	                                          React.createElement(
-	                                             "li",
+	                                             'li',
 	                                             null,
-	                                             "Baggage charges."
+	                                             'Baggage charges.'
 	                                          )
 	                                       )
 	                                    )
 	                                 ),
-	                                 React.createElement("div", { className: "fine-print-sawtooth-border-sides hidden-print" }),
-	                                 React.createElement("div", { className: "fine-print-sawtooth hidden-print" }),
-	                                 React.createElement("div", { className: "fine-print-sawtooth-border-bottom hidden-print" })
+	                                 React.createElement('div', { className: 'fine-print-sawtooth-border-sides hidden-print' }),
+	                                 React.createElement('div', { className: 'fine-print-sawtooth hidden-print' }),
+	                                 React.createElement('div', { className: 'fine-print-sawtooth-border-bottom hidden-print' })
 	                              )
 	                           )
 	                        )
@@ -36371,212 +36440,212 @@
 	                  )
 	               ),
 	               React.createElement(
-	                  "aside",
-	                  { className: "content-siderail" },
+	                  'aside',
+	                  { className: 'content-siderail' },
 	                  React.createElement(
-	                     "div",
-	                     { className: "trip-detail-pane-wrap hidden-sm hidden-xs" },
+	                     'div',
+	                     { className: 'trip-detail-pane-wrap hidden-sm hidden-xs' },
 	                     React.createElement(
-	                        "div",
-	                        { className: "event-details-pane" },
+	                        'div',
+	                        { className: 'event-details-pane' },
 	                        React.createElement(
-	                           "ul",
-	                           { className: "event-details-top event-details-list" },
+	                           'ul',
+	                           { className: 'event-details-top event-details-list' },
 	                           React.createElement(
-	                              "li",
+	                              'li',
 	                              null,
 	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Dates"
+	                                 'label',
+	                                 { className: 'detail-sm event-details-label' },
+	                                 'Dates'
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
+	                                 'div',
+	                                 { className: 'event-detail' },
 	                                 React.createElement(
-	                                    "div",
+	                                    'div',
 	                                    null,
-	                                    "Apr 21\u2013Apr 30, 2019"
+	                                    'Apr 21\u2013Apr 30, 2019'
 	                                 )
 	                              )
 	                           ),
 	                           React.createElement(
-	                              "li",
+	                              'li',
 	                              null,
 	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Cost"
+	                                 'label',
+	                                 { className: 'detail-sm event-details-label' },
+	                                 'Cost'
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 "$5,471.00 USD"
+	                                 'div',
+	                                 { className: 'event-detail' },
+	                                 '$5,471.00 USD'
 	                              )
 	                           ),
 	                           React.createElement(
-	                              "li",
+	                              'li',
 	                              null,
 	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Itinerary"
+	                                 'label',
+	                                 { className: 'detail-sm event-details-label' },
+	                                 'Itinerary'
 	                              ),
 	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 "9 days, 8 nights"
+	                                 'div',
+	                                 { className: 'event-detail' },
+	                                 '9 days, 8 nights'
 	                              )
 	                           )
 	                        )
 	                     )
 	                  ),
 	                  React.createElement(
-	                     "nav",
-	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
+	                     'nav',
+	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
 	                     React.createElement(
-	                        "h6",
-	                        { className: "trip-body-title" },
-	                        "Trip Schedule"
+	                        'h6',
+	                        { className: 'trip-body-title' },
+	                        'Trip Schedule'
 	                     ),
 	                     React.createElement(
-	                        "ul",
+	                        'ul',
 	                        null,
 	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
+	                           'li',
+	                           { className: 'trip-day-nav-li' },
 	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 1"
+	                              'div',
+	                              { className: 'trip-day-nav-num detail-sm-non-uppercase' },
+	                              'Day 1'
 	                           ),
 	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day1" },
-	                              "Welcome to Ushuaia!"
+	                              'a',
+	                              { className: 'detail-md trip-day-nav-link', href: '#day1' },
+	                              'Welcome to Ushuaia!'
 	                           )
 	                        ),
 	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
+	                           'li',
+	                           { className: 'trip-day-nav-li' },
 	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 2"
+	                              'div',
+	                              { className: 'trip-day-nav-num detail-sm-non-uppercase' },
+	                              'Day 2'
 	                           ),
 	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day2" },
-	                              "Ushuaia - Drake Passage"
+	                              'a',
+	                              { className: 'detail-md trip-day-nav-link', href: '#day2' },
+	                              'Ushuaia - Drake Passage'
 	                           )
 	                        ),
 	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
+	                           'li',
+	                           { className: 'trip-day-nav-li' },
 	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 3"
+	                              'div',
+	                              { className: 'trip-day-nav-num detail-sm-non-uppercase' },
+	                              'Day 3'
 	                           ),
 	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day3" },
-	                              "Ushuaia - Drake Passage"
+	                              'a',
+	                              { className: 'detail-md trip-day-nav-link', href: '#day3' },
+	                              'Ushuaia - Drake Passage'
 	                           )
 	                        ),
 	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
+	                           'li',
+	                           { className: 'trip-day-nav-li' },
 	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 4"
+	                              'div',
+	                              { className: 'trip-day-nav-num detail-sm-non-uppercase' },
+	                              'Day 4'
 	                           ),
 	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day4" },
-	                              "South Shetland Islands"
+	                              'a',
+	                              { className: 'detail-md trip-day-nav-link', href: '#day4' },
+	                              'South Shetland Islands'
 	                           )
 	                        ),
 	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
+	                           'li',
+	                           { className: 'trip-day-nav-li' },
 	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 5"
+	                              'div',
+	                              { className: 'trip-day-nav-num detail-sm-non-uppercase' },
+	                              'Day 5'
 	                           ),
 	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day5" },
-	                              "Antarctic Peninsula"
+	                              'a',
+	                              { className: 'detail-md trip-day-nav-link', href: '#day5' },
+	                              'Antarctic Peninsula'
 	                           )
 	                        ),
 	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
+	                           'li',
+	                           { className: 'trip-day-nav-li' },
 	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 6"
+	                              'div',
+	                              { className: 'trip-day-nav-num detail-sm-non-uppercase' },
+	                              'Day 6'
 	                           ),
 	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day6" },
-	                              "Antarctic Peninsula"
+	                              'a',
+	                              { className: 'detail-md trip-day-nav-link', href: '#day6' },
+	                              'Antarctic Peninsula'
 	                           )
 	                        ),
 	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
+	                           'li',
+	                           { className: 'trip-day-nav-li' },
 	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 7"
+	                              'div',
+	                              { className: 'trip-day-nav-num detail-sm-non-uppercase' },
+	                              'Day 7'
 	                           ),
 	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day7" },
-	                              "Antarctic Peninsula - Drake Passage"
+	                              'a',
+	                              { className: 'detail-md trip-day-nav-link', href: '#day7' },
+	                              'Antarctic Peninsula - Drake Passage'
 	                           )
 	                        ),
 	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
+	                           'li',
+	                           { className: 'trip-day-nav-li' },
 	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 8"
+	                              'div',
+	                              { className: 'trip-day-nav-num detail-sm-non-uppercase' },
+	                              'Day 8'
 	                           ),
 	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day8" },
-	                              "Antarctic Peninsula - Drake Passage"
+	                              'a',
+	                              { className: 'detail-md trip-day-nav-link', href: '#day8' },
+	                              'Antarctic Peninsula - Drake Passage'
 	                           )
 	                        ),
 	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
+	                           'li',
+	                           { className: 'trip-day-nav-li' },
 	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 9"
+	                              'div',
+	                              { className: 'trip-day-nav-num detail-sm-non-uppercase' },
+	                              'Day 9'
 	                           ),
 	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day9" },
-	                              "Ushuaia"
+	                              'a',
+	                              { className: 'detail-md trip-day-nav-link', href: '#day9' },
+	                              'Ushuaia'
 	                           )
 	                        )
 	                     )
 	                  ),
 	                  React.createElement(
-	                     "nav",
-	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
+	                     'nav',
+	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
 	                     React.createElement(
-	                        "button",
-	                        { className: "favouriteButton", onClick: this.handleFavourites },
-	                        "Add to favourites"
+	                        'button',
+	                        { className: 'favouriteButton', onClick: this.handleFavourites },
+	                        'Add to favourites'
 	                     )
 	                  )
 	               )
@@ -36586,2999 +36655,488 @@
 	   }
 	});
 
-	module.exports = Antarctica;
+	module.exports = connect(mapStateToProps)(Antarctica);
 
 /***/ },
 /* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
-	var React = __webpack_require__(8);
+	exports.__esModule = true;
+	exports.connect = exports.Provider = undefined;
 
-	var Brazil = React.createClass({
-	   displayName: "Brazil",
+	var _Provider = __webpack_require__(291);
 
-	   handleFavourites: function handleFavourites() {
-	      alert("2007");
-	   },
-	   render: function render() {
-	      return React.createElement(
-	         "article",
-	         { className: "event-content trip-content" },
-	         React.createElement(
-	            "div",
-	            { className: "container" },
-	            React.createElement(
-	               "div",
-	               { className: "row" },
-	               React.createElement(
-	                  "div",
-	                  { className: "col-md-8" },
-	                  React.createElement(
-	                     "div",
-	                     { className: "row" },
-	                     React.createElement(
-	                        "header",
-	                        { className: "item-header trip-header js-item-header" },
-	                        React.createElement(
-	                           "div",
-	                           { className: "col-md-12" },
-	                           React.createElement(
-	                              "h2",
-	                              { className: "detail-sm item-supertitle" },
-	                              "Brazil"
-	                           ),
-	                           React.createElement(
-	                              "h1",
-	                              { className: "title-lg item-title trip-title" },
-	                              "Brazilian Wildlife"
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "div",
-	                     { className: "row" },
-	                     React.createElement(
-	                        "div",
-	                        { className: "content-body event-content-body col-md-11 trip-content-body" },
-	                        React.createElement(
-	                           "section",
-	                           { id: "event-body", className: "item-body" },
-	                           React.createElement(
-	                              "h3",
-	                              { className: "event-body-subheading" },
-	                              "HIGHLIGHTS"
-	                           ),
-	                           React.createElement(
-	                              "ul",
-	                              null,
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 React.createElement(
-	                                    "strong",
-	                                    null,
-	                                    "Greatest diversity of wildlife of any country on the planet:"
-	                                 ),
-	                                 " Brazil is home to 60% of the Amazon Rainforest"
-	                              ),
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 React.createElement(
-	                                    "strong",
-	                                    null,
-	                                    "Carnival Gala at a Belle \xC9poque atelier"
-	                                 ),
-	                                 ": On our final night, transform into your most glamorous self and delight yourself in one of the most spectacular private house museums in South America: the ",
-	                                 React.createElement(
-	                                    "a",
-	                                    { href: "https://www.atlasobscura.com/places/taller-doleguer-junyent-oleguer-junyents-workshop" },
-	                                    "Oleguer Junyent Workshop"
-	                                 ),
-	                                 ". Our Carnival Gala includes a private dinner as well as opera and mentalist performances."
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "section",
-	                              { id: "event-trip-itinerary" },
-	                              React.createElement(
-	                                 "h5",
-	                                 { className: "event-body-heading" },
-	                                 "Itinerary"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day1" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 1"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Welcome to Rio de Janeiro!"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Monday, March 4"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "When you arrive in Rio your local guide will be waiting to meet you and will take you to your hotel which is located on the end of Copacabana Beach."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/brazil1.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day2" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 2"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Rio de Janeiro"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Tuesday, March 5"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "This morning's excursion will take you to visit Sugar Loaf Mountain, one of the most famous landmarks of the city. You will take two cable cars with your guide to reach the top of Sugar Loaf Mountain to appreciate some of the best views across the city. "
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "This afternoon you will be picked up from your hotel in an open top jeep and taken into the Tijuca Atlantic Forest, the largest urban forest in the World. During the afternoon you may come across monkeys, sloths and exotic birds. "
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/brazil2.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day3" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 3"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Rio de Janeiro - Fazenda Barranco Alto"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Wednesday, March 6"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Transfer to the airport for your flights to Campo Grande. When you arrive you at Campo Grande you will be met and driven to the airstrip at Aquidauana, a journey of approximately 3 hours, where you will board your light aircraft to Fazenda Barranco Alto."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/brazil3.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day4" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 4"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Rio de Janeiro - Fazenda Barranco Alto"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Thursday, March 7"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "The Fazenda Barranco Alto offers a number of activities to its guests, such as walking safaris with biologists to observe the flora and fauna, photo safaris, boat and kayak trips, horse riding and night safaris. Guests can also observe the working farmers and visit the traditional workshops."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/brazil4.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day5" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 5"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Fazenda Barranco Alto"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Friday, March 8"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Day of activities on the fazenda. "
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/brazil5.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day6" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 6"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Fazenda Barranco Alto - Florianopolis"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Saturday, March 9"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "This morning you will be flown back to Aquiduana and then driven the rest of the way to Campo Grande to board your flight to Florianopolis, via Sao Paulo. "
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "On arrival you will be taken to your beach front accommodation. "
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/brazil3.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day7" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 7"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Fazenda Barranco Alto - Florianopolis"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Sunday, March 10"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Every year between July and November Southern Right whales come to give birth and care for their young."
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       " Today you will be taken out on a boat to get up close to the whales. You then have the afternoon free to enjoy your hotel."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/brazil2.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day8" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 8"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Florianopolis"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Monday, March 11"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "This morning you will be picked up from your hotel and taken to Praia do Rosa, where you will embark on a morning of horse riding along the dunes to Praia da Barra. "
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "The return journey takes a different route through the forest. At the end of the excursion you will be taken back to your hotel where you will have the rest of the day at leisure. "
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/brazil1.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day9" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 9"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Florianopolis - Sao Paulo"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Tuesday, March 12"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "You will be transferred to the airport in plenty of time for your flight to Sao Paulo and connect with your international flight. "
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/brazil6.jpg" })
-	                              )
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "div",
-	                           { className: "row" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "col-xs-12" },
-	                              React.createElement(
-	                                 "section",
-	                                 { className: "event-fine-print" },
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-fine-print-body item-body" },
-	                                    React.createElement(
-	                                       "div",
-	                                       { className: "title-sm" },
-	                                       "The Fine Print"
-	                                    ),
-	                                    React.createElement(
-	                                       "div",
-	                                       { className: "event-fine-print-body item-body" },
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "YOUR BRAZIL TRIP INCLUDES"
-	                                       ),
-	                                       React.createElement(
-	                                          "ul",
-	                                          { className: "tripsUl" },
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "All lodging in double-accommodation rooms at the Hotel Oriente for the duration of the tour. (Single supplement for a private room is available for $530. Otherwise we'll work to place individuals of the same gender together.)"
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Daily breakfast at the hotel, five lunches, and two dinners."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Two expert guides, with a great depth and breadth of knowledge about Barcelona, its elaborate history, and its vibrant arts and culture."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Admission to all proposed activities and events."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "A full briefing packet for each explorer, including logistical and contact information, recommended reading list, and packing list."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "A curious group of fellow Atlas Obscura explorers, excited to discover all that Barcelona  has to offer!"
-	                                          )
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          React.createElement(
-	                                             "strong",
-	                                             null,
-	                                             "ACTIVITY LEVEL"
-	                                          )
-	                                       ),
-	                                       React.createElement(
-	                                          "p",
-	                                          null,
-	                                          "We recommend you have a medium fitness level to fully participate in this trip. You should be comfortable staying on your feet for long stretches at a time, and walking anywhere between 3 to 6 miles a day. We will be out and about most of each day, with time to rest at lunch and dinner, both of which will take place on the later side."
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "PAYMENT"
-	                                       ),
-	                                       React.createElement(
-	                                          "p",
-	                                          null,
-	                                          "You will be charged a $500 deposit to hold your space. This deposit is non-refundable after three days. ",
-	                                          React.createElement(
-	                                             "strong",
-	                                             null,
-	                                             "The final payment of $2,975 will be due by December 3, 2018"
-	                                          ),
-	                                          ". All reservations will be final after this date, and subject to our cancellation policy. By submitting your deposit, you agree to our ",
-	                                          React.createElement(
-	                                             "a",
-	                                             { href: "https://docs.google.com/document/d/1VKyOQFEnVBAjrwRw1k8OqCSURFC7a6zrkSvXV7N4BN4/edit" },
-	                                             React.createElement(
-	                                                "strong",
-	                                                null,
-	                                                "Terms & Conditions"
-	                                             )
-	                                          ),
-	                                          ". For those wishing to have a single room and/or extra nights, optional supplements will be included with the final payment. "
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "TRAVELERS ARE RESPONSIBLE FOR"
-	                                       ),
-	                                       React.createElement(
-	                                          "ul",
-	                                          { className: "tripsUl" },
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Transportation and flights to and from Barcelona."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Transportation from the Barcelona airport (or other origin) to the group's hotel."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Individual travel insurance (optional)."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Baggage charges."
-	                                          )
-	                                       )
-	                                    )
-	                                 ),
-	                                 React.createElement("div", { className: "fine-print-sawtooth-border-sides hidden-print" }),
-	                                 React.createElement("div", { className: "fine-print-sawtooth hidden-print" }),
-	                                 React.createElement("div", { className: "fine-print-sawtooth-border-bottom hidden-print" })
-	                              )
-	                           )
-	                        )
-	                     )
-	                  )
-	               ),
-	               React.createElement(
-	                  "aside",
-	                  { className: "content-siderail" },
-	                  React.createElement(
-	                     "div",
-	                     { className: "trip-detail-pane-wrap hidden-sm hidden-xs" },
-	                     React.createElement(
-	                        "div",
-	                        { className: "event-details-pane" },
-	                        React.createElement(
-	                           "ul",
-	                           { className: "event-details-top event-details-list" },
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Dates"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 React.createElement(
-	                                    "div",
-	                                    null,
-	                                    "Mar 04\u2013Mar 10, 2019"
-	                                 )
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Cost"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 "$4,098.00 USD"
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Itinerary"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 "9 days, 8 nights"
-	                              )
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "nav",
-	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
-	                     React.createElement(
-	                        "h6",
-	                        { className: "trip-body-title" },
-	                        "Trip Schedule"
-	                     ),
-	                     React.createElement(
-	                        "ul",
-	                        null,
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 1"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day1" },
-	                              "Welcome to Rio de Janeiro!"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 2"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day2" },
-	                              "Rio de Janeiro"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 3"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day3" },
-	                              "Rio de Janeiro - Fazenda Barranco Alto"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 4"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day4" },
-	                              "Rio de Janeiro - Fazenda Barranco Alto"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 5"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day5" },
-	                              "Fazenda Barranco Alto"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 6"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day6" },
-	                              "Fazenda Barranco Alto - Florianopolis"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 7"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day7" },
-	                              "Fazenda Barranco Alto - Florianopolis"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 8"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day8" },
-	                              "Florianopolis"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 9"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day9" },
-	                              "Florianopolis - Sao Paulo"
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "nav",
-	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
-	                     React.createElement(
-	                        "button",
-	                        { className: "favouriteButton", onClick: this.handleFavourites },
-	                        "Add to favourites"
-	                     )
-	                  )
-	               )
-	            )
-	         )
-	      );
-	   }
-	});
+	var _Provider2 = _interopRequireDefault(_Provider);
 
-	module.exports = Brazil;
+	var _connect = __webpack_require__(293);
+
+	var _connect2 = _interopRequireDefault(_connect);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	exports.Provider = _Provider2["default"];
+	exports.connect = _connect2["default"];
 
 /***/ },
 /* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var React = __webpack_require__(8);
+	exports.__esModule = true;
+	exports["default"] = undefined;
 
-	var Petra = React.createClass({
-	   displayName: "Petra",
+	var _react = __webpack_require__(8);
 
-	   handleFavourites: function handleFavourites() {
-	      alert("2007");
-	   },
-	   render: function render() {
-	      return React.createElement(
-	         "article",
-	         { className: "event-content trip-content" },
-	         React.createElement(
-	            "div",
-	            { className: "container" },
-	            React.createElement(
-	               "div",
-	               { className: "row" },
-	               React.createElement(
-	                  "div",
-	                  { className: "col-md-8" },
-	                  React.createElement(
-	                     "div",
-	                     { className: "row" },
-	                     React.createElement(
-	                        "header",
-	                        { className: "item-header trip-header js-item-header" },
-	                        React.createElement(
-	                           "div",
-	                           { className: "col-md-12" },
-	                           React.createElement(
-	                              "h2",
-	                              { className: "detail-sm item-supertitle" },
-	                              "Jordan"
-	                           ),
-	                           React.createElement(
-	                              "h1",
-	                              { className: "title-lg item-title trip-title" },
-	                              "Jordan: Lost City Of Arabia"
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "div",
-	                     { className: "row" },
-	                     React.createElement(
-	                        "div",
-	                        { className: "content-body event-content-body col-md-11 trip-content-body" },
-	                        React.createElement(
-	                           "section",
-	                           { id: "event-body", className: "item-body" },
-	                           React.createElement(
-	                              "h3",
-	                              { className: "event-body-subheading" },
-	                              "HIGHLIGHTS"
-	                           ),
-	                           React.createElement(
-	                              "ul",
-	                              null,
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 "Exploring the ruins of Roman Jerash"
-	                              ),
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 "Staying with local villagers in the north of the country"
-	                              ),
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 "Camping in the deserts of Wadi Rum"
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "section",
-	                              { id: "event-trip-itinerary" },
-	                              React.createElement(
-	                                 "h5",
-	                                 { className: "event-body-heading" },
-	                                 "Itinerary"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day1" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 1"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Tour starts in Madaba"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Monday, March 4"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "The tour starts in the the town of Madaba, home to some of the most extraordinary mosaics in the Middle East."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/petra1.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day2" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 2"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Madaba to Jerash"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Tuesday, March 5"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "A busy day ahead of us, we will first visit Madaba\u2019s famous Byzantine Church, before heading across to Mt Nebo, after which we will head north to the Roman city of Jerash."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/petra2.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day3" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 3"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Jerash \u2013 Ajloun - Orjan"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Wednesday, March 6"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "This morning we will head to Ajloun\u2019s crusader-era castle before heading to the village of Rasun for lunch before walking through the hills to Orjan village, where we\u2019ll overnight with our village host families."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/petra3.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day4" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 4"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Orjan \u2013 Kerak - Dana Nature Reserve"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Thursday, March 7"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "This morning we'll take a walk through the surrounding area, before joining up with our vehicle and head towards the Dana Nature Reserve, stopping off at the stunning Crusader castle of Kerak on the way."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/petra4.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day5" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 5"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Orjan \u2013 Kerak - Dana Nature Reserve"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Friday, March 8"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Today will be on foot as we follow the Wadi Dana Trail, walking from Dana to Feynan, covering approximately 14km."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/petra5.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day6" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 6"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Dana Nature Reserve"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Saturday, March 9"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "We\u2019ll head straight to Petra this morning and take a guided tour of the ancient Nabataean city of Petra."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/petra6.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day7" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 7"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Petra"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Sunday, March 10"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Today we\u2019ll return to Petra via the \u201Csecret road\u201D of al-Madras, and visit the High Place of Sacrifice, and Royal Tombs."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/petra7.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day8" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 8"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Petra \u2013 Wadi Rum"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Monday, March 11"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Leaving Petra behind us we strike into the desert of Wadi Rum in 4WD jeeps for a full day of exploration."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/petra8.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day9" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 9"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Dead Sea"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Tuesday, March 12"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "We head towards the saline waters of the Dead Sea, the lowest place on earth, where there will be time to have a float before heading to Amman for our final night."
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Until next time!"
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { src: "../images/petra9.jpg" })
-	                              )
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "div",
-	                           { className: "row" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "col-xs-12" },
-	                              React.createElement(
-	                                 "section",
-	                                 { className: "event-fine-print" },
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-fine-print-body item-body" },
-	                                    React.createElement(
-	                                       "div",
-	                                       { className: "title-sm" },
-	                                       "The Fine Print"
-	                                    ),
-	                                    React.createElement(
-	                                       "div",
-	                                       { className: "event-fine-print-body item-body" },
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "YOUR JORDAN TRIP INCLUDES"
-	                                       ),
-	                                       React.createElement(
-	                                          "ul",
-	                                          { className: "tripsUl" },
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "All lodging in double-accommodation rooms at the Hotel Oriente for the duration of the tour. (Single supplement for a private room is available for $530. Otherwise we'll work to place individuals of the same gender together.)"
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Daily breakfast at the hotel, five lunches, and two dinners."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Two expert guides, with a great depth and breadth of knowledge about Barcelona, its elaborate history, and its vibrant arts and culture."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Admission to all proposed activities and events."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "A full briefing packet for each explorer, including logistical and contact information, recommended reading list, and packing list."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "A curious group of fellow Atlas Obscura explorers, excited to discover all that Barcelona  has to offer!"
-	                                          )
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          React.createElement(
-	                                             "strong",
-	                                             null,
-	                                             "ACTIVITY LEVEL"
-	                                          )
-	                                       ),
-	                                       React.createElement(
-	                                          "p",
-	                                          null,
-	                                          "We recommend you have a medium fitness level to fully participate in this trip. You should be comfortable staying on your feet for long stretches at a time, and walking anywhere between 3 to 6 miles a day. We will be out and about most of each day, with time to rest at lunch and dinner, both of which will take place on the later side."
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "PAYMENT"
-	                                       ),
-	                                       React.createElement(
-	                                          "p",
-	                                          null,
-	                                          "You will be charged a $500 deposit to hold your space. This deposit is non-refundable after three days. ",
-	                                          React.createElement(
-	                                             "strong",
-	                                             null,
-	                                             "The final payment of $2,975 will be due by December 3, 2018"
-	                                          ),
-	                                          ". All reservations will be final after this date, and subject to our cancellation policy. By submitting your deposit, you agree to our ",
-	                                          React.createElement(
-	                                             "a",
-	                                             { href: "https://docs.google.com/document/d/1VKyOQFEnVBAjrwRw1k8OqCSURFC7a6zrkSvXV7N4BN4/edit" },
-	                                             React.createElement(
-	                                                "strong",
-	                                                null,
-	                                                "Terms & Conditions"
-	                                             )
-	                                          ),
-	                                          ". For those wishing to have a single room and/or extra nights, optional supplements will be included with the final payment. "
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "TRAVELERS ARE RESPONSIBLE FOR"
-	                                       ),
-	                                       React.createElement(
-	                                          "ul",
-	                                          { className: "tripsUl" },
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Transportation and flights to and from Barcelona."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Transportation from the Barcelona airport (or other origin) to the group's hotel."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Individual travel insurance (optional)."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Baggage charges."
-	                                          )
-	                                       )
-	                                    )
-	                                 ),
-	                                 React.createElement("div", { className: "fine-print-sawtooth-border-sides hidden-print" }),
-	                                 React.createElement("div", { className: "fine-print-sawtooth hidden-print" }),
-	                                 React.createElement("div", { className: "fine-print-sawtooth-border-bottom hidden-print" })
-	                              )
-	                           )
-	                        )
-	                     )
-	                  )
-	               ),
-	               React.createElement(
-	                  "aside",
-	                  { className: "content-siderail" },
-	                  React.createElement(
-	                     "div",
-	                     { className: "trip-detail-pane-wrap hidden-sm hidden-xs" },
-	                     React.createElement(
-	                        "div",
-	                        { className: "event-details-pane" },
-	                        React.createElement(
-	                           "ul",
-	                           { className: "event-details-top event-details-list" },
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Dates"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 React.createElement(
-	                                    "div",
-	                                    null,
-	                                    "Sept 06\u2013Sept 15, 2019"
-	                                 )
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Cost"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 "$2,274.00 USD"
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Itinerary"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 "9 days, 8 nights"
-	                              )
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "nav",
-	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
-	                     React.createElement(
-	                        "h6",
-	                        { className: "trip-body-title" },
-	                        "Trip Schedule"
-	                     ),
-	                     React.createElement(
-	                        "ul",
-	                        null,
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 1"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day1" },
-	                              "Tour starts in Madaba"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 2"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day2" },
-	                              "Madaba to Jerash"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 3"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day3" },
-	                              "Jerash \u2013 Ajloun - Orjan"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 4"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day4" },
-	                              "Orjan \u2013 Kerak - Dana Nature Reserve"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 5"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day5" },
-	                              "Orjan \u2013 Kerak - Dana Nature Reserve"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 6"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day6" },
-	                              "Dana Nature Reserve"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 7"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day7" },
-	                              "Petra"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 8"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day8" },
-	                              "Petra \u2013 Wadi Rum"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 9"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day9" },
-	                              "Dead Sea"
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "nav",
-	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
-	                     React.createElement(
-	                        "button",
-	                        { className: "favouriteButton", onClick: this.handleFavourites },
-	                        "Add to favourites"
-	                     )
-	                  )
-	               )
-	            )
-	         )
-	      );
-	   }
-	});
+	var _storeShape = __webpack_require__(292);
 
-	module.exports = Petra;
+	var _storeShape2 = _interopRequireDefault(_storeShape);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var didWarnAboutReceivingStore = false;
+	function warnAboutReceivingStore() {
+	  if (didWarnAboutReceivingStore) {
+	    return;
+	  }
+	  didWarnAboutReceivingStore = true;
+
+	  /* eslint-disable no-console */
+	  if (typeof console !== 'undefined' && typeof console.error === 'function') {
+	    console.error('<Provider> does not support changing `store` on the fly. ' + 'It is most likely that you see this error because you updated to ' + 'Redux 2.x and React Redux 2.x which no longer hot reload reducers ' + 'automatically. See https://github.com/rackt/react-redux/releases/' + 'tag/v2.0.0 for the migration instructions.');
+	  }
+	  /* eslint-disable no-console */
+	}
+
+	var Provider = function (_Component) {
+	  _inherits(Provider, _Component);
+
+	  Provider.prototype.getChildContext = function getChildContext() {
+	    return { store: this.store };
+	  };
+
+	  function Provider(props, context) {
+	    _classCallCheck(this, Provider);
+
+	    var _this = _possibleConstructorReturn(this, _Component.call(this, props, context));
+
+	    _this.store = props.store;
+	    return _this;
+	  }
+
+	  Provider.prototype.render = function render() {
+	    var children = this.props.children;
+
+	    return _react.Children.only(children);
+	  };
+
+	  return Provider;
+	}(_react.Component);
+
+	exports["default"] = Provider;
+
+	if (process.env.NODE_ENV !== 'production') {
+	  Provider.prototype.componentWillReceiveProps = function (nextProps) {
+	    var store = this.store;
+	    var nextStore = nextProps.store;
+
+	    if (store !== nextStore) {
+	      warnAboutReceivingStore();
+	    }
+	  };
+	}
+
+	Provider.propTypes = {
+	  store: _storeShape2["default"].isRequired,
+	  children: _react.PropTypes.element.isRequired
+	};
+	Provider.childContextTypes = {
+	  store: _storeShape2["default"].isRequired
+	};
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ },
 /* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
-	var React = __webpack_require__(8);
+	exports.__esModule = true;
 
-	var Zambia = React.createClass({
-	   displayName: "Zambia",
+	var _react = __webpack_require__(8);
 
-	   handleFavourites: function handleFavourites() {
-	      alert("2007");
-	   },
-	   render: function render() {
-	      return React.createElement(
-	         "article",
-	         { className: "event-content trip-content" },
-	         React.createElement(
-	            "div",
-	            { className: "container" },
-	            React.createElement(
-	               "div",
-	               { className: "row" },
-	               React.createElement(
-	                  "div",
-	                  { className: "col-md-8" },
-	                  React.createElement(
-	                     "div",
-	                     { className: "row" },
-	                     React.createElement(
-	                        "header",
-	                        { className: "item-header trip-header js-item-header" },
-	                        React.createElement(
-	                           "div",
-	                           { className: "col-md-12" },
-	                           React.createElement(
-	                              "h2",
-	                              { className: "detail-sm item-supertitle" },
-	                              "Zambia"
-	                           ),
-	                           React.createElement(
-	                              "h1",
-	                              { className: "title-lg item-title trip-title" },
-	                              "Wild Zambian Safari"
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "div",
-	                     { className: "row" },
-	                     React.createElement(
-	                        "div",
-	                        { className: "content-body event-content-body col-md-11 trip-content-body" },
-	                        React.createElement(
-	                           "section",
-	                           { id: "event-body", className: "item-body" },
-	                           React.createElement(
-	                              "h3",
-	                              { className: "event-body-subheading" },
-	                              "HIGHLIGHTS"
-	                           ),
-	                           React.createElement(
-	                              "ul",
-	                              null,
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 "Stay on a remote island in the middle of the Zambezi River."
-	                              ),
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 "Enjoy a unique walking safari and get up close and personal with big game."
-	                              ),
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 "Spot cheetah on the open plains of Kafue."
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "section",
-	                              { id: "event-trip-itinerary" },
-	                              React.createElement(
-	                                 "h5",
-	                                 { className: "event-body-heading" },
-	                                 "Itinerary"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day1" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 1"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Welcome to Zambia!"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Sunday, April 21"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Arrive in Ushuaia today and be transferred to your hotel. Enjoy the sights and sounds of the world's most southerly city."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia1.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day2" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 2"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Lower Zambezi National Park"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Monday, April 22"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Enjoy a free morning in Ushuaia where you can explore the town or the surrounding countryside. Embarkation on the Expedition begins in the afternoon at the port in Ushuaia, after which you'll depart the southernmost tip of the South American continent and sail through the Beagle Channel."
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Running through the Tierra del Fuego Archipelago, the channel forms part of the border between Chile and neighbouring Argentina and this evening's sailing takes you south, towards the open waters of Drake Passage and the vast Southern Ocean."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia2.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day3" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 3"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Kafue National Park"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Tuesday, April 23"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "There will be daily lectures on board from resident polar experts and keep an eye out for the first sightings of icebergs."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia3.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day4" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 4"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Kafue National Park"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Wednesday, April 24"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Over the coming days you'll discover some of the most unique wildlife and experience some of the most inspiring scenery on the planet, as you head for the vast white wilderness of Antarctica. "
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Attempting two shore landings a day, there will be opportunities to encounter Gentoo, chinstrap and Ad\xE9lie penguin rookeries, see Weddell and leopard seals and hopefully come across orcas and humpbacks in the cold Antarctic waters. During the voyage you'll also have a chance to learn about the peninsula's remarkable history. "
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia4.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day5" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 5"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Livingstone"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Thursday, April 25"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia5.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day6" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 6"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Antarctic Peninsula"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Friday, April 26"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia6.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day7" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 7"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Antarctic Peninsula - Drake Passage"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Saturday, April 27"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure. "
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia7.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day8" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 8"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Antarctic Peninsula - Drake Passage"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Sunday, April 28"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia6.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day9" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 9"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Ushuaia"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Monday, April 29"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Disembark in Ushuaia early this morning, where your journey ends. Wild Frontiers can arrange departure transfers and further travel in Argentina."
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Until the next adventure!"
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia5.jpg" })
-	                              )
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "div",
-	                           { className: "row" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "col-xs-12" },
-	                              React.createElement(
-	                                 "section",
-	                                 { className: "event-fine-print" },
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-fine-print-body item-body" },
-	                                    React.createElement(
-	                                       "div",
-	                                       { className: "title-sm" },
-	                                       "The Fine Print"
-	                                    ),
-	                                    React.createElement(
-	                                       "div",
-	                                       { className: "event-fine-print-body item-body" },
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "YOUR ZAMBIA TRIP INCLUDES"
-	                                       ),
-	                                       React.createElement(
-	                                          "ul",
-	                                          { className: "tripsUl" },
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "All lodging in double-accommodation rooms at a central hotel for the duration of the tour. (Single supplement for a private room is available for $725. Otherwise we'll work to place individuals of the same gender together.)"
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Daily breakfast at the hotel, four lunches, and three dinners."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Two expert guides, with a great depth and breadth of knowledge about Rome\u2019s history, arts, and culture."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Admission to all proposed activities and events."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "A full briefing packet for each explorer, including logistical and contact information, recommended reading list, and packing list."
-	                                          )
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          React.createElement(
-	                                             "strong",
-	                                             null,
-	                                             "ACTIVITY LEVEL"
-	                                          )
-	                                       ),
-	                                       React.createElement(
-	                                          "p",
-	                                          null,
-	                                          "We recommend you have a medium fitness level to fully participate in this trip. You should be comfortable staying on your feet for long stretches at a time, and walking anywhere between 3 to 6 miles a day. We will be out and about most of each day, with time to rest at lunch and dinner, both of which will take place on the later side."
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "PAYMENT"
-	                                       ),
-	                                       React.createElement(
-	                                          "p",
-	                                          null,
-	                                          "You will be charged a $500 deposit to hold your space. This deposit is non-refundable after three days. ",
-	                                          React.createElement(
-	                                             "strong",
-	                                             null,
-	                                             "The final payment of $2,975 will be due by December 3, 2018"
-	                                          ),
-	                                          ". All reservations will be final after this date, and subject to our cancellation policy. By submitting your deposit, you agree to our ",
-	                                          React.createElement(
-	                                             "a",
-	                                             { href: "https://docs.google.com/document/d/1VKyOQFEnVBAjrwRw1k8OqCSURFC7a6zrkSvXV7N4BN4/edit" },
-	                                             React.createElement(
-	                                                "strong",
-	                                                null,
-	                                                "Terms & Conditions"
-	                                             )
-	                                          ),
-	                                          ". For those wishing to have a single room and/or extra nights, optional supplements will be included with the final payment. "
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "TRAVELERS ARE RESPONSIBLE FOR"
-	                                       ),
-	                                       React.createElement(
-	                                          "ul",
-	                                          { className: "tripsUl" },
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Flights or other transportation to and from Argentina."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Transportation from the Rome airport (or other origin) to the group's hotel."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Travel insurance (recommended)."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Baggage charges."
-	                                          )
-	                                       )
-	                                    )
-	                                 ),
-	                                 React.createElement("div", { className: "fine-print-sawtooth-border-sides hidden-print" }),
-	                                 React.createElement("div", { className: "fine-print-sawtooth hidden-print" }),
-	                                 React.createElement("div", { className: "fine-print-sawtooth-border-bottom hidden-print" })
-	                              )
-	                           )
-	                        )
-	                     )
-	                  )
-	               ),
-	               React.createElement(
-	                  "aside",
-	                  { className: "content-siderail" },
-	                  React.createElement(
-	                     "div",
-	                     { className: "trip-detail-pane-wrap hidden-sm hidden-xs" },
-	                     React.createElement(
-	                        "div",
-	                        { className: "event-details-pane" },
-	                        React.createElement(
-	                           "ul",
-	                           { className: "event-details-top event-details-list" },
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Dates"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 React.createElement(
-	                                    "div",
-	                                    null,
-	                                    "Apr 21\u2013Apr 30, 2019"
-	                                 )
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Cost"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 "$6,538.00 USD"
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Itinerary"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 "9 days, 8 nights"
-	                              )
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "nav",
-	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
-	                     React.createElement(
-	                        "h6",
-	                        { className: "trip-body-title" },
-	                        "Trip Schedule"
-	                     ),
-	                     React.createElement(
-	                        "ul",
-	                        null,
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 1"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day1" },
-	                              "Welcome to Zambia!"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 2"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day2" },
-	                              "Lower Zambezi National Park"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 3"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day3" },
-	                              "Kafue National Park"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 4"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day4" },
-	                              "Kafue National Park"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 5"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day5" },
-	                              "Livingstone"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 6"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day6" },
-	                              "Lusaka"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 7"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day7" },
-	                              "Lusaka"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 8"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day8" },
-	                              "Drake Passage"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 9"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day9" },
-	                              "Ushuaia"
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "nav",
-	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
-	                     React.createElement(
-	                        "button",
-	                        { className: "favouriteButton", onClick: this.handleFavourites },
-	                        "Add to favourites"
-	                     )
-	                  )
-	               )
-	            )
-	         )
-	      );
-	   }
+	exports["default"] = _react.PropTypes.shape({
+	  subscribe: _react.PropTypes.func.isRequired,
+	  dispatch: _react.PropTypes.func.isRequired,
+	  getState: _react.PropTypes.func.isRequired
 	});
-
-	module.exports = Zambia;
 
 /***/ },
 /* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 
-	var React = __webpack_require__(8);
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var Rwanda = React.createClass({
-	   displayName: "Rwanda",
+	exports.__esModule = true;
+	exports["default"] = connect;
 
-	   handleFavourites: function handleFavourites() {
-	      alert("2007");
-	   },
-	   render: function render() {
-	      return React.createElement(
-	         "article",
-	         { className: "event-content trip-content" },
-	         React.createElement(
-	            "div",
-	            { className: "container" },
-	            React.createElement(
-	               "div",
-	               { className: "row" },
-	               React.createElement(
-	                  "div",
-	                  { className: "col-md-8" },
-	                  React.createElement(
-	                     "div",
-	                     { className: "row" },
-	                     React.createElement(
-	                        "header",
-	                        { className: "item-header trip-header js-item-header" },
-	                        React.createElement(
-	                           "div",
-	                           { className: "col-md-12" },
-	                           React.createElement(
-	                              "h2",
-	                              { className: "detail-sm item-supertitle" },
-	                              "Rwanda"
-	                           ),
-	                           React.createElement(
-	                              "h1",
-	                              { className: "title-lg item-title trip-title" },
-	                              "Gorillas in Africa's Midst"
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "div",
-	                     { className: "row" },
-	                     React.createElement(
-	                        "div",
-	                        { className: "content-body event-content-body col-md-11 trip-content-body" },
-	                        React.createElement(
-	                           "section",
-	                           { id: "event-body", className: "item-body" },
-	                           React.createElement(
-	                              "h3",
-	                              { className: "event-body-subheading" },
-	                              "HIGHLIGHTS"
-	                           ),
-	                           React.createElement(
-	                              "ul",
-	                              null,
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 "Explore Kahuzi-Biega National Park, home to rare Eastern Lowland Gorillas."
-	                              ),
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 "Cross stunning Lake Kivu between the towns of Goma and Bukavu."
-	                              ),
-	                              React.createElement(
-	                                 "li",
-	                                 null,
-	                                 "Witness the famous karyenda drummers of Burundi in action."
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "section",
-	                              { id: "event-trip-itinerary" },
-	                              React.createElement(
-	                                 "h5",
-	                                 { className: "event-body-heading" },
-	                                 "Itinerary"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day1" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 1"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Tour Starts in Kigali (Rwanda)"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Sunday, April 21"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Arrive in Ushuaia today and be transferred to your hotel. Enjoy the sights and sounds of the world's most southerly city."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda1.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day2" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 2"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Kigali - Kirundo (Burundi)"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Monday, April 22"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Enjoy a free morning in Ushuaia where you can explore the town or the surrounding countryside. Embarkation on the Expedition begins in the afternoon at the port in Ushuaia, after which you'll depart the southernmost tip of the South American continent and sail through the Beagle Channel."
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Running through the Tierra del Fuego Archipelago, the channel forms part of the border between Chile and neighbouring Argentina and this evening's sailing takes you south, towards the open waters of Drake Passage and the vast Southern Ocean."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda2.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day3" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 3"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Kirundo - Gitega"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Tuesday, April 23"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "There will be daily lectures on board from resident polar experts and keep an eye out for the first sightings of icebergs."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda3.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day4" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 4"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Gitega - Kibuye (Rwanda)"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Wednesday, April 24"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Over the coming days you'll discover some of the most unique wildlife and experience some of the most inspiring scenery on the planet, as you head for the vast white wilderness of Antarctica. "
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Attempting two shore landings a day, there will be opportunities to encounter Gentoo, chinstrap and Ad\xE9lie penguin rookeries, see Weddell and leopard seals and hopefully come across orcas and humpbacks in the cold Antarctic waters. During the voyage you'll also have a chance to learn about the peninsula's remarkable history. "
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda4.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day5" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 5"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Kibuye - Gisenyi"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Thursday, April 25"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda5.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day6" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 6"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Climb Mt Nyiragongo"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Friday, April 26"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda6.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day7" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 7"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Virunga National Park - Goma"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Saturday, April 27"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure. "
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda7.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day8" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 8"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Goma \u2013 Bukavu"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Sunday, April 28"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure."
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda8.jpg" })
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "trip-day-wrap" },
-	                                 React.createElement("a", { name: "day9" }),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "trip-day-nav-num trip-day-body-num" },
-	                                    "Day 9"
-	                                 ),
-	                                 React.createElement(
-	                                    "h6",
-	                                    { className: "trip-body-title trip-day-title" },
-	                                    "Gorilla Tracking In Kahuzi"
-	                                 ),
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-body-subheading trip-day-dateline" },
-	                                    "Monday, April 29"
-	                                 ),
-	                                 React.createElement(
-	                                    "ul",
-	                                    { className: "tripsUl" },
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Disembark in Ushuaia early this morning, where your journey ends. Wild Frontiers can arrange departure transfers and further travel in Argentina."
-	                                    ),
-	                                    React.createElement(
-	                                       "li",
-	                                       null,
-	                                       "Until the next adventure!"
-	                                    )
-	                                 ),
-	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda9.jpg" })
-	                              )
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "div",
-	                           { className: "row" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "col-xs-12" },
-	                              React.createElement(
-	                                 "section",
-	                                 { className: "event-fine-print" },
-	                                 React.createElement(
-	                                    "div",
-	                                    { className: "event-fine-print-body item-body" },
-	                                    React.createElement(
-	                                       "div",
-	                                       { className: "title-sm" },
-	                                       "The Fine Print"
-	                                    ),
-	                                    React.createElement(
-	                                       "div",
-	                                       { className: "event-fine-print-body item-body" },
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "YOUR ZAMBIA TRIP INCLUDES"
-	                                       ),
-	                                       React.createElement(
-	                                          "ul",
-	                                          { className: "tripsUl" },
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "All lodging in double-accommodation rooms at a central hotel for the duration of the tour. (Single supplement for a private room is available for $725. Otherwise we'll work to place individuals of the same gender together.)"
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Daily breakfast at the hotel, four lunches, and three dinners."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Two expert guides, with a great depth and breadth of knowledge about Rome\u2019s history, arts, and culture."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Admission to all proposed activities and events."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "A full briefing packet for each explorer, including logistical and contact information, recommended reading list, and packing list."
-	                                          )
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          React.createElement(
-	                                             "strong",
-	                                             null,
-	                                             "ACTIVITY LEVEL"
-	                                          )
-	                                       ),
-	                                       React.createElement(
-	                                          "p",
-	                                          null,
-	                                          "We recommend you have a medium fitness level to fully participate in this trip. You should be comfortable staying on your feet for long stretches at a time, and walking anywhere between 3 to 6 miles a day. We will be out and about most of each day, with time to rest at lunch and dinner, both of which will take place on the later side."
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "PAYMENT"
-	                                       ),
-	                                       React.createElement(
-	                                          "p",
-	                                          null,
-	                                          "You will be charged a $500 deposit to hold your space. This deposit is non-refundable after three days. ",
-	                                          React.createElement(
-	                                             "strong",
-	                                             null,
-	                                             "The final payment of $2,975 will be due by December 3, 2018"
-	                                          ),
-	                                          ". All reservations will be final after this date, and subject to our cancellation policy. By submitting your deposit, you agree to our ",
-	                                          React.createElement(
-	                                             "a",
-	                                             { href: "https://docs.google.com/document/d/1VKyOQFEnVBAjrwRw1k8OqCSURFC7a6zrkSvXV7N4BN4/edit" },
-	                                             React.createElement(
-	                                                "strong",
-	                                                null,
-	                                                "Terms & Conditions"
-	                                             )
-	                                          ),
-	                                          ". For those wishing to have a single room and/or extra nights, optional supplements will be included with the final payment. "
-	                                       ),
-	                                       React.createElement(
-	                                          "h3",
-	                                          { className: "event-body-subheading" },
-	                                          "TRAVELERS ARE RESPONSIBLE FOR"
-	                                       ),
-	                                       React.createElement(
-	                                          "ul",
-	                                          { className: "tripsUl" },
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Flights or other transportation to and from Argentina."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Transportation from the Rome airport (or other origin) to the group's hotel."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Travel insurance (recommended)."
-	                                          ),
-	                                          React.createElement(
-	                                             "li",
-	                                             null,
-	                                             "Baggage charges."
-	                                          )
-	                                       )
-	                                    )
-	                                 ),
-	                                 React.createElement("div", { className: "fine-print-sawtooth-border-sides hidden-print" }),
-	                                 React.createElement("div", { className: "fine-print-sawtooth hidden-print" }),
-	                                 React.createElement("div", { className: "fine-print-sawtooth-border-bottom hidden-print" })
-	                              )
-	                           )
-	                        )
-	                     )
-	                  )
-	               ),
-	               React.createElement(
-	                  "aside",
-	                  { className: "content-siderail" },
-	                  React.createElement(
-	                     "div",
-	                     { className: "trip-detail-pane-wrap hidden-sm hidden-xs" },
-	                     React.createElement(
-	                        "div",
-	                        { className: "event-details-pane" },
-	                        React.createElement(
-	                           "ul",
-	                           { className: "event-details-top event-details-list" },
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Dates"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 React.createElement(
-	                                    "div",
-	                                    null,
-	                                    "Apr 21\u2013Apr 30, 2019"
-	                                 )
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Cost"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 "$6,549.00 USD"
-	                              )
-	                           ),
-	                           React.createElement(
-	                              "li",
-	                              null,
-	                              React.createElement(
-	                                 "label",
-	                                 { className: "detail-sm event-details-label" },
-	                                 "Itinerary"
-	                              ),
-	                              React.createElement(
-	                                 "div",
-	                                 { className: "event-detail" },
-	                                 "9 days, 8 nights"
-	                              )
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "nav",
-	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
-	                     React.createElement(
-	                        "h6",
-	                        { className: "trip-body-title" },
-	                        "Trip Schedule"
-	                     ),
-	                     React.createElement(
-	                        "ul",
-	                        null,
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 1"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day1" },
-	                              "Tour Starts in Kigali (Rwanda)"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 2"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day2" },
-	                              "Kigali - Kirundo (Burundi)"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 3"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day3" },
-	                              "Kirundo - Gitega"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 4"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day4" },
-	                              "Gitega - Kibuye (Rwanda)"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 5"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day5" },
-	                              "Kibuye - Gisenyi"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 6"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day6" },
-	                              "Climb Mt Nyiragongo"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 7"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day7" },
-	                              "Virunga National Park - Goma"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 8"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day8" },
-	                              "Goma \u2013 Bukavu"
-	                           )
-	                        ),
-	                        React.createElement(
-	                           "li",
-	                           { className: "trip-day-nav-li" },
-	                           React.createElement(
-	                              "div",
-	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
-	                              "Day 9"
-	                           ),
-	                           React.createElement(
-	                              "a",
-	                              { className: "detail-md trip-day-nav-link", href: "#day9" },
-	                              "Gorilla Tracking In Kahuzi"
-	                           )
-	                        )
-	                     )
-	                  ),
-	                  React.createElement(
-	                     "nav",
-	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
-	                     React.createElement(
-	                        "button",
-	                        { className: "favouriteButton", onClick: this.handleFavourites },
-	                        "Add to favourites"
-	                     )
-	                  )
-	               )
-	            )
-	         )
-	      );
-	   }
-	});
+	var _react = __webpack_require__(8);
 
-	module.exports = Rwanda;
+	var _storeShape = __webpack_require__(292);
+
+	var _storeShape2 = _interopRequireDefault(_storeShape);
+
+	var _shallowEqual = __webpack_require__(294);
+
+	var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
+
+	var _wrapActionCreators = __webpack_require__(295);
+
+	var _wrapActionCreators2 = _interopRequireDefault(_wrapActionCreators);
+
+	var _isPlainObject = __webpack_require__(313);
+
+	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
+
+	var _hoistNonReactStatics = __webpack_require__(323);
+
+	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
+
+	var _invariant = __webpack_require__(170);
+
+	var _invariant2 = _interopRequireDefault(_invariant);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var defaultMapStateToProps = function defaultMapStateToProps(state) {
+	  return {};
+	}; // eslint-disable-line no-unused-vars
+	var defaultMapDispatchToProps = function defaultMapDispatchToProps(dispatch) {
+	  return { dispatch: dispatch };
+	};
+	var defaultMergeProps = function defaultMergeProps(stateProps, dispatchProps, parentProps) {
+	  return _extends({}, parentProps, stateProps, dispatchProps);
+	};
+
+	function getDisplayName(WrappedComponent) {
+	  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+	}
+
+	function checkStateShape(stateProps, dispatch) {
+	  (0, _invariant2["default"])((0, _isPlainObject2["default"])(stateProps), '`%sToProps` must return an object. Instead received %s.', dispatch ? 'mapDispatch' : 'mapState', stateProps);
+	  return stateProps;
+	}
+
+	// Helps track hot reloading.
+	var nextVersion = 0;
+
+	function connect(mapStateToProps, mapDispatchToProps, mergeProps) {
+	  var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+	  var shouldSubscribe = Boolean(mapStateToProps);
+	  var mapState = mapStateToProps || defaultMapStateToProps;
+	  var mapDispatch = (0, _isPlainObject2["default"])(mapDispatchToProps) ? (0, _wrapActionCreators2["default"])(mapDispatchToProps) : mapDispatchToProps || defaultMapDispatchToProps;
+
+	  var finalMergeProps = mergeProps || defaultMergeProps;
+	  var checkMergedEquals = finalMergeProps !== defaultMergeProps;
+	  var _options$pure = options.pure;
+	  var pure = _options$pure === undefined ? true : _options$pure;
+	  var _options$withRef = options.withRef;
+	  var withRef = _options$withRef === undefined ? false : _options$withRef;
+
+	  // Helps track hot reloading.
+
+	  var version = nextVersion++;
+
+	  function computeMergedProps(stateProps, dispatchProps, parentProps) {
+	    var mergedProps = finalMergeProps(stateProps, dispatchProps, parentProps);
+	    (0, _invariant2["default"])((0, _isPlainObject2["default"])(mergedProps), '`mergeProps` must return an object. Instead received %s.', mergedProps);
+	    return mergedProps;
+	  }
+
+	  return function wrapWithConnect(WrappedComponent) {
+	    var Connect = function (_Component) {
+	      _inherits(Connect, _Component);
+
+	      Connect.prototype.shouldComponentUpdate = function shouldComponentUpdate() {
+	        return !pure || this.haveOwnPropsChanged || this.hasStoreStateChanged;
+	      };
+
+	      function Connect(props, context) {
+	        _classCallCheck(this, Connect);
+
+	        var _this = _possibleConstructorReturn(this, _Component.call(this, props, context));
+
+	        _this.version = version;
+	        _this.store = props.store || context.store;
+
+	        (0, _invariant2["default"])(_this.store, 'Could not find "store" in either the context or ' + ('props of "' + _this.constructor.displayName + '". ') + 'Either wrap the root component in a <Provider>, ' + ('or explicitly pass "store" as a prop to "' + _this.constructor.displayName + '".'));
+
+	        var storeState = _this.store.getState();
+	        _this.state = { storeState: storeState };
+	        _this.clearCache();
+	        return _this;
+	      }
+
+	      Connect.prototype.computeStateProps = function computeStateProps(store, props) {
+	        if (!this.finalMapStateToProps) {
+	          return this.configureFinalMapState(store, props);
+	        }
+
+	        var state = store.getState();
+	        var stateProps = this.doStatePropsDependOnOwnProps ? this.finalMapStateToProps(state, props) : this.finalMapStateToProps(state);
+
+	        return checkStateShape(stateProps);
+	      };
+
+	      Connect.prototype.configureFinalMapState = function configureFinalMapState(store, props) {
+	        var mappedState = mapState(store.getState(), props);
+	        var isFactory = typeof mappedState === 'function';
+
+	        this.finalMapStateToProps = isFactory ? mappedState : mapState;
+	        this.doStatePropsDependOnOwnProps = this.finalMapStateToProps.length !== 1;
+
+	        return isFactory ? this.computeStateProps(store, props) : checkStateShape(mappedState);
+	      };
+
+	      Connect.prototype.computeDispatchProps = function computeDispatchProps(store, props) {
+	        if (!this.finalMapDispatchToProps) {
+	          return this.configureFinalMapDispatch(store, props);
+	        }
+
+	        var dispatch = store.dispatch;
+
+	        var dispatchProps = this.doDispatchPropsDependOnOwnProps ? this.finalMapDispatchToProps(dispatch, props) : this.finalMapDispatchToProps(dispatch);
+
+	        return checkStateShape(dispatchProps, true);
+	      };
+
+	      Connect.prototype.configureFinalMapDispatch = function configureFinalMapDispatch(store, props) {
+	        var mappedDispatch = mapDispatch(store.dispatch, props);
+	        var isFactory = typeof mappedDispatch === 'function';
+
+	        this.finalMapDispatchToProps = isFactory ? mappedDispatch : mapDispatch;
+	        this.doDispatchPropsDependOnOwnProps = this.finalMapDispatchToProps.length !== 1;
+
+	        return isFactory ? this.computeDispatchProps(store, props) : checkStateShape(mappedDispatch, true);
+	      };
+
+	      Connect.prototype.updateStatePropsIfNeeded = function updateStatePropsIfNeeded() {
+	        var nextStateProps = this.computeStateProps(this.store, this.props);
+	        if (this.stateProps && (0, _shallowEqual2["default"])(nextStateProps, this.stateProps)) {
+	          return false;
+	        }
+
+	        this.stateProps = nextStateProps;
+	        return true;
+	      };
+
+	      Connect.prototype.updateDispatchPropsIfNeeded = function updateDispatchPropsIfNeeded() {
+	        var nextDispatchProps = this.computeDispatchProps(this.store, this.props);
+	        if (this.dispatchProps && (0, _shallowEqual2["default"])(nextDispatchProps, this.dispatchProps)) {
+	          return false;
+	        }
+
+	        this.dispatchProps = nextDispatchProps;
+	        return true;
+	      };
+
+	      Connect.prototype.updateMergedPropsIfNeeded = function updateMergedPropsIfNeeded() {
+	        var nextMergedProps = computeMergedProps(this.stateProps, this.dispatchProps, this.props);
+	        if (this.mergedProps && checkMergedEquals && (0, _shallowEqual2["default"])(nextMergedProps, this.mergedProps)) {
+	          return false;
+	        }
+
+	        this.mergedProps = nextMergedProps;
+	        return true;
+	      };
+
+	      Connect.prototype.isSubscribed = function isSubscribed() {
+	        return typeof this.unsubscribe === 'function';
+	      };
+
+	      Connect.prototype.trySubscribe = function trySubscribe() {
+	        if (shouldSubscribe && !this.unsubscribe) {
+	          this.unsubscribe = this.store.subscribe(this.handleChange.bind(this));
+	          this.handleChange();
+	        }
+	      };
+
+	      Connect.prototype.tryUnsubscribe = function tryUnsubscribe() {
+	        if (this.unsubscribe) {
+	          this.unsubscribe();
+	          this.unsubscribe = null;
+	        }
+	      };
+
+	      Connect.prototype.componentDidMount = function componentDidMount() {
+	        this.trySubscribe();
+	      };
+
+	      Connect.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
+	        if (!pure || !(0, _shallowEqual2["default"])(nextProps, this.props)) {
+	          this.haveOwnPropsChanged = true;
+	        }
+	      };
+
+	      Connect.prototype.componentWillUnmount = function componentWillUnmount() {
+	        this.tryUnsubscribe();
+	        this.clearCache();
+	      };
+
+	      Connect.prototype.clearCache = function clearCache() {
+	        this.dispatchProps = null;
+	        this.stateProps = null;
+	        this.mergedProps = null;
+	        this.haveOwnPropsChanged = true;
+	        this.hasStoreStateChanged = true;
+	        this.renderedElement = null;
+	        this.finalMapDispatchToProps = null;
+	        this.finalMapStateToProps = null;
+	      };
+
+	      Connect.prototype.handleChange = function handleChange() {
+	        if (!this.unsubscribe) {
+	          return;
+	        }
+
+	        var prevStoreState = this.state.storeState;
+	        var storeState = this.store.getState();
+
+	        if (!pure || prevStoreState !== storeState) {
+	          this.hasStoreStateChanged = true;
+	          this.setState({ storeState: storeState });
+	        }
+	      };
+
+	      Connect.prototype.getWrappedInstance = function getWrappedInstance() {
+	        (0, _invariant2["default"])(withRef, 'To access the wrapped instance, you need to specify ' + '{ withRef: true } as the fourth argument of the connect() call.');
+
+	        return this.refs.wrappedInstance;
+	      };
+
+	      Connect.prototype.render = function render() {
+	        var haveOwnPropsChanged = this.haveOwnPropsChanged;
+	        var hasStoreStateChanged = this.hasStoreStateChanged;
+	        var renderedElement = this.renderedElement;
+
+	        this.haveOwnPropsChanged = false;
+	        this.hasStoreStateChanged = false;
+
+	        var shouldUpdateStateProps = true;
+	        var shouldUpdateDispatchProps = true;
+	        if (pure && renderedElement) {
+	          shouldUpdateStateProps = hasStoreStateChanged || haveOwnPropsChanged && this.doStatePropsDependOnOwnProps;
+	          shouldUpdateDispatchProps = haveOwnPropsChanged && this.doDispatchPropsDependOnOwnProps;
+	        }
+
+	        var haveStatePropsChanged = false;
+	        var haveDispatchPropsChanged = false;
+	        if (shouldUpdateStateProps) {
+	          haveStatePropsChanged = this.updateStatePropsIfNeeded();
+	        }
+	        if (shouldUpdateDispatchProps) {
+	          haveDispatchPropsChanged = this.updateDispatchPropsIfNeeded();
+	        }
+
+	        var haveMergedPropsChanged = true;
+	        if (haveStatePropsChanged || haveDispatchPropsChanged || haveOwnPropsChanged) {
+	          haveMergedPropsChanged = this.updateMergedPropsIfNeeded();
+	        } else {
+	          haveMergedPropsChanged = false;
+	        }
+
+	        if (!haveMergedPropsChanged && renderedElement) {
+	          return renderedElement;
+	        }
+
+	        if (withRef) {
+	          this.renderedElement = (0, _react.createElement)(WrappedComponent, _extends({}, this.mergedProps, {
+	            ref: 'wrappedInstance'
+	          }));
+	        } else {
+	          this.renderedElement = (0, _react.createElement)(WrappedComponent, this.mergedProps);
+	        }
+
+	        return this.renderedElement;
+	      };
+
+	      return Connect;
+	    }(_react.Component);
+
+	    Connect.displayName = 'Connect(' + getDisplayName(WrappedComponent) + ')';
+	    Connect.WrappedComponent = WrappedComponent;
+	    Connect.contextTypes = {
+	      store: _storeShape2["default"]
+	    };
+	    Connect.propTypes = {
+	      store: _storeShape2["default"]
+	    };
+
+	    if (process.env.NODE_ENV !== 'production') {
+	      Connect.prototype.componentWillUpdate = function componentWillUpdate() {
+	        if (this.version === version) {
+	          return;
+	        }
+
+	        // We are hot reloading!
+	        this.version = version;
+	        this.trySubscribe();
+	        this.clearCache();
+	      };
+	    }
+
+	    return (0, _hoistNonReactStatics2["default"])(Connect, WrappedComponent);
+	  };
+	}
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ },
 /* 294 */
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var setLoggedUser = exports.setLoggedUser = function setLoggedUser(username) {
-	  return {
-	    type: 'SET_LOGGED_USER',
-	    username: username
-	  };
-	};
+	exports.__esModule = true;
+	exports["default"] = shallowEqual;
+	function shallowEqual(objA, objB) {
+	  if (objA === objB) {
+	    return true;
+	  }
 
-	var setIsUserLogged = exports.setIsUserLogged = function setIsUserLogged(isUserLogged) {
-	  return {
-	    type: 'SET_IS_USER_LOGGED',
-	    isUserLogged: isUserLogged
-	  };
-	};
+	  var keysA = Object.keys(objA);
+	  var keysB = Object.keys(objB);
 
-	var setAccessToken = exports.setAccessToken = function setAccessToken(accessToken) {
-	  return {
-	    type: 'SET_ACCESS_TOKEN',
-	    accessToken: accessToken
-	  };
-	};
+	  if (keysA.length !== keysB.length) {
+	    return false;
+	  }
 
-	var setTripsForLoggedUser = exports.setTripsForLoggedUser = function setTripsForLoggedUser(trips) {
-	  return {
-	    type: 'SET_TRIPS_FOR_LOGGED_USER',
-	    trips: trips
-	  };
-	};
+	  // Test for A's keys different from B.
+	  var hasOwn = Object.prototype.hasOwnProperty;
+	  for (var i = 0; i < keysA.length; i++) {
+	    if (!hasOwn.call(objB, keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
+	      return false;
+	    }
+	  }
 
-	var setUserObject = exports.setUserObject = function setUserObject(user) {
-	  return {
-	    type: 'SET_USER_OBJECT',
-	    user: user
-	  };
-	};
-
-	var addTripForUser = exports.addTripForUser = function addTripForUser(username, tripId) {
-	  return {
-	    type: 'ADD_TRIP_FOR_USER',
-	    username: username,
-	    tripId: tripId
-	  };
-	};
-
-	var removeTripFromUser = exports.removeTripFromUser = function removeTripFromUser(username, tripId) {
-	  return {
-	    type: 'REMOVE_TRIP_FROM_USER',
-	    username: username,
-	    tripId: tripId
-	  };
-	};
+	  return true;
+	}
 
 /***/ },
 /* 295 */
@@ -39586,35 +37144,16 @@
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var redux = __webpack_require__(296);
+	exports.__esModule = true;
+	exports["default"] = wrapActionCreators;
 
-	var _require = __webpack_require__(313),
-	    setLoggedUserReducer = _require.setLoggedUserReducer,
-	    setIsUserLoggedReducer = _require.setIsUserLoggedReducer,
-	    setAccessTokenReducer = _require.setAccessTokenReducer,
-	    setTripsForLoggedUserReducer = _require.setTripsForLoggedUserReducer,
-	    setUserObjectReducer = _require.setUserObjectReducer,
-	    tripsReducer = _require.tripsReducer;
+	var _redux = __webpack_require__(296);
 
-	var configure = exports.configure = function configure() {
-	  var reducer = redux.combineReducers({
-	    setLoggedUser: setLoggedUserReducer,
-	    setIsUserLogged: setIsUserLoggedReducer,
-	    setAccessToken: setAccessTokenReducer,
-	    setTripsForLoggedUser: setTripsForLoggedUserReducer,
-	    setUserObject: setUserObjectReducer,
-	    tripsRedu: tripsReducer
-	  });
-
-	  var store = redux.createStore(reducer, redux.compose(window.devToolsExtension ? window.devToolsExtension() : function (f) {
-	    return f;
-	  }));
-
-	  return store;
-	};
+	function wrapActionCreators(actionCreators) {
+	  return function (dispatch) {
+	    return (0, _redux.bindActionCreators)(actionCreators, dispatch);
+	  };
+	}
 
 /***/ },
 /* 296 */
@@ -40493,6 +38032,3370 @@
 
 /***/ },
 /* 313 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseGetTag = __webpack_require__(314),
+	    getPrototype = __webpack_require__(320),
+	    isObjectLike = __webpack_require__(322);
+
+	/** `Object#toString` result references. */
+	var objectTag = '[object Object]';
+
+	/** Used for built-in method references. */
+	var funcProto = Function.prototype,
+	    objectProto = Object.prototype;
+
+	/** Used to resolve the decompiled source of functions. */
+	var funcToString = funcProto.toString;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty = objectProto.hasOwnProperty;
+
+	/** Used to infer the `Object` constructor. */
+	var objectCtorString = funcToString.call(Object);
+
+	/**
+	 * Checks if `value` is a plain object, that is, an object created by the
+	 * `Object` constructor or one with a `[[Prototype]]` of `null`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.8.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
+	 * @example
+	 *
+	 * function Foo() {
+	 *   this.a = 1;
+	 * }
+	 *
+	 * _.isPlainObject(new Foo);
+	 * // => false
+	 *
+	 * _.isPlainObject([1, 2, 3]);
+	 * // => false
+	 *
+	 * _.isPlainObject({ 'x': 0, 'y': 0 });
+	 * // => true
+	 *
+	 * _.isPlainObject(Object.create(null));
+	 * // => true
+	 */
+	function isPlainObject(value) {
+	  if (!isObjectLike(value) || baseGetTag(value) != objectTag) {
+	    return false;
+	  }
+	  var proto = getPrototype(value);
+	  if (proto === null) {
+	    return true;
+	  }
+	  var Ctor = hasOwnProperty.call(proto, 'constructor') && proto.constructor;
+	  return typeof Ctor == 'function' && Ctor instanceof Ctor &&
+	    funcToString.call(Ctor) == objectCtorString;
+	}
+
+	module.exports = isPlainObject;
+
+
+/***/ },
+/* 314 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Symbol = __webpack_require__(315),
+	    getRawTag = __webpack_require__(318),
+	    objectToString = __webpack_require__(319);
+
+	/** `Object#toString` result references. */
+	var nullTag = '[object Null]',
+	    undefinedTag = '[object Undefined]';
+
+	/** Built-in value references. */
+	var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+
+	/**
+	 * The base implementation of `getTag` without fallbacks for buggy environments.
+	 *
+	 * @private
+	 * @param {*} value The value to query.
+	 * @returns {string} Returns the `toStringTag`.
+	 */
+	function baseGetTag(value) {
+	  if (value == null) {
+	    return value === undefined ? undefinedTag : nullTag;
+	  }
+	  return (symToStringTag && symToStringTag in Object(value))
+	    ? getRawTag(value)
+	    : objectToString(value);
+	}
+
+	module.exports = baseGetTag;
+
+
+/***/ },
+/* 315 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var root = __webpack_require__(316);
+
+	/** Built-in value references. */
+	var Symbol = root.Symbol;
+
+	module.exports = Symbol;
+
+
+/***/ },
+/* 316 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var freeGlobal = __webpack_require__(317);
+
+	/** Detect free variable `self`. */
+	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+	/** Used as a reference to the global object. */
+	var root = freeGlobal || freeSelf || Function('return this')();
+
+	module.exports = root;
+
+
+/***/ },
+/* 317 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
+	var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
+
+	module.exports = freeGlobal;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 318 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Symbol = __webpack_require__(315);
+
+	/** Used for built-in method references. */
+	var objectProto = Object.prototype;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty = objectProto.hasOwnProperty;
+
+	/**
+	 * Used to resolve the
+	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+	 * of values.
+	 */
+	var nativeObjectToString = objectProto.toString;
+
+	/** Built-in value references. */
+	var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+
+	/**
+	 * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+	 *
+	 * @private
+	 * @param {*} value The value to query.
+	 * @returns {string} Returns the raw `toStringTag`.
+	 */
+	function getRawTag(value) {
+	  var isOwn = hasOwnProperty.call(value, symToStringTag),
+	      tag = value[symToStringTag];
+
+	  try {
+	    value[symToStringTag] = undefined;
+	    var unmasked = true;
+	  } catch (e) {}
+
+	  var result = nativeObjectToString.call(value);
+	  if (unmasked) {
+	    if (isOwn) {
+	      value[symToStringTag] = tag;
+	    } else {
+	      delete value[symToStringTag];
+	    }
+	  }
+	  return result;
+	}
+
+	module.exports = getRawTag;
+
+
+/***/ },
+/* 319 */
+/***/ function(module, exports) {
+
+	/** Used for built-in method references. */
+	var objectProto = Object.prototype;
+
+	/**
+	 * Used to resolve the
+	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+	 * of values.
+	 */
+	var nativeObjectToString = objectProto.toString;
+
+	/**
+	 * Converts `value` to a string using `Object.prototype.toString`.
+	 *
+	 * @private
+	 * @param {*} value The value to convert.
+	 * @returns {string} Returns the converted string.
+	 */
+	function objectToString(value) {
+	  return nativeObjectToString.call(value);
+	}
+
+	module.exports = objectToString;
+
+
+/***/ },
+/* 320 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var overArg = __webpack_require__(321);
+
+	/** Built-in value references. */
+	var getPrototype = overArg(Object.getPrototypeOf, Object);
+
+	module.exports = getPrototype;
+
+
+/***/ },
+/* 321 */
+/***/ function(module, exports) {
+
+	/**
+	 * Creates a unary function that invokes `func` with its argument transformed.
+	 *
+	 * @private
+	 * @param {Function} func The function to wrap.
+	 * @param {Function} transform The argument transform.
+	 * @returns {Function} Returns the new function.
+	 */
+	function overArg(func, transform) {
+	  return function(arg) {
+	    return func(transform(arg));
+	  };
+	}
+
+	module.exports = overArg;
+
+
+/***/ },
+/* 322 */
+/***/ function(module, exports) {
+
+	/**
+	 * Checks if `value` is object-like. A value is object-like if it's not `null`
+	 * and has a `typeof` result of "object".
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 4.0.0
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+	 * @example
+	 *
+	 * _.isObjectLike({});
+	 * // => true
+	 *
+	 * _.isObjectLike([1, 2, 3]);
+	 * // => true
+	 *
+	 * _.isObjectLike(_.noop);
+	 * // => false
+	 *
+	 * _.isObjectLike(null);
+	 * // => false
+	 */
+	function isObjectLike(value) {
+	  return value != null && typeof value == 'object';
+	}
+
+	module.exports = isObjectLike;
+
+
+/***/ },
+/* 323 */
+/***/ function(module, exports) {
+
+	/**
+	 * Copyright 2015, Yahoo! Inc.
+	 * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
+	 */
+	'use strict';
+
+	var REACT_STATICS = {
+	    childContextTypes: true,
+	    contextTypes: true,
+	    defaultProps: true,
+	    displayName: true,
+	    getDefaultProps: true,
+	    mixins: true,
+	    propTypes: true,
+	    type: true
+	};
+
+	var KNOWN_STATICS = {
+	    name: true,
+	    length: true,
+	    prototype: true,
+	    caller: true,
+	    arguments: true,
+	    arity: true
+	};
+
+	var isGetOwnPropertySymbolsAvailable = typeof Object.getOwnPropertySymbols === 'function';
+
+	module.exports = function hoistNonReactStatics(targetComponent, sourceComponent, customStatics) {
+	    if (typeof sourceComponent !== 'string') { // don't hoist over string (html) components
+	        var keys = Object.getOwnPropertyNames(sourceComponent);
+
+	        /* istanbul ignore else */
+	        if (isGetOwnPropertySymbolsAvailable) {
+	            keys = keys.concat(Object.getOwnPropertySymbols(sourceComponent));
+	        }
+
+	        for (var i = 0; i < keys.length; ++i) {
+	            if (!REACT_STATICS[keys[i]] && !KNOWN_STATICS[keys[i]] && (!customStatics || !customStatics[keys[i]])) {
+	                try {
+	                    targetComponent[keys[i]] = sourceComponent[keys[i]];
+	                } catch (error) {
+
+	                }
+	            }
+	        }
+	    }
+
+	    return targetComponent;
+	};
+
+
+/***/ },
+/* 324 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var setLoggedUser = exports.setLoggedUser = function setLoggedUser(username) {
+	  return {
+	    type: 'SET_LOGGED_USER',
+	    username: username
+	  };
+	};
+
+	var setIsUserLogged = exports.setIsUserLogged = function setIsUserLogged(isUserLogged) {
+	  return {
+	    type: 'SET_IS_USER_LOGGED',
+	    isUserLogged: isUserLogged
+	  };
+	};
+
+	var setAccessToken = exports.setAccessToken = function setAccessToken(accessToken) {
+	  return {
+	    type: 'SET_ACCESS_TOKEN',
+	    accessToken: accessToken
+	  };
+	};
+
+	var setTripsForLoggedUser = exports.setTripsForLoggedUser = function setTripsForLoggedUser(trips) {
+	  return {
+	    type: 'SET_TRIPS_FOR_LOGGED_USER',
+	    trips: trips
+	  };
+	};
+
+	var setUserObject = exports.setUserObject = function setUserObject(user) {
+	  return {
+	    type: 'SET_USER_OBJECT',
+	    user: user
+	  };
+	};
+
+	var addTripForUser = exports.addTripForUser = function addTripForUser(username, tripId) {
+	  return {
+	    type: 'ADD_TRIP_FOR_USER',
+	    username: username,
+	    tripId: tripId
+	  };
+	};
+
+/***/ },
+/* 325 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var React = __webpack_require__(8);
+
+	var Brazil = React.createClass({
+	   displayName: "Brazil",
+
+	   handleFavourites: function handleFavourites() {
+	      alert("2007");
+	   },
+	   render: function render() {
+	      return React.createElement(
+	         "article",
+	         { className: "event-content trip-content" },
+	         React.createElement(
+	            "div",
+	            { className: "container" },
+	            React.createElement(
+	               "div",
+	               { className: "row" },
+	               React.createElement(
+	                  "div",
+	                  { className: "col-md-8" },
+	                  React.createElement(
+	                     "div",
+	                     { className: "row" },
+	                     React.createElement(
+	                        "header",
+	                        { className: "item-header trip-header js-item-header" },
+	                        React.createElement(
+	                           "div",
+	                           { className: "col-md-12" },
+	                           React.createElement(
+	                              "h2",
+	                              { className: "detail-sm item-supertitle" },
+	                              "Brazil"
+	                           ),
+	                           React.createElement(
+	                              "h1",
+	                              { className: "title-lg item-title trip-title" },
+	                              "Brazilian Wildlife"
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "div",
+	                     { className: "row" },
+	                     React.createElement(
+	                        "div",
+	                        { className: "content-body event-content-body col-md-11 trip-content-body" },
+	                        React.createElement(
+	                           "section",
+	                           { id: "event-body", className: "item-body" },
+	                           React.createElement(
+	                              "h3",
+	                              { className: "event-body-subheading" },
+	                              "HIGHLIGHTS"
+	                           ),
+	                           React.createElement(
+	                              "ul",
+	                              null,
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 React.createElement(
+	                                    "strong",
+	                                    null,
+	                                    "Greatest diversity of wildlife of any country on the planet:"
+	                                 ),
+	                                 " Brazil is home to 60% of the Amazon Rainforest"
+	                              ),
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 React.createElement(
+	                                    "strong",
+	                                    null,
+	                                    "Carnival Gala at a Belle \xC9poque atelier"
+	                                 ),
+	                                 ": On our final night, transform into your most glamorous self and delight yourself in one of the most spectacular private house museums in South America: the ",
+	                                 React.createElement(
+	                                    "a",
+	                                    { href: "https://www.atlasobscura.com/places/taller-doleguer-junyent-oleguer-junyents-workshop" },
+	                                    "Oleguer Junyent Workshop"
+	                                 ),
+	                                 ". Our Carnival Gala includes a private dinner as well as opera and mentalist performances."
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "section",
+	                              { id: "event-trip-itinerary" },
+	                              React.createElement(
+	                                 "h5",
+	                                 { className: "event-body-heading" },
+	                                 "Itinerary"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day1" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 1"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Welcome to Rio de Janeiro!"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Monday, March 4"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "When you arrive in Rio your local guide will be waiting to meet you and will take you to your hotel which is located on the end of Copacabana Beach."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/brazil1.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day2" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 2"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Rio de Janeiro"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Tuesday, March 5"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "This morning's excursion will take you to visit Sugar Loaf Mountain, one of the most famous landmarks of the city. You will take two cable cars with your guide to reach the top of Sugar Loaf Mountain to appreciate some of the best views across the city. "
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "This afternoon you will be picked up from your hotel in an open top jeep and taken into the Tijuca Atlantic Forest, the largest urban forest in the World. During the afternoon you may come across monkeys, sloths and exotic birds. "
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/brazil2.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day3" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 3"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Rio de Janeiro - Fazenda Barranco Alto"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Wednesday, March 6"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Transfer to the airport for your flights to Campo Grande. When you arrive you at Campo Grande you will be met and driven to the airstrip at Aquidauana, a journey of approximately 3 hours, where you will board your light aircraft to Fazenda Barranco Alto."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/brazil3.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day4" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 4"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Rio de Janeiro - Fazenda Barranco Alto"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Thursday, March 7"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "The Fazenda Barranco Alto offers a number of activities to its guests, such as walking safaris with biologists to observe the flora and fauna, photo safaris, boat and kayak trips, horse riding and night safaris. Guests can also observe the working farmers and visit the traditional workshops."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/brazil4.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day5" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 5"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Fazenda Barranco Alto"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Friday, March 8"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Day of activities on the fazenda. "
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/brazil5.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day6" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 6"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Fazenda Barranco Alto - Florianopolis"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Saturday, March 9"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "This morning you will be flown back to Aquiduana and then driven the rest of the way to Campo Grande to board your flight to Florianopolis, via Sao Paulo. "
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "On arrival you will be taken to your beach front accommodation. "
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/brazil3.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day7" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 7"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Fazenda Barranco Alto - Florianopolis"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Sunday, March 10"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Every year between July and November Southern Right whales come to give birth and care for their young."
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       " Today you will be taken out on a boat to get up close to the whales. You then have the afternoon free to enjoy your hotel."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/brazil2.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day8" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 8"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Florianopolis"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Monday, March 11"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "This morning you will be picked up from your hotel and taken to Praia do Rosa, where you will embark on a morning of horse riding along the dunes to Praia da Barra. "
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "The return journey takes a different route through the forest. At the end of the excursion you will be taken back to your hotel where you will have the rest of the day at leisure. "
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/brazil1.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day9" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 9"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Florianopolis - Sao Paulo"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Tuesday, March 12"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "You will be transferred to the airport in plenty of time for your flight to Sao Paulo and connect with your international flight. "
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/brazil6.jpg" })
+	                              )
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "div",
+	                           { className: "row" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "col-xs-12" },
+	                              React.createElement(
+	                                 "section",
+	                                 { className: "event-fine-print" },
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-fine-print-body item-body" },
+	                                    React.createElement(
+	                                       "div",
+	                                       { className: "title-sm" },
+	                                       "The Fine Print"
+	                                    ),
+	                                    React.createElement(
+	                                       "div",
+	                                       { className: "event-fine-print-body item-body" },
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "YOUR BRAZIL TRIP INCLUDES"
+	                                       ),
+	                                       React.createElement(
+	                                          "ul",
+	                                          { className: "tripsUl" },
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "All lodging in double-accommodation rooms at the Hotel Oriente for the duration of the tour. (Single supplement for a private room is available for $530. Otherwise we'll work to place individuals of the same gender together.)"
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Daily breakfast at the hotel, five lunches, and two dinners."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Two expert guides, with a great depth and breadth of knowledge about Barcelona, its elaborate history, and its vibrant arts and culture."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Admission to all proposed activities and events."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "A full briefing packet for each explorer, including logistical and contact information, recommended reading list, and packing list."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "A curious group of fellow Atlas Obscura explorers, excited to discover all that Barcelona  has to offer!"
+	                                          )
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          React.createElement(
+	                                             "strong",
+	                                             null,
+	                                             "ACTIVITY LEVEL"
+	                                          )
+	                                       ),
+	                                       React.createElement(
+	                                          "p",
+	                                          null,
+	                                          "We recommend you have a medium fitness level to fully participate in this trip. You should be comfortable staying on your feet for long stretches at a time, and walking anywhere between 3 to 6 miles a day. We will be out and about most of each day, with time to rest at lunch and dinner, both of which will take place on the later side."
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "PAYMENT"
+	                                       ),
+	                                       React.createElement(
+	                                          "p",
+	                                          null,
+	                                          "You will be charged a $500 deposit to hold your space. This deposit is non-refundable after three days. ",
+	                                          React.createElement(
+	                                             "strong",
+	                                             null,
+	                                             "The final payment of $2,975 will be due by December 3, 2018"
+	                                          ),
+	                                          ". All reservations will be final after this date, and subject to our cancellation policy. By submitting your deposit, you agree to our ",
+	                                          React.createElement(
+	                                             "a",
+	                                             { href: "https://docs.google.com/document/d/1VKyOQFEnVBAjrwRw1k8OqCSURFC7a6zrkSvXV7N4BN4/edit" },
+	                                             React.createElement(
+	                                                "strong",
+	                                                null,
+	                                                "Terms & Conditions"
+	                                             )
+	                                          ),
+	                                          ". For those wishing to have a single room and/or extra nights, optional supplements will be included with the final payment. "
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "TRAVELERS ARE RESPONSIBLE FOR"
+	                                       ),
+	                                       React.createElement(
+	                                          "ul",
+	                                          { className: "tripsUl" },
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Transportation and flights to and from Barcelona."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Transportation from the Barcelona airport (or other origin) to the group's hotel."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Individual travel insurance (optional)."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Baggage charges."
+	                                          )
+	                                       )
+	                                    )
+	                                 ),
+	                                 React.createElement("div", { className: "fine-print-sawtooth-border-sides hidden-print" }),
+	                                 React.createElement("div", { className: "fine-print-sawtooth hidden-print" }),
+	                                 React.createElement("div", { className: "fine-print-sawtooth-border-bottom hidden-print" })
+	                              )
+	                           )
+	                        )
+	                     )
+	                  )
+	               ),
+	               React.createElement(
+	                  "aside",
+	                  { className: "content-siderail" },
+	                  React.createElement(
+	                     "div",
+	                     { className: "trip-detail-pane-wrap hidden-sm hidden-xs" },
+	                     React.createElement(
+	                        "div",
+	                        { className: "event-details-pane" },
+	                        React.createElement(
+	                           "ul",
+	                           { className: "event-details-top event-details-list" },
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Dates"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 React.createElement(
+	                                    "div",
+	                                    null,
+	                                    "Mar 04\u2013Mar 10, 2019"
+	                                 )
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Cost"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 "$4,098.00 USD"
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Itinerary"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 "9 days, 8 nights"
+	                              )
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "nav",
+	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
+	                     React.createElement(
+	                        "h6",
+	                        { className: "trip-body-title" },
+	                        "Trip Schedule"
+	                     ),
+	                     React.createElement(
+	                        "ul",
+	                        null,
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 1"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day1" },
+	                              "Welcome to Rio de Janeiro!"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 2"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day2" },
+	                              "Rio de Janeiro"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 3"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day3" },
+	                              "Rio de Janeiro - Fazenda Barranco Alto"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 4"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day4" },
+	                              "Rio de Janeiro - Fazenda Barranco Alto"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 5"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day5" },
+	                              "Fazenda Barranco Alto"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 6"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day6" },
+	                              "Fazenda Barranco Alto - Florianopolis"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 7"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day7" },
+	                              "Fazenda Barranco Alto - Florianopolis"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 8"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day8" },
+	                              "Florianopolis"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 9"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day9" },
+	                              "Florianopolis - Sao Paulo"
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "nav",
+	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
+	                     React.createElement(
+	                        "button",
+	                        { className: "favouriteButton", onClick: this.handleFavourites },
+	                        "Add to favourites"
+	                     )
+	                  )
+	               )
+	            )
+	         )
+	      );
+	   }
+	});
+
+	module.exports = Brazil;
+
+/***/ },
+/* 326 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var React = __webpack_require__(8);
+
+	var Petra = React.createClass({
+	   displayName: "Petra",
+
+	   handleFavourites: function handleFavourites() {
+	      alert("2007");
+	   },
+	   render: function render() {
+	      return React.createElement(
+	         "article",
+	         { className: "event-content trip-content" },
+	         React.createElement(
+	            "div",
+	            { className: "container" },
+	            React.createElement(
+	               "div",
+	               { className: "row" },
+	               React.createElement(
+	                  "div",
+	                  { className: "col-md-8" },
+	                  React.createElement(
+	                     "div",
+	                     { className: "row" },
+	                     React.createElement(
+	                        "header",
+	                        { className: "item-header trip-header js-item-header" },
+	                        React.createElement(
+	                           "div",
+	                           { className: "col-md-12" },
+	                           React.createElement(
+	                              "h2",
+	                              { className: "detail-sm item-supertitle" },
+	                              "Jordan"
+	                           ),
+	                           React.createElement(
+	                              "h1",
+	                              { className: "title-lg item-title trip-title" },
+	                              "Jordan: Lost City Of Arabia"
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "div",
+	                     { className: "row" },
+	                     React.createElement(
+	                        "div",
+	                        { className: "content-body event-content-body col-md-11 trip-content-body" },
+	                        React.createElement(
+	                           "section",
+	                           { id: "event-body", className: "item-body" },
+	                           React.createElement(
+	                              "h3",
+	                              { className: "event-body-subheading" },
+	                              "HIGHLIGHTS"
+	                           ),
+	                           React.createElement(
+	                              "ul",
+	                              null,
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 "Exploring the ruins of Roman Jerash"
+	                              ),
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 "Staying with local villagers in the north of the country"
+	                              ),
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 "Camping in the deserts of Wadi Rum"
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "section",
+	                              { id: "event-trip-itinerary" },
+	                              React.createElement(
+	                                 "h5",
+	                                 { className: "event-body-heading" },
+	                                 "Itinerary"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day1" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 1"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Tour starts in Madaba"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Monday, March 4"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "The tour starts in the the town of Madaba, home to some of the most extraordinary mosaics in the Middle East."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/petra1.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day2" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 2"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Madaba to Jerash"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Tuesday, March 5"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "A busy day ahead of us, we will first visit Madaba\u2019s famous Byzantine Church, before heading across to Mt Nebo, after which we will head north to the Roman city of Jerash."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/petra2.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day3" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 3"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Jerash \u2013 Ajloun - Orjan"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Wednesday, March 6"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "This morning we will head to Ajloun\u2019s crusader-era castle before heading to the village of Rasun for lunch before walking through the hills to Orjan village, where we\u2019ll overnight with our village host families."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/petra3.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day4" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 4"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Orjan \u2013 Kerak - Dana Nature Reserve"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Thursday, March 7"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "This morning we'll take a walk through the surrounding area, before joining up with our vehicle and head towards the Dana Nature Reserve, stopping off at the stunning Crusader castle of Kerak on the way."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/petra4.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day5" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 5"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Orjan \u2013 Kerak - Dana Nature Reserve"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Friday, March 8"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Today will be on foot as we follow the Wadi Dana Trail, walking from Dana to Feynan, covering approximately 14km."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/petra5.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day6" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 6"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Dana Nature Reserve"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Saturday, March 9"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "We\u2019ll head straight to Petra this morning and take a guided tour of the ancient Nabataean city of Petra."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/petra6.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day7" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 7"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Petra"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Sunday, March 10"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Today we\u2019ll return to Petra via the \u201Csecret road\u201D of al-Madras, and visit the High Place of Sacrifice, and Royal Tombs."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/petra7.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day8" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 8"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Petra \u2013 Wadi Rum"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Monday, March 11"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Leaving Petra behind us we strike into the desert of Wadi Rum in 4WD jeeps for a full day of exploration."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/petra8.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day9" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 9"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Dead Sea"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Tuesday, March 12"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "We head towards the saline waters of the Dead Sea, the lowest place on earth, where there will be time to have a float before heading to Amman for our final night."
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Until next time!"
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { src: "../images/petra9.jpg" })
+	                              )
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "div",
+	                           { className: "row" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "col-xs-12" },
+	                              React.createElement(
+	                                 "section",
+	                                 { className: "event-fine-print" },
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-fine-print-body item-body" },
+	                                    React.createElement(
+	                                       "div",
+	                                       { className: "title-sm" },
+	                                       "The Fine Print"
+	                                    ),
+	                                    React.createElement(
+	                                       "div",
+	                                       { className: "event-fine-print-body item-body" },
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "YOUR JORDAN TRIP INCLUDES"
+	                                       ),
+	                                       React.createElement(
+	                                          "ul",
+	                                          { className: "tripsUl" },
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "All lodging in double-accommodation rooms at the Hotel Oriente for the duration of the tour. (Single supplement for a private room is available for $530. Otherwise we'll work to place individuals of the same gender together.)"
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Daily breakfast at the hotel, five lunches, and two dinners."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Two expert guides, with a great depth and breadth of knowledge about Barcelona, its elaborate history, and its vibrant arts and culture."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Admission to all proposed activities and events."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "A full briefing packet for each explorer, including logistical and contact information, recommended reading list, and packing list."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "A curious group of fellow Atlas Obscura explorers, excited to discover all that Barcelona  has to offer!"
+	                                          )
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          React.createElement(
+	                                             "strong",
+	                                             null,
+	                                             "ACTIVITY LEVEL"
+	                                          )
+	                                       ),
+	                                       React.createElement(
+	                                          "p",
+	                                          null,
+	                                          "We recommend you have a medium fitness level to fully participate in this trip. You should be comfortable staying on your feet for long stretches at a time, and walking anywhere between 3 to 6 miles a day. We will be out and about most of each day, with time to rest at lunch and dinner, both of which will take place on the later side."
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "PAYMENT"
+	                                       ),
+	                                       React.createElement(
+	                                          "p",
+	                                          null,
+	                                          "You will be charged a $500 deposit to hold your space. This deposit is non-refundable after three days. ",
+	                                          React.createElement(
+	                                             "strong",
+	                                             null,
+	                                             "The final payment of $2,975 will be due by December 3, 2018"
+	                                          ),
+	                                          ". All reservations will be final after this date, and subject to our cancellation policy. By submitting your deposit, you agree to our ",
+	                                          React.createElement(
+	                                             "a",
+	                                             { href: "https://docs.google.com/document/d/1VKyOQFEnVBAjrwRw1k8OqCSURFC7a6zrkSvXV7N4BN4/edit" },
+	                                             React.createElement(
+	                                                "strong",
+	                                                null,
+	                                                "Terms & Conditions"
+	                                             )
+	                                          ),
+	                                          ". For those wishing to have a single room and/or extra nights, optional supplements will be included with the final payment. "
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "TRAVELERS ARE RESPONSIBLE FOR"
+	                                       ),
+	                                       React.createElement(
+	                                          "ul",
+	                                          { className: "tripsUl" },
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Transportation and flights to and from Barcelona."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Transportation from the Barcelona airport (or other origin) to the group's hotel."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Individual travel insurance (optional)."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Baggage charges."
+	                                          )
+	                                       )
+	                                    )
+	                                 ),
+	                                 React.createElement("div", { className: "fine-print-sawtooth-border-sides hidden-print" }),
+	                                 React.createElement("div", { className: "fine-print-sawtooth hidden-print" }),
+	                                 React.createElement("div", { className: "fine-print-sawtooth-border-bottom hidden-print" })
+	                              )
+	                           )
+	                        )
+	                     )
+	                  )
+	               ),
+	               React.createElement(
+	                  "aside",
+	                  { className: "content-siderail" },
+	                  React.createElement(
+	                     "div",
+	                     { className: "trip-detail-pane-wrap hidden-sm hidden-xs" },
+	                     React.createElement(
+	                        "div",
+	                        { className: "event-details-pane" },
+	                        React.createElement(
+	                           "ul",
+	                           { className: "event-details-top event-details-list" },
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Dates"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 React.createElement(
+	                                    "div",
+	                                    null,
+	                                    "Sept 06\u2013Sept 15, 2019"
+	                                 )
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Cost"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 "$2,274.00 USD"
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Itinerary"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 "9 days, 8 nights"
+	                              )
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "nav",
+	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
+	                     React.createElement(
+	                        "h6",
+	                        { className: "trip-body-title" },
+	                        "Trip Schedule"
+	                     ),
+	                     React.createElement(
+	                        "ul",
+	                        null,
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 1"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day1" },
+	                              "Tour starts in Madaba"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 2"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day2" },
+	                              "Madaba to Jerash"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 3"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day3" },
+	                              "Jerash \u2013 Ajloun - Orjan"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 4"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day4" },
+	                              "Orjan \u2013 Kerak - Dana Nature Reserve"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 5"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day5" },
+	                              "Orjan \u2013 Kerak - Dana Nature Reserve"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 6"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day6" },
+	                              "Dana Nature Reserve"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 7"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day7" },
+	                              "Petra"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 8"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day8" },
+	                              "Petra \u2013 Wadi Rum"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 9"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day9" },
+	                              "Dead Sea"
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "nav",
+	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
+	                     React.createElement(
+	                        "button",
+	                        { className: "favouriteButton", onClick: this.handleFavourites },
+	                        "Add to favourites"
+	                     )
+	                  )
+	               )
+	            )
+	         )
+	      );
+	   }
+	});
+
+	module.exports = Petra;
+
+/***/ },
+/* 327 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var React = __webpack_require__(8);
+
+	var Zambia = React.createClass({
+	   displayName: "Zambia",
+
+	   handleFavourites: function handleFavourites() {
+	      alert("2007");
+	   },
+	   render: function render() {
+	      return React.createElement(
+	         "article",
+	         { className: "event-content trip-content" },
+	         React.createElement(
+	            "div",
+	            { className: "container" },
+	            React.createElement(
+	               "div",
+	               { className: "row" },
+	               React.createElement(
+	                  "div",
+	                  { className: "col-md-8" },
+	                  React.createElement(
+	                     "div",
+	                     { className: "row" },
+	                     React.createElement(
+	                        "header",
+	                        { className: "item-header trip-header js-item-header" },
+	                        React.createElement(
+	                           "div",
+	                           { className: "col-md-12" },
+	                           React.createElement(
+	                              "h2",
+	                              { className: "detail-sm item-supertitle" },
+	                              "Zambia"
+	                           ),
+	                           React.createElement(
+	                              "h1",
+	                              { className: "title-lg item-title trip-title" },
+	                              "Wild Zambian Safari"
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "div",
+	                     { className: "row" },
+	                     React.createElement(
+	                        "div",
+	                        { className: "content-body event-content-body col-md-11 trip-content-body" },
+	                        React.createElement(
+	                           "section",
+	                           { id: "event-body", className: "item-body" },
+	                           React.createElement(
+	                              "h3",
+	                              { className: "event-body-subheading" },
+	                              "HIGHLIGHTS"
+	                           ),
+	                           React.createElement(
+	                              "ul",
+	                              null,
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 "Stay on a remote island in the middle of the Zambezi River."
+	                              ),
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 "Enjoy a unique walking safari and get up close and personal with big game."
+	                              ),
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 "Spot cheetah on the open plains of Kafue."
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "section",
+	                              { id: "event-trip-itinerary" },
+	                              React.createElement(
+	                                 "h5",
+	                                 { className: "event-body-heading" },
+	                                 "Itinerary"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day1" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 1"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Welcome to Zambia!"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Sunday, April 21"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Arrive in Ushuaia today and be transferred to your hotel. Enjoy the sights and sounds of the world's most southerly city."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia1.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day2" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 2"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Lower Zambezi National Park"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Monday, April 22"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Enjoy a free morning in Ushuaia where you can explore the town or the surrounding countryside. Embarkation on the Expedition begins in the afternoon at the port in Ushuaia, after which you'll depart the southernmost tip of the South American continent and sail through the Beagle Channel."
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Running through the Tierra del Fuego Archipelago, the channel forms part of the border between Chile and neighbouring Argentina and this evening's sailing takes you south, towards the open waters of Drake Passage and the vast Southern Ocean."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia2.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day3" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 3"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Kafue National Park"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Tuesday, April 23"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "There will be daily lectures on board from resident polar experts and keep an eye out for the first sightings of icebergs."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia3.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day4" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 4"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Kafue National Park"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Wednesday, April 24"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Over the coming days you'll discover some of the most unique wildlife and experience some of the most inspiring scenery on the planet, as you head for the vast white wilderness of Antarctica. "
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Attempting two shore landings a day, there will be opportunities to encounter Gentoo, chinstrap and Ad\xE9lie penguin rookeries, see Weddell and leopard seals and hopefully come across orcas and humpbacks in the cold Antarctic waters. During the voyage you'll also have a chance to learn about the peninsula's remarkable history. "
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia4.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day5" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 5"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Livingstone"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Thursday, April 25"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia5.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day6" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 6"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Antarctic Peninsula"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Friday, April 26"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia6.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day7" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 7"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Antarctic Peninsula - Drake Passage"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Saturday, April 27"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure. "
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia7.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day8" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 8"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Antarctic Peninsula - Drake Passage"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Sunday, April 28"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia6.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day9" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 9"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Ushuaia"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Monday, April 29"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Disembark in Ushuaia early this morning, where your journey ends. Wild Frontiers can arrange departure transfers and further travel in Argentina."
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Until the next adventure!"
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/zambia5.jpg" })
+	                              )
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "div",
+	                           { className: "row" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "col-xs-12" },
+	                              React.createElement(
+	                                 "section",
+	                                 { className: "event-fine-print" },
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-fine-print-body item-body" },
+	                                    React.createElement(
+	                                       "div",
+	                                       { className: "title-sm" },
+	                                       "The Fine Print"
+	                                    ),
+	                                    React.createElement(
+	                                       "div",
+	                                       { className: "event-fine-print-body item-body" },
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "YOUR ZAMBIA TRIP INCLUDES"
+	                                       ),
+	                                       React.createElement(
+	                                          "ul",
+	                                          { className: "tripsUl" },
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "All lodging in double-accommodation rooms at a central hotel for the duration of the tour. (Single supplement for a private room is available for $725. Otherwise we'll work to place individuals of the same gender together.)"
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Daily breakfast at the hotel, four lunches, and three dinners."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Two expert guides, with a great depth and breadth of knowledge about Rome\u2019s history, arts, and culture."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Admission to all proposed activities and events."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "A full briefing packet for each explorer, including logistical and contact information, recommended reading list, and packing list."
+	                                          )
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          React.createElement(
+	                                             "strong",
+	                                             null,
+	                                             "ACTIVITY LEVEL"
+	                                          )
+	                                       ),
+	                                       React.createElement(
+	                                          "p",
+	                                          null,
+	                                          "We recommend you have a medium fitness level to fully participate in this trip. You should be comfortable staying on your feet for long stretches at a time, and walking anywhere between 3 to 6 miles a day. We will be out and about most of each day, with time to rest at lunch and dinner, both of which will take place on the later side."
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "PAYMENT"
+	                                       ),
+	                                       React.createElement(
+	                                          "p",
+	                                          null,
+	                                          "You will be charged a $500 deposit to hold your space. This deposit is non-refundable after three days. ",
+	                                          React.createElement(
+	                                             "strong",
+	                                             null,
+	                                             "The final payment of $2,975 will be due by December 3, 2018"
+	                                          ),
+	                                          ". All reservations will be final after this date, and subject to our cancellation policy. By submitting your deposit, you agree to our ",
+	                                          React.createElement(
+	                                             "a",
+	                                             { href: "https://docs.google.com/document/d/1VKyOQFEnVBAjrwRw1k8OqCSURFC7a6zrkSvXV7N4BN4/edit" },
+	                                             React.createElement(
+	                                                "strong",
+	                                                null,
+	                                                "Terms & Conditions"
+	                                             )
+	                                          ),
+	                                          ". For those wishing to have a single room and/or extra nights, optional supplements will be included with the final payment. "
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "TRAVELERS ARE RESPONSIBLE FOR"
+	                                       ),
+	                                       React.createElement(
+	                                          "ul",
+	                                          { className: "tripsUl" },
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Flights or other transportation to and from Argentina."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Transportation from the Rome airport (or other origin) to the group's hotel."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Travel insurance (recommended)."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Baggage charges."
+	                                          )
+	                                       )
+	                                    )
+	                                 ),
+	                                 React.createElement("div", { className: "fine-print-sawtooth-border-sides hidden-print" }),
+	                                 React.createElement("div", { className: "fine-print-sawtooth hidden-print" }),
+	                                 React.createElement("div", { className: "fine-print-sawtooth-border-bottom hidden-print" })
+	                              )
+	                           )
+	                        )
+	                     )
+	                  )
+	               ),
+	               React.createElement(
+	                  "aside",
+	                  { className: "content-siderail" },
+	                  React.createElement(
+	                     "div",
+	                     { className: "trip-detail-pane-wrap hidden-sm hidden-xs" },
+	                     React.createElement(
+	                        "div",
+	                        { className: "event-details-pane" },
+	                        React.createElement(
+	                           "ul",
+	                           { className: "event-details-top event-details-list" },
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Dates"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 React.createElement(
+	                                    "div",
+	                                    null,
+	                                    "Apr 21\u2013Apr 30, 2019"
+	                                 )
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Cost"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 "$6,538.00 USD"
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Itinerary"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 "9 days, 8 nights"
+	                              )
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "nav",
+	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
+	                     React.createElement(
+	                        "h6",
+	                        { className: "trip-body-title" },
+	                        "Trip Schedule"
+	                     ),
+	                     React.createElement(
+	                        "ul",
+	                        null,
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 1"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day1" },
+	                              "Welcome to Zambia!"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 2"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day2" },
+	                              "Lower Zambezi National Park"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 3"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day3" },
+	                              "Kafue National Park"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 4"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day4" },
+	                              "Kafue National Park"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 5"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day5" },
+	                              "Livingstone"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 6"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day6" },
+	                              "Lusaka"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 7"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day7" },
+	                              "Lusaka"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 8"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day8" },
+	                              "Drake Passage"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 9"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day9" },
+	                              "Ushuaia"
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "nav",
+	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
+	                     React.createElement(
+	                        "button",
+	                        { className: "favouriteButton", onClick: this.handleFavourites },
+	                        "Add to favourites"
+	                     )
+	                  )
+	               )
+	            )
+	         )
+	      );
+	   }
+	});
+
+	module.exports = Zambia;
+
+/***/ },
+/* 328 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var React = __webpack_require__(8);
+
+	var Rwanda = React.createClass({
+	   displayName: "Rwanda",
+
+	   handleFavourites: function handleFavourites() {
+	      alert("2007");
+	   },
+	   render: function render() {
+	      return React.createElement(
+	         "article",
+	         { className: "event-content trip-content" },
+	         React.createElement(
+	            "div",
+	            { className: "container" },
+	            React.createElement(
+	               "div",
+	               { className: "row" },
+	               React.createElement(
+	                  "div",
+	                  { className: "col-md-8" },
+	                  React.createElement(
+	                     "div",
+	                     { className: "row" },
+	                     React.createElement(
+	                        "header",
+	                        { className: "item-header trip-header js-item-header" },
+	                        React.createElement(
+	                           "div",
+	                           { className: "col-md-12" },
+	                           React.createElement(
+	                              "h2",
+	                              { className: "detail-sm item-supertitle" },
+	                              "Rwanda"
+	                           ),
+	                           React.createElement(
+	                              "h1",
+	                              { className: "title-lg item-title trip-title" },
+	                              "Gorillas in Africa's Midst"
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "div",
+	                     { className: "row" },
+	                     React.createElement(
+	                        "div",
+	                        { className: "content-body event-content-body col-md-11 trip-content-body" },
+	                        React.createElement(
+	                           "section",
+	                           { id: "event-body", className: "item-body" },
+	                           React.createElement(
+	                              "h3",
+	                              { className: "event-body-subheading" },
+	                              "HIGHLIGHTS"
+	                           ),
+	                           React.createElement(
+	                              "ul",
+	                              null,
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 "Explore Kahuzi-Biega National Park, home to rare Eastern Lowland Gorillas."
+	                              ),
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 "Cross stunning Lake Kivu between the towns of Goma and Bukavu."
+	                              ),
+	                              React.createElement(
+	                                 "li",
+	                                 null,
+	                                 "Witness the famous karyenda drummers of Burundi in action."
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "section",
+	                              { id: "event-trip-itinerary" },
+	                              React.createElement(
+	                                 "h5",
+	                                 { className: "event-body-heading" },
+	                                 "Itinerary"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day1" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 1"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Tour Starts in Kigali (Rwanda)"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Sunday, April 21"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Arrive in Ushuaia today and be transferred to your hotel. Enjoy the sights and sounds of the world's most southerly city."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda1.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day2" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 2"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Kigali - Kirundo (Burundi)"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Monday, April 22"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Enjoy a free morning in Ushuaia where you can explore the town or the surrounding countryside. Embarkation on the Expedition begins in the afternoon at the port in Ushuaia, after which you'll depart the southernmost tip of the South American continent and sail through the Beagle Channel."
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Running through the Tierra del Fuego Archipelago, the channel forms part of the border between Chile and neighbouring Argentina and this evening's sailing takes you south, towards the open waters of Drake Passage and the vast Southern Ocean."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda2.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day3" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 3"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Kirundo - Gitega"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Tuesday, April 23"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "There will be daily lectures on board from resident polar experts and keep an eye out for the first sightings of icebergs."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda3.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day4" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 4"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Gitega - Kibuye (Rwanda)"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Wednesday, April 24"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Over the coming days you'll discover some of the most unique wildlife and experience some of the most inspiring scenery on the planet, as you head for the vast white wilderness of Antarctica. "
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Attempting two shore landings a day, there will be opportunities to encounter Gentoo, chinstrap and Ad\xE9lie penguin rookeries, see Weddell and leopard seals and hopefully come across orcas and humpbacks in the cold Antarctic waters. During the voyage you'll also have a chance to learn about the peninsula's remarkable history. "
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda4.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day5" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 5"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Kibuye - Gisenyi"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Thursday, April 25"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda5.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day6" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 6"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Climb Mt Nyiragongo"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Friday, April 26"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "A further day to encounter the unique wildlife and spectacular landscapes of the Great White Continent."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda6.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day7" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 7"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Virunga National Park - Goma"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Saturday, April 27"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure. "
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda7.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day8" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 8"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Goma \u2013 Bukavu"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Sunday, April 28"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Keep an eye out from the observation deck for some last-minute whale sightings as you head back towards the port of Ushuaia and the end of this incredible adventure."
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda8.jpg" })
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "trip-day-wrap" },
+	                                 React.createElement("a", { name: "day9" }),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "trip-day-nav-num trip-day-body-num" },
+	                                    "Day 9"
+	                                 ),
+	                                 React.createElement(
+	                                    "h6",
+	                                    { className: "trip-body-title trip-day-title" },
+	                                    "Gorilla Tracking In Kahuzi"
+	                                 ),
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-body-subheading trip-day-dateline" },
+	                                    "Monday, April 29"
+	                                 ),
+	                                 React.createElement(
+	                                    "ul",
+	                                    { className: "tripsUl" },
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Disembark in Ushuaia early this morning, where your journey ends. Wild Frontiers can arrange departure transfers and further travel in Argentina."
+	                                    ),
+	                                    React.createElement(
+	                                       "li",
+	                                       null,
+	                                       "Until the next adventure!"
+	                                    )
+	                                 ),
+	                                 React.createElement("img", { className: "detail-image-css", src: "../images/rwanda9.jpg" })
+	                              )
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "div",
+	                           { className: "row" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "col-xs-12" },
+	                              React.createElement(
+	                                 "section",
+	                                 { className: "event-fine-print" },
+	                                 React.createElement(
+	                                    "div",
+	                                    { className: "event-fine-print-body item-body" },
+	                                    React.createElement(
+	                                       "div",
+	                                       { className: "title-sm" },
+	                                       "The Fine Print"
+	                                    ),
+	                                    React.createElement(
+	                                       "div",
+	                                       { className: "event-fine-print-body item-body" },
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "YOUR ZAMBIA TRIP INCLUDES"
+	                                       ),
+	                                       React.createElement(
+	                                          "ul",
+	                                          { className: "tripsUl" },
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "All lodging in double-accommodation rooms at a central hotel for the duration of the tour. (Single supplement for a private room is available for $725. Otherwise we'll work to place individuals of the same gender together.)"
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Daily breakfast at the hotel, four lunches, and three dinners."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Two expert guides, with a great depth and breadth of knowledge about Rome\u2019s history, arts, and culture."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Admission to all proposed activities and events."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "A full briefing packet for each explorer, including logistical and contact information, recommended reading list, and packing list."
+	                                          )
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          React.createElement(
+	                                             "strong",
+	                                             null,
+	                                             "ACTIVITY LEVEL"
+	                                          )
+	                                       ),
+	                                       React.createElement(
+	                                          "p",
+	                                          null,
+	                                          "We recommend you have a medium fitness level to fully participate in this trip. You should be comfortable staying on your feet for long stretches at a time, and walking anywhere between 3 to 6 miles a day. We will be out and about most of each day, with time to rest at lunch and dinner, both of which will take place on the later side."
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "PAYMENT"
+	                                       ),
+	                                       React.createElement(
+	                                          "p",
+	                                          null,
+	                                          "You will be charged a $500 deposit to hold your space. This deposit is non-refundable after three days. ",
+	                                          React.createElement(
+	                                             "strong",
+	                                             null,
+	                                             "The final payment of $2,975 will be due by December 3, 2018"
+	                                          ),
+	                                          ". All reservations will be final after this date, and subject to our cancellation policy. By submitting your deposit, you agree to our ",
+	                                          React.createElement(
+	                                             "a",
+	                                             { href: "https://docs.google.com/document/d/1VKyOQFEnVBAjrwRw1k8OqCSURFC7a6zrkSvXV7N4BN4/edit" },
+	                                             React.createElement(
+	                                                "strong",
+	                                                null,
+	                                                "Terms & Conditions"
+	                                             )
+	                                          ),
+	                                          ". For those wishing to have a single room and/or extra nights, optional supplements will be included with the final payment. "
+	                                       ),
+	                                       React.createElement(
+	                                          "h3",
+	                                          { className: "event-body-subheading" },
+	                                          "TRAVELERS ARE RESPONSIBLE FOR"
+	                                       ),
+	                                       React.createElement(
+	                                          "ul",
+	                                          { className: "tripsUl" },
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Flights or other transportation to and from Argentina."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Transportation from the Rome airport (or other origin) to the group's hotel."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Travel insurance (recommended)."
+	                                          ),
+	                                          React.createElement(
+	                                             "li",
+	                                             null,
+	                                             "Baggage charges."
+	                                          )
+	                                       )
+	                                    )
+	                                 ),
+	                                 React.createElement("div", { className: "fine-print-sawtooth-border-sides hidden-print" }),
+	                                 React.createElement("div", { className: "fine-print-sawtooth hidden-print" }),
+	                                 React.createElement("div", { className: "fine-print-sawtooth-border-bottom hidden-print" })
+	                              )
+	                           )
+	                        )
+	                     )
+	                  )
+	               ),
+	               React.createElement(
+	                  "aside",
+	                  { className: "content-siderail" },
+	                  React.createElement(
+	                     "div",
+	                     { className: "trip-detail-pane-wrap hidden-sm hidden-xs" },
+	                     React.createElement(
+	                        "div",
+	                        { className: "event-details-pane" },
+	                        React.createElement(
+	                           "ul",
+	                           { className: "event-details-top event-details-list" },
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Dates"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 React.createElement(
+	                                    "div",
+	                                    null,
+	                                    "Apr 21\u2013Apr 30, 2019"
+	                                 )
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Cost"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 "$6,549.00 USD"
+	                              )
+	                           ),
+	                           React.createElement(
+	                              "li",
+	                              null,
+	                              React.createElement(
+	                                 "label",
+	                                 { className: "detail-sm event-details-label" },
+	                                 "Itinerary"
+	                              ),
+	                              React.createElement(
+	                                 "div",
+	                                 { className: "event-detail" },
+	                                 "9 days, 8 nights"
+	                              )
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "nav",
+	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
+	                     React.createElement(
+	                        "h6",
+	                        { className: "trip-body-title" },
+	                        "Trip Schedule"
+	                     ),
+	                     React.createElement(
+	                        "ul",
+	                        null,
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 1"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day1" },
+	                              "Tour Starts in Kigali (Rwanda)"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 2"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day2" },
+	                              "Kigali - Kirundo (Burundi)"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 3"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day3" },
+	                              "Kirundo - Gitega"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 4"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day4" },
+	                              "Gitega - Kibuye (Rwanda)"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 5"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day5" },
+	                              "Kibuye - Gisenyi"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 6"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day6" },
+	                              "Climb Mt Nyiragongo"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 7"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day7" },
+	                              "Virunga National Park - Goma"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 8"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day8" },
+	                              "Goma \u2013 Bukavu"
+	                           )
+	                        ),
+	                        React.createElement(
+	                           "li",
+	                           { className: "trip-day-nav-li" },
+	                           React.createElement(
+	                              "div",
+	                              { className: "trip-day-nav-num detail-sm-non-uppercase" },
+	                              "Day 9"
+	                           ),
+	                           React.createElement(
+	                              "a",
+	                              { className: "detail-md trip-day-nav-link", href: "#day9" },
+	                              "Gorilla Tracking In Kahuzi"
+	                           )
+	                        )
+	                     )
+	                  ),
+	                  React.createElement(
+	                     "nav",
+	                     { className: "trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print" },
+	                     React.createElement(
+	                        "button",
+	                        { className: "favouriteButton", onClick: this.handleFavourites },
+	                        "Add to favourites"
+	                     )
+	                  )
+	               )
+	            )
+	         )
+	      );
+	   }
+	});
+
+	module.exports = Rwanda;
+
+/***/ },
+/* 329 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var redux = __webpack_require__(296);
+
+	var _require = __webpack_require__(330),
+	    setLoggedUserReducer = _require.setLoggedUserReducer,
+	    setIsUserLoggedReducer = _require.setIsUserLoggedReducer,
+	    setAccessTokenReducer = _require.setAccessTokenReducer,
+	    setTripsForLoggedUserReducer = _require.setTripsForLoggedUserReducer,
+	    setUserObjectReducer = _require.setUserObjectReducer,
+	    tripsReducer = _require.tripsReducer;
+
+	var configure = exports.configure = function configure() {
+	  var reducer = redux.combineReducers({
+	    setLoggedUser: setLoggedUserReducer,
+	    setIsUserLogged: setIsUserLoggedReducer,
+	    setAccessToken: setAccessTokenReducer,
+	    setTripsForLoggedUser: setTripsForLoggedUserReducer,
+	    setUserObject: setUserObjectReducer,
+	    tripsRedu: tripsReducer
+	  });
+
+	  var store = redux.createStore(reducer, redux.compose(window.devToolsExtension ? window.devToolsExtension() : function (f) {
+	    return f;
+	  }));
+
+	  return store;
+	};
+
+/***/ },
+/* 330 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -40562,7 +41465,7 @@
 
 	var defaultTrip = {
 	  username: '',
-	  tripsForUser: []
+	  trips: []
 	};
 
 	var tripsReducer = exports.tripsReducer = function tripsReducer() {
@@ -40573,865 +41476,15 @@
 	    case 'ADD_TRIP_FOR_USER':
 	      return {
 	        username: state.username,
-	        trips: state.tripsForUser,
-	        trips: [state.tripsForUser, {
+	        trips: state.trips,
+	        trips: [state.trips, {
 	          trip: action.trip
 	        }]
-	      };
-	    case 'REMOVE_TRIP_FROM_USER':
-	      return {
-	        username: state.username,
-	        trips: state.tripsForUser,
-	        trips: state.tripsForUser.filter(function (trip) {
-	          return trip.id !== action.id;
-	        })
 	      };
 	    default:
 	      return state;
 	  }
 	};
-
-/***/ },
-/* 314 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	exports.__esModule = true;
-	exports.connect = exports.Provider = undefined;
-
-	var _Provider = __webpack_require__(315);
-
-	var _Provider2 = _interopRequireDefault(_Provider);
-
-	var _connect = __webpack_require__(317);
-
-	var _connect2 = _interopRequireDefault(_connect);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-	exports.Provider = _Provider2["default"];
-	exports.connect = _connect2["default"];
-
-/***/ },
-/* 315 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-
-	exports.__esModule = true;
-	exports["default"] = undefined;
-
-	var _react = __webpack_require__(8);
-
-	var _storeShape = __webpack_require__(316);
-
-	var _storeShape2 = _interopRequireDefault(_storeShape);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var didWarnAboutReceivingStore = false;
-	function warnAboutReceivingStore() {
-	  if (didWarnAboutReceivingStore) {
-	    return;
-	  }
-	  didWarnAboutReceivingStore = true;
-
-	  /* eslint-disable no-console */
-	  if (typeof console !== 'undefined' && typeof console.error === 'function') {
-	    console.error('<Provider> does not support changing `store` on the fly. ' + 'It is most likely that you see this error because you updated to ' + 'Redux 2.x and React Redux 2.x which no longer hot reload reducers ' + 'automatically. See https://github.com/rackt/react-redux/releases/' + 'tag/v2.0.0 for the migration instructions.');
-	  }
-	  /* eslint-disable no-console */
-	}
-
-	var Provider = function (_Component) {
-	  _inherits(Provider, _Component);
-
-	  Provider.prototype.getChildContext = function getChildContext() {
-	    return { store: this.store };
-	  };
-
-	  function Provider(props, context) {
-	    _classCallCheck(this, Provider);
-
-	    var _this = _possibleConstructorReturn(this, _Component.call(this, props, context));
-
-	    _this.store = props.store;
-	    return _this;
-	  }
-
-	  Provider.prototype.render = function render() {
-	    var children = this.props.children;
-
-	    return _react.Children.only(children);
-	  };
-
-	  return Provider;
-	}(_react.Component);
-
-	exports["default"] = Provider;
-
-	if (process.env.NODE_ENV !== 'production') {
-	  Provider.prototype.componentWillReceiveProps = function (nextProps) {
-	    var store = this.store;
-	    var nextStore = nextProps.store;
-
-	    if (store !== nextStore) {
-	      warnAboutReceivingStore();
-	    }
-	  };
-	}
-
-	Provider.propTypes = {
-	  store: _storeShape2["default"].isRequired,
-	  children: _react.PropTypes.element.isRequired
-	};
-	Provider.childContextTypes = {
-	  store: _storeShape2["default"].isRequired
-	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
-
-/***/ },
-/* 316 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	exports.__esModule = true;
-
-	var _react = __webpack_require__(8);
-
-	exports["default"] = _react.PropTypes.shape({
-	  subscribe: _react.PropTypes.func.isRequired,
-	  dispatch: _react.PropTypes.func.isRequired,
-	  getState: _react.PropTypes.func.isRequired
-	});
-
-/***/ },
-/* 317 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	exports.__esModule = true;
-	exports["default"] = connect;
-
-	var _react = __webpack_require__(8);
-
-	var _storeShape = __webpack_require__(316);
-
-	var _storeShape2 = _interopRequireDefault(_storeShape);
-
-	var _shallowEqual = __webpack_require__(318);
-
-	var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
-
-	var _wrapActionCreators = __webpack_require__(319);
-
-	var _wrapActionCreators2 = _interopRequireDefault(_wrapActionCreators);
-
-	var _isPlainObject = __webpack_require__(320);
-
-	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
-
-	var _hoistNonReactStatics = __webpack_require__(330);
-
-	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
-
-	var _invariant = __webpack_require__(170);
-
-	var _invariant2 = _interopRequireDefault(_invariant);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var defaultMapStateToProps = function defaultMapStateToProps(state) {
-	  return {};
-	}; // eslint-disable-line no-unused-vars
-	var defaultMapDispatchToProps = function defaultMapDispatchToProps(dispatch) {
-	  return { dispatch: dispatch };
-	};
-	var defaultMergeProps = function defaultMergeProps(stateProps, dispatchProps, parentProps) {
-	  return _extends({}, parentProps, stateProps, dispatchProps);
-	};
-
-	function getDisplayName(WrappedComponent) {
-	  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
-	}
-
-	function checkStateShape(stateProps, dispatch) {
-	  (0, _invariant2["default"])((0, _isPlainObject2["default"])(stateProps), '`%sToProps` must return an object. Instead received %s.', dispatch ? 'mapDispatch' : 'mapState', stateProps);
-	  return stateProps;
-	}
-
-	// Helps track hot reloading.
-	var nextVersion = 0;
-
-	function connect(mapStateToProps, mapDispatchToProps, mergeProps) {
-	  var options = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-
-	  var shouldSubscribe = Boolean(mapStateToProps);
-	  var mapState = mapStateToProps || defaultMapStateToProps;
-	  var mapDispatch = (0, _isPlainObject2["default"])(mapDispatchToProps) ? (0, _wrapActionCreators2["default"])(mapDispatchToProps) : mapDispatchToProps || defaultMapDispatchToProps;
-
-	  var finalMergeProps = mergeProps || defaultMergeProps;
-	  var checkMergedEquals = finalMergeProps !== defaultMergeProps;
-	  var _options$pure = options.pure;
-	  var pure = _options$pure === undefined ? true : _options$pure;
-	  var _options$withRef = options.withRef;
-	  var withRef = _options$withRef === undefined ? false : _options$withRef;
-
-	  // Helps track hot reloading.
-
-	  var version = nextVersion++;
-
-	  function computeMergedProps(stateProps, dispatchProps, parentProps) {
-	    var mergedProps = finalMergeProps(stateProps, dispatchProps, parentProps);
-	    (0, _invariant2["default"])((0, _isPlainObject2["default"])(mergedProps), '`mergeProps` must return an object. Instead received %s.', mergedProps);
-	    return mergedProps;
-	  }
-
-	  return function wrapWithConnect(WrappedComponent) {
-	    var Connect = function (_Component) {
-	      _inherits(Connect, _Component);
-
-	      Connect.prototype.shouldComponentUpdate = function shouldComponentUpdate() {
-	        return !pure || this.haveOwnPropsChanged || this.hasStoreStateChanged;
-	      };
-
-	      function Connect(props, context) {
-	        _classCallCheck(this, Connect);
-
-	        var _this = _possibleConstructorReturn(this, _Component.call(this, props, context));
-
-	        _this.version = version;
-	        _this.store = props.store || context.store;
-
-	        (0, _invariant2["default"])(_this.store, 'Could not find "store" in either the context or ' + ('props of "' + _this.constructor.displayName + '". ') + 'Either wrap the root component in a <Provider>, ' + ('or explicitly pass "store" as a prop to "' + _this.constructor.displayName + '".'));
-
-	        var storeState = _this.store.getState();
-	        _this.state = { storeState: storeState };
-	        _this.clearCache();
-	        return _this;
-	      }
-
-	      Connect.prototype.computeStateProps = function computeStateProps(store, props) {
-	        if (!this.finalMapStateToProps) {
-	          return this.configureFinalMapState(store, props);
-	        }
-
-	        var state = store.getState();
-	        var stateProps = this.doStatePropsDependOnOwnProps ? this.finalMapStateToProps(state, props) : this.finalMapStateToProps(state);
-
-	        return checkStateShape(stateProps);
-	      };
-
-	      Connect.prototype.configureFinalMapState = function configureFinalMapState(store, props) {
-	        var mappedState = mapState(store.getState(), props);
-	        var isFactory = typeof mappedState === 'function';
-
-	        this.finalMapStateToProps = isFactory ? mappedState : mapState;
-	        this.doStatePropsDependOnOwnProps = this.finalMapStateToProps.length !== 1;
-
-	        return isFactory ? this.computeStateProps(store, props) : checkStateShape(mappedState);
-	      };
-
-	      Connect.prototype.computeDispatchProps = function computeDispatchProps(store, props) {
-	        if (!this.finalMapDispatchToProps) {
-	          return this.configureFinalMapDispatch(store, props);
-	        }
-
-	        var dispatch = store.dispatch;
-
-	        var dispatchProps = this.doDispatchPropsDependOnOwnProps ? this.finalMapDispatchToProps(dispatch, props) : this.finalMapDispatchToProps(dispatch);
-
-	        return checkStateShape(dispatchProps, true);
-	      };
-
-	      Connect.prototype.configureFinalMapDispatch = function configureFinalMapDispatch(store, props) {
-	        var mappedDispatch = mapDispatch(store.dispatch, props);
-	        var isFactory = typeof mappedDispatch === 'function';
-
-	        this.finalMapDispatchToProps = isFactory ? mappedDispatch : mapDispatch;
-	        this.doDispatchPropsDependOnOwnProps = this.finalMapDispatchToProps.length !== 1;
-
-	        return isFactory ? this.computeDispatchProps(store, props) : checkStateShape(mappedDispatch, true);
-	      };
-
-	      Connect.prototype.updateStatePropsIfNeeded = function updateStatePropsIfNeeded() {
-	        var nextStateProps = this.computeStateProps(this.store, this.props);
-	        if (this.stateProps && (0, _shallowEqual2["default"])(nextStateProps, this.stateProps)) {
-	          return false;
-	        }
-
-	        this.stateProps = nextStateProps;
-	        return true;
-	      };
-
-	      Connect.prototype.updateDispatchPropsIfNeeded = function updateDispatchPropsIfNeeded() {
-	        var nextDispatchProps = this.computeDispatchProps(this.store, this.props);
-	        if (this.dispatchProps && (0, _shallowEqual2["default"])(nextDispatchProps, this.dispatchProps)) {
-	          return false;
-	        }
-
-	        this.dispatchProps = nextDispatchProps;
-	        return true;
-	      };
-
-	      Connect.prototype.updateMergedPropsIfNeeded = function updateMergedPropsIfNeeded() {
-	        var nextMergedProps = computeMergedProps(this.stateProps, this.dispatchProps, this.props);
-	        if (this.mergedProps && checkMergedEquals && (0, _shallowEqual2["default"])(nextMergedProps, this.mergedProps)) {
-	          return false;
-	        }
-
-	        this.mergedProps = nextMergedProps;
-	        return true;
-	      };
-
-	      Connect.prototype.isSubscribed = function isSubscribed() {
-	        return typeof this.unsubscribe === 'function';
-	      };
-
-	      Connect.prototype.trySubscribe = function trySubscribe() {
-	        if (shouldSubscribe && !this.unsubscribe) {
-	          this.unsubscribe = this.store.subscribe(this.handleChange.bind(this));
-	          this.handleChange();
-	        }
-	      };
-
-	      Connect.prototype.tryUnsubscribe = function tryUnsubscribe() {
-	        if (this.unsubscribe) {
-	          this.unsubscribe();
-	          this.unsubscribe = null;
-	        }
-	      };
-
-	      Connect.prototype.componentDidMount = function componentDidMount() {
-	        this.trySubscribe();
-	      };
-
-	      Connect.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
-	        if (!pure || !(0, _shallowEqual2["default"])(nextProps, this.props)) {
-	          this.haveOwnPropsChanged = true;
-	        }
-	      };
-
-	      Connect.prototype.componentWillUnmount = function componentWillUnmount() {
-	        this.tryUnsubscribe();
-	        this.clearCache();
-	      };
-
-	      Connect.prototype.clearCache = function clearCache() {
-	        this.dispatchProps = null;
-	        this.stateProps = null;
-	        this.mergedProps = null;
-	        this.haveOwnPropsChanged = true;
-	        this.hasStoreStateChanged = true;
-	        this.renderedElement = null;
-	        this.finalMapDispatchToProps = null;
-	        this.finalMapStateToProps = null;
-	      };
-
-	      Connect.prototype.handleChange = function handleChange() {
-	        if (!this.unsubscribe) {
-	          return;
-	        }
-
-	        var prevStoreState = this.state.storeState;
-	        var storeState = this.store.getState();
-
-	        if (!pure || prevStoreState !== storeState) {
-	          this.hasStoreStateChanged = true;
-	          this.setState({ storeState: storeState });
-	        }
-	      };
-
-	      Connect.prototype.getWrappedInstance = function getWrappedInstance() {
-	        (0, _invariant2["default"])(withRef, 'To access the wrapped instance, you need to specify ' + '{ withRef: true } as the fourth argument of the connect() call.');
-
-	        return this.refs.wrappedInstance;
-	      };
-
-	      Connect.prototype.render = function render() {
-	        var haveOwnPropsChanged = this.haveOwnPropsChanged;
-	        var hasStoreStateChanged = this.hasStoreStateChanged;
-	        var renderedElement = this.renderedElement;
-
-	        this.haveOwnPropsChanged = false;
-	        this.hasStoreStateChanged = false;
-
-	        var shouldUpdateStateProps = true;
-	        var shouldUpdateDispatchProps = true;
-	        if (pure && renderedElement) {
-	          shouldUpdateStateProps = hasStoreStateChanged || haveOwnPropsChanged && this.doStatePropsDependOnOwnProps;
-	          shouldUpdateDispatchProps = haveOwnPropsChanged && this.doDispatchPropsDependOnOwnProps;
-	        }
-
-	        var haveStatePropsChanged = false;
-	        var haveDispatchPropsChanged = false;
-	        if (shouldUpdateStateProps) {
-	          haveStatePropsChanged = this.updateStatePropsIfNeeded();
-	        }
-	        if (shouldUpdateDispatchProps) {
-	          haveDispatchPropsChanged = this.updateDispatchPropsIfNeeded();
-	        }
-
-	        var haveMergedPropsChanged = true;
-	        if (haveStatePropsChanged || haveDispatchPropsChanged || haveOwnPropsChanged) {
-	          haveMergedPropsChanged = this.updateMergedPropsIfNeeded();
-	        } else {
-	          haveMergedPropsChanged = false;
-	        }
-
-	        if (!haveMergedPropsChanged && renderedElement) {
-	          return renderedElement;
-	        }
-
-	        if (withRef) {
-	          this.renderedElement = (0, _react.createElement)(WrappedComponent, _extends({}, this.mergedProps, {
-	            ref: 'wrappedInstance'
-	          }));
-	        } else {
-	          this.renderedElement = (0, _react.createElement)(WrappedComponent, this.mergedProps);
-	        }
-
-	        return this.renderedElement;
-	      };
-
-	      return Connect;
-	    }(_react.Component);
-
-	    Connect.displayName = 'Connect(' + getDisplayName(WrappedComponent) + ')';
-	    Connect.WrappedComponent = WrappedComponent;
-	    Connect.contextTypes = {
-	      store: _storeShape2["default"]
-	    };
-	    Connect.propTypes = {
-	      store: _storeShape2["default"]
-	    };
-
-	    if (process.env.NODE_ENV !== 'production') {
-	      Connect.prototype.componentWillUpdate = function componentWillUpdate() {
-	        if (this.version === version) {
-	          return;
-	        }
-
-	        // We are hot reloading!
-	        this.version = version;
-	        this.trySubscribe();
-	        this.clearCache();
-	      };
-	    }
-
-	    return (0, _hoistNonReactStatics2["default"])(Connect, WrappedComponent);
-	  };
-	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
-
-/***/ },
-/* 318 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	exports.__esModule = true;
-	exports["default"] = shallowEqual;
-	function shallowEqual(objA, objB) {
-	  if (objA === objB) {
-	    return true;
-	  }
-
-	  var keysA = Object.keys(objA);
-	  var keysB = Object.keys(objB);
-
-	  if (keysA.length !== keysB.length) {
-	    return false;
-	  }
-
-	  // Test for A's keys different from B.
-	  var hasOwn = Object.prototype.hasOwnProperty;
-	  for (var i = 0; i < keysA.length; i++) {
-	    if (!hasOwn.call(objB, keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
-	      return false;
-	    }
-	  }
-
-	  return true;
-	}
-
-/***/ },
-/* 319 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	exports.__esModule = true;
-	exports["default"] = wrapActionCreators;
-
-	var _redux = __webpack_require__(296);
-
-	function wrapActionCreators(actionCreators) {
-	  return function (dispatch) {
-	    return (0, _redux.bindActionCreators)(actionCreators, dispatch);
-	  };
-	}
-
-/***/ },
-/* 320 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseGetTag = __webpack_require__(321),
-	    getPrototype = __webpack_require__(327),
-	    isObjectLike = __webpack_require__(329);
-
-	/** `Object#toString` result references. */
-	var objectTag = '[object Object]';
-
-	/** Used for built-in method references. */
-	var funcProto = Function.prototype,
-	    objectProto = Object.prototype;
-
-	/** Used to resolve the decompiled source of functions. */
-	var funcToString = funcProto.toString;
-
-	/** Used to check objects for own properties. */
-	var hasOwnProperty = objectProto.hasOwnProperty;
-
-	/** Used to infer the `Object` constructor. */
-	var objectCtorString = funcToString.call(Object);
-
-	/**
-	 * Checks if `value` is a plain object, that is, an object created by the
-	 * `Object` constructor or one with a `[[Prototype]]` of `null`.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 0.8.0
-	 * @category Lang
-	 * @param {*} value The value to check.
-	 * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
-	 * @example
-	 *
-	 * function Foo() {
-	 *   this.a = 1;
-	 * }
-	 *
-	 * _.isPlainObject(new Foo);
-	 * // => false
-	 *
-	 * _.isPlainObject([1, 2, 3]);
-	 * // => false
-	 *
-	 * _.isPlainObject({ 'x': 0, 'y': 0 });
-	 * // => true
-	 *
-	 * _.isPlainObject(Object.create(null));
-	 * // => true
-	 */
-	function isPlainObject(value) {
-	  if (!isObjectLike(value) || baseGetTag(value) != objectTag) {
-	    return false;
-	  }
-	  var proto = getPrototype(value);
-	  if (proto === null) {
-	    return true;
-	  }
-	  var Ctor = hasOwnProperty.call(proto, 'constructor') && proto.constructor;
-	  return typeof Ctor == 'function' && Ctor instanceof Ctor &&
-	    funcToString.call(Ctor) == objectCtorString;
-	}
-
-	module.exports = isPlainObject;
-
-
-/***/ },
-/* 321 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Symbol = __webpack_require__(322),
-	    getRawTag = __webpack_require__(325),
-	    objectToString = __webpack_require__(326);
-
-	/** `Object#toString` result references. */
-	var nullTag = '[object Null]',
-	    undefinedTag = '[object Undefined]';
-
-	/** Built-in value references. */
-	var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
-
-	/**
-	 * The base implementation of `getTag` without fallbacks for buggy environments.
-	 *
-	 * @private
-	 * @param {*} value The value to query.
-	 * @returns {string} Returns the `toStringTag`.
-	 */
-	function baseGetTag(value) {
-	  if (value == null) {
-	    return value === undefined ? undefinedTag : nullTag;
-	  }
-	  return (symToStringTag && symToStringTag in Object(value))
-	    ? getRawTag(value)
-	    : objectToString(value);
-	}
-
-	module.exports = baseGetTag;
-
-
-/***/ },
-/* 322 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var root = __webpack_require__(323);
-
-	/** Built-in value references. */
-	var Symbol = root.Symbol;
-
-	module.exports = Symbol;
-
-
-/***/ },
-/* 323 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var freeGlobal = __webpack_require__(324);
-
-	/** Detect free variable `self`. */
-	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-	/** Used as a reference to the global object. */
-	var root = freeGlobal || freeSelf || Function('return this')();
-
-	module.exports = root;
-
-
-/***/ },
-/* 324 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
-	var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
-
-	module.exports = freeGlobal;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 325 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Symbol = __webpack_require__(322);
-
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
-
-	/** Used to check objects for own properties. */
-	var hasOwnProperty = objectProto.hasOwnProperty;
-
-	/**
-	 * Used to resolve the
-	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
-	 * of values.
-	 */
-	var nativeObjectToString = objectProto.toString;
-
-	/** Built-in value references. */
-	var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
-
-	/**
-	 * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
-	 *
-	 * @private
-	 * @param {*} value The value to query.
-	 * @returns {string} Returns the raw `toStringTag`.
-	 */
-	function getRawTag(value) {
-	  var isOwn = hasOwnProperty.call(value, symToStringTag),
-	      tag = value[symToStringTag];
-
-	  try {
-	    value[symToStringTag] = undefined;
-	    var unmasked = true;
-	  } catch (e) {}
-
-	  var result = nativeObjectToString.call(value);
-	  if (unmasked) {
-	    if (isOwn) {
-	      value[symToStringTag] = tag;
-	    } else {
-	      delete value[symToStringTag];
-	    }
-	  }
-	  return result;
-	}
-
-	module.exports = getRawTag;
-
-
-/***/ },
-/* 326 */
-/***/ function(module, exports) {
-
-	/** Used for built-in method references. */
-	var objectProto = Object.prototype;
-
-	/**
-	 * Used to resolve the
-	 * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
-	 * of values.
-	 */
-	var nativeObjectToString = objectProto.toString;
-
-	/**
-	 * Converts `value` to a string using `Object.prototype.toString`.
-	 *
-	 * @private
-	 * @param {*} value The value to convert.
-	 * @returns {string} Returns the converted string.
-	 */
-	function objectToString(value) {
-	  return nativeObjectToString.call(value);
-	}
-
-	module.exports = objectToString;
-
-
-/***/ },
-/* 327 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var overArg = __webpack_require__(328);
-
-	/** Built-in value references. */
-	var getPrototype = overArg(Object.getPrototypeOf, Object);
-
-	module.exports = getPrototype;
-
-
-/***/ },
-/* 328 */
-/***/ function(module, exports) {
-
-	/**
-	 * Creates a unary function that invokes `func` with its argument transformed.
-	 *
-	 * @private
-	 * @param {Function} func The function to wrap.
-	 * @param {Function} transform The argument transform.
-	 * @returns {Function} Returns the new function.
-	 */
-	function overArg(func, transform) {
-	  return function(arg) {
-	    return func(transform(arg));
-	  };
-	}
-
-	module.exports = overArg;
-
-
-/***/ },
-/* 329 */
-/***/ function(module, exports) {
-
-	/**
-	 * Checks if `value` is object-like. A value is object-like if it's not `null`
-	 * and has a `typeof` result of "object".
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 4.0.0
-	 * @category Lang
-	 * @param {*} value The value to check.
-	 * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
-	 * @example
-	 *
-	 * _.isObjectLike({});
-	 * // => true
-	 *
-	 * _.isObjectLike([1, 2, 3]);
-	 * // => true
-	 *
-	 * _.isObjectLike(_.noop);
-	 * // => false
-	 *
-	 * _.isObjectLike(null);
-	 * // => false
-	 */
-	function isObjectLike(value) {
-	  return value != null && typeof value == 'object';
-	}
-
-	module.exports = isObjectLike;
-
-
-/***/ },
-/* 330 */
-/***/ function(module, exports) {
-
-	/**
-	 * Copyright 2015, Yahoo! Inc.
-	 * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
-	 */
-	'use strict';
-
-	var REACT_STATICS = {
-	    childContextTypes: true,
-	    contextTypes: true,
-	    defaultProps: true,
-	    displayName: true,
-	    getDefaultProps: true,
-	    mixins: true,
-	    propTypes: true,
-	    type: true
-	};
-
-	var KNOWN_STATICS = {
-	    name: true,
-	    length: true,
-	    prototype: true,
-	    caller: true,
-	    arguments: true,
-	    arity: true
-	};
-
-	var isGetOwnPropertySymbolsAvailable = typeof Object.getOwnPropertySymbols === 'function';
-
-	module.exports = function hoistNonReactStatics(targetComponent, sourceComponent, customStatics) {
-	    if (typeof sourceComponent !== 'string') { // don't hoist over string (html) components
-	        var keys = Object.getOwnPropertyNames(sourceComponent);
-
-	        /* istanbul ignore else */
-	        if (isGetOwnPropertySymbolsAvailable) {
-	            keys = keys.concat(Object.getOwnPropertySymbols(sourceComponent));
-	        }
-
-	        for (var i = 0; i < keys.length; ++i) {
-	            if (!REACT_STATICS[keys[i]] && !KNOWN_STATICS[keys[i]] && (!customStatics || !customStatics[keys[i]])) {
-	                try {
-	                    targetComponent[keys[i]] = sourceComponent[keys[i]];
-	                } catch (error) {
-
-	                }
-	            }
-	        }
-	    }
-
-	    return targetComponent;
-	};
-
 
 /***/ },
 /* 331 */
@@ -42298,7 +42351,7 @@
 
 
 	// module
-	exports.push([module.id, ".profileNav {\r\n  display: inline-block;\r\n  float: left;\r\n  margin-left: 200px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\nprofileLink\r\n.h3-title-profile {\r\n  color: #455A3B;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n\r\n.additionalQuestionLabel {\r\n  font-size: 15px;\r\n}\r\n\r\n.editInfoButton {\r\n  margin: auto;\r\n  width: 50%;\r\n}\r\n\r\n.rightProfile {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n}\r\n\r\n.profileContainer {\r\n  margin-right: 200px;\r\n  margin-top: 25px;\r\n  display: inline-block;\r\n}\r\n\r\n.favDestLabel {\r\n  text-align: center;\r\n  width: 100%;\r\n}", ""]);
+	exports.push([module.id, ".profileNav {\r\n  display: inline-block;\r\n  float: left;\r\n  margin-left: 200px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\nprofileLink\r\n.h3-title-profile {\r\n  color: #455A3B;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n\r\n.additionalQuestionLabel {\r\n  font-size: 15px;\r\n}\r\n\r\n.editInfoButton {\r\n  width: 50%;\r\n}\r\n\r\n.submitInfoButton {\r\n  margin: auto;\r\n  width: 50%;\r\n}\r\n\r\n.rightProfile {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n}\r\n\r\n.rightProfileHidden {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n  display: none !important;\r\n}\r\n\r\n.profileContainer {\r\n  margin-right: 200px;\r\n  margin-top: 25px;\r\n  display: inline-block;\r\n}\r\n\r\n.favDestLabel {\r\n  text-align: center;\r\n  width: 100%;\r\n}", ""]);
 
 	// exports
 

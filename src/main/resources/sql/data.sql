@@ -24,7 +24,6 @@ insert into trip (id,category,region,country,title,price,tags,duration,rating,de
 insert into trip (id,category,region,country,title,price,tags,duration,rating,departure_date,end_date_to_sign,destination) values (2011,'SCIENCE_AND_NATURE','Africa','Zambia','Wild zambian safari',6538,'PhotographyBomb,FascinatingFauna,MotherNature',11,4.8,null,null,'Tropical place');
 
 
-insert into user_trip(id, user_id, trip_id) values (1000, 'aleks', 2001);
-insert into user_trip(id, user_id, trip_id) values (1001, 'aleks', 2005);
-insert into user_trip(id, user_id, trip_id) values (1002, 'aleks', 2006);
-insert into user_trip(id, user_id, trip_id) values (1003, 'aleks', 2009);
+insert into user_trip(user_id, trip_id) values ('aleks', 2005);
+insert into user_trip(user_id, trip_id) values ('aleks', 2006);
+insert into user_trip(user_id, trip_id) values ('aleks', 2009);

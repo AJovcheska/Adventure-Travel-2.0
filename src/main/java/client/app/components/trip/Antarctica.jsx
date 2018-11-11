@@ -1,8 +1,21 @@
 var React = require('react');
+var {connect} = require('react-redux');
+var actions = require('actions');
+var backendApi = require('backendApi');
+
+function mapStateToProps(state) {
+  return { username: state.username };
+}
 
 var Antarctica = React.createClass({
   handleFavourites: function() {
-    alert("2007");
+     var {dispatch, username} = this.props;
+     console.log('Username:', username);
+     backendApi.addTripForUser(username, "2001").then((response) => {
+       console.log('Response form antarctica', response);
+     }, function (errorMessage) {
+       console.log(errorMessage);
+     });
   },
   render: function() {
     return (
@@ -292,4 +305,4 @@ var Antarctica = React.createClass({
   }
 });
 
-module.exports = Antarctica;
+module.exports = connect(mapStateToProps)(Antarctica);

@@ -63,4 +63,6 @@ public class TripService {
     public void deleteTripFromUser(String username, String id) {
         tripRepository.deleteTripFromUser(username, id);
     }
+
+    public void addTripForUser(String username, String id) { tripRepository.addTripForUser(username, id); }
 }

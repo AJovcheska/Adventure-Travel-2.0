@@ -63,8 +63,14 @@ create table trip (
   primary key (id)
 );
 
+create sequence user_trip_seq
+ start with     1000
+ increment by   1
+ nocache
+ nocycle;
+
 create table user_trip (
-  id number(19,0) not null,
+  id number(19,0) not null default nextval('user_trip_seq'),
   user_id varchar2(30),
   trip_id number(19,0),
 

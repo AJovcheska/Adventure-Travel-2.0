@@ -45,7 +45,7 @@ export var setUserObjectReducer = (state = [], action) => {
 
 var defaultTrip = {
   username: '',
-  tripsForUser: []
+  trips: []
 };
 
 export var tripsReducer = (state = defaultTrip, action) => {
@@ -53,19 +53,13 @@ export var tripsReducer = (state = defaultTrip, action) => {
     case 'ADD_TRIP_FOR_USER':
       return {
         username: state.username,
-        trips: state.tripsForUser,
+        trips: state.trips,
         trips: [
-          state.tripsForUser,
+          state.trips,
           {
             trip: action.trip
           }
         ]
-      };
-    case 'REMOVE_TRIP_FROM_USER':
-      return {
-        username: state.username,
-        trips: state.tripsForUser,
-        trips: state.tripsForUser.filter((trip) =>  trip.id !== action.id)
       };
     default:
       return state;

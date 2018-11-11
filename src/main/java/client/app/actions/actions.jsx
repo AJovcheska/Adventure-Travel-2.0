@@ -41,11 +41,3 @@ export var addTripForUser = (username, tripId) => {
   }
 };
 
-export var removeTripFromUser = (username, tripId) => {
-  return {
-    type: 'REMOVE_TRIP_FROM_USER',
-    username,
-    tripId
-  }
-};
-

@@ -44,7 +44,8 @@ public class TripRepositoryImpl implements TripRepository {
 
     @Override
     public TripDto findById(String id) {
-        List<TripDto> list = jdbcTemplate.query(tripQueries.getSelectById(),
+        String selectById = tripQueries.getSelectById();
+        List<TripDto> list = jdbcTemplate.query(selectById,
                 new MapSqlParameterSource("id", id), new TripMapper());
         if (list.size() != 1) {
             return null;
@@ -65,6 +66,15 @@ public class TripRepositoryImpl implements TripRepository {
         map.addValue("username", username);
         map.addValue("id", id);
         jdbcTemplate.update(tripQueries.getDeleteTripFromUser(),
+                map);
+    }
+
+    @Override
+    public void addTripForUser(String username, String id) {
+        MapSqlParameterSource map = new MapSqlParameterSource();
+        map.addValue("username", username);
+        map.addValue("tripId", id);
+        jdbcTemplate.update(tripQueries.getAddTripForUser(),
                 map);
     }
 

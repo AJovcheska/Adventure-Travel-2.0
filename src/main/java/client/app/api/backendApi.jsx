@@ -24,6 +24,8 @@ const DELETE_TRIP_URL = "http://localhost:8080/api/nonsecured/remove/trip?";
 
 const UPDATE_INFO_URL = "http://localhost:8080/api/nonsecured/update?";
 
+const ADD_TRIP_FOR_USER_URL = "http://localhost:8080/api/nonsecured/add/trip?";
+
 module.exports = {
   getTemp: function (location) {
     var encodedLocation = encodeURIComponent(location);
@@ -200,6 +202,28 @@ module.exports = {
     params.append("username", encodedUsername);
     params.append("id", encodedId);
     return axios.delete(DELETE_TRIP_URL,
+      {
+        params: params
+      }).then(function (res) {
+      if (res.data.cod && res.data.message) {
+        throw new Error(res.data.message);
+      } else {
+        return res;
+      }
+    }).catch(function (error) {
+      if (error.response) {
+        return error.response.status;
+      }
+    });
+  },
+  addTripForUser: function(username, id) {
+    var encodedId = decodeURIComponent(id);
+    var encodedUsername = decodeURIComponent(username);
+
+    var params = new URLSearchParams();
+    params.append("username", encodedUsername);
+    params.append("id", encodedId);
+    return axios.put(ADD_TRIP_FOR_USER_URL,
       {
         params: params
       }).then(function (res) {

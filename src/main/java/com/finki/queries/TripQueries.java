@@ -28,6 +28,9 @@ public class TripQueries {
     @Value("${delete-trip-from-user}")
     private String deleteTripFromUser;
 
+    @Value("${add-trip-for-user}")
+    private String addTripForUser;
+
 }
 
 

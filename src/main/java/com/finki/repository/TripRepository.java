@@ -27,5 +27,8 @@ public interface TripRepository {
 
     @Transactional(readOnly = true)
     void deleteTripFromUser(String username, String id);
+    
+    @Transactional(readOnly = true)
+    void addTripForUser(String username, String id);
 
 }

@@ -33,6 +33,10 @@ profileLink
 }
 
 .editInfoButton {
+  width: 50%;
+}
+
+.submitInfoButton {
   margin: auto;
   width: 50%;
 }
@@ -42,6 +46,14 @@ profileLink
   display: inline-block;
   border: dashed;
   padding: 10px;
+}
+
+.rightProfileHidden {
+  float: right;
+  display: inline-block;
+  border: dashed;
+  padding: 10px;
+  display: none !important;
 }
 
 .profileContainer {
