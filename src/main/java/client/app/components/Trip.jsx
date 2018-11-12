@@ -5,8 +5,20 @@ var backendApi = require('backendApi');
 var Trip = React.createClass({
   getInitialState: function () {
     return {
-      trip: {}
+      trip: {},
+      id: this.props.id
     };
+  },
+  componentDidMount: function() {
+    var {id} = this.state;
+
+    backendApi.getTripById(id).then((response) => {
+      this.setState({
+        trip: response.data
+      })
+    }).catch((error)=>{
+      console.log(error);
+    });
   },
   handleDescription: function(event) {
     var {id} = this.props;
@@ -20,11 +32,15 @@ var Trip = React.createClass({
     });
   },
   render: function() {
-    var {price} = this.props;
-    var {title} = this.props;
-    var {rating} = this.props;
-    var {departure_date} = this.props;
-    var {id} = this.props;
+    var {price,title,rating,departure_date,id} = this.props;
+
+    var pageToOpen = '';
+    if (id > 2011) {
+      pageToOpen = '/trip';
+      console.log('Trip:', this.state.trip);
+    } else {
+      pageToOpen = `/${id}`;
+    }
     return (
       <div className="content-card-v2 content-card-item trip-card">
         <figure className="content-card-figure js-content-card-figure">
@@ -40,7 +56,7 @@ var Trip = React.createClass({
             <div className="trip-rating" id="trip-card-rating">{rating} stars</div>
           </div>
           <div className="content-card-footer">
-            <Link to={`/${this.props.id}`} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>
+            <Link to={{ pathname: '/trip', state: { trip: this.state.trip} }} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>
           </div>
         </div>
         <div className="clearfix">

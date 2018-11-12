@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -95,10 +96,17 @@ public class TripController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.PUT, value = "/nonsecured/add/trip", consumes = MediaType.ALL_VALUE,
+    @RequestMapping(method = RequestMethod.POST, value = "/nonsecured/add/trip", consumes = MediaType.ALL_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity addTripForUser(@RequestParam(value = "username") String username, @RequestParam(value = "id") String id) {
         tripService.addTripForUser(username, id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST, value = "nonsecured/trip", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity addTrip(@RequestBody Trip trip) {
+        tripService.addTrip(trip);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

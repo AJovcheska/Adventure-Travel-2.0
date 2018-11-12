@@ -113,34 +113,36 @@
 	var LoginForm = __webpack_require__(269);
 	var SuccessRegistration = __webpack_require__(270);
 	var ErrorPage = __webpack_require__(271);
+	var CreateTrip = __webpack_require__(272);
 
-	var MotherNatureTag = __webpack_require__(272);
-	var InTheMountainTag = __webpack_require__(274);
-	var ArchitecturalWondersTag = __webpack_require__(275);
-	var BikingAndHikingTag = __webpack_require__(276);
-	var HistoryAndMisteryTag = __webpack_require__(277);
-	var InspiringArtTag = __webpack_require__(278);
-	var IcecoldTag = __webpack_require__(279);
-	var PhotographyBombTag = __webpack_require__(280);
-	var FascinatingFaunaTag = __webpack_require__(281);
-	var FarFarEastTag = __webpack_require__(282);
+	var MotherNatureTag = __webpack_require__(273);
+	var InTheMountainTag = __webpack_require__(275);
+	var ArchitecturalWondersTag = __webpack_require__(276);
+	var BikingAndHikingTag = __webpack_require__(277);
+	var HistoryAndMisteryTag = __webpack_require__(278);
+	var InspiringArtTag = __webpack_require__(279);
+	var IcecoldTag = __webpack_require__(280);
+	var PhotographyBombTag = __webpack_require__(281);
+	var FascinatingFaunaTag = __webpack_require__(282);
+	var FarFarEastTag = __webpack_require__(283);
 
-	var Barcelona = __webpack_require__(283);
-	var Rome = __webpack_require__(284);
-	var Morocco = __webpack_require__(285);
-	var Persia = __webpack_require__(286);
-	var Mongolia = __webpack_require__(287);
-	var Everest = __webpack_require__(288);
-	var Antarctica = __webpack_require__(289);
-	var Brazil = __webpack_require__(325);
-	var Petra = __webpack_require__(326);
-	var Zambia = __webpack_require__(327);
-	var Rwanda = __webpack_require__(328);
+	var Barcelona = __webpack_require__(284);
+	var Rome = __webpack_require__(285);
+	var Morocco = __webpack_require__(286);
+	var Persia = __webpack_require__(287);
+	var Mongolia = __webpack_require__(288);
+	var Everest = __webpack_require__(289);
+	var Antarctica = __webpack_require__(290);
+	var Brazil = __webpack_require__(326);
+	var Petra = __webpack_require__(327);
+	var Zambia = __webpack_require__(328);
+	var Rwanda = __webpack_require__(329);
+	var NewTrip = __webpack_require__(330);
 
-	var actions = __webpack_require__(324);
-	var store = __webpack_require__(329).configure();
+	var actions = __webpack_require__(325);
+	var store = __webpack_require__(331).configure();
 
-	var _require2 = __webpack_require__(290),
+	var _require2 = __webpack_require__(291),
 	    Provider = _require2.Provider;
 
 	store.subscribe(function () {
@@ -148,11 +150,10 @@
 	});
 
 	// Load foundation
-	__webpack_require__(331);
+	__webpack_require__(333);
 	$(document).foundation();
 
 	// app css
-	__webpack_require__(335);
 	__webpack_require__(337);
 	__webpack_require__(339);
 	__webpack_require__(341);
@@ -165,6 +166,8 @@
 	__webpack_require__(355);
 	__webpack_require__(357);
 	__webpack_require__(359);
+	__webpack_require__(361);
+	__webpack_require__(363);
 
 	ReactDOM.render(React.createElement(
 	  Provider,
@@ -181,6 +184,7 @@
 	      React.createElement(Route, { path: 'description', component: TripDescription }),
 	      React.createElement(Route, { path: 'profile', component: Profile }),
 	      React.createElement(Route, { path: 'login', component: LoginForm }),
+	      React.createElement(Route, { path: 'createTrip', component: CreateTrip }),
 	      React.createElement(Route, { path: '2000', component: Rome }),
 	      React.createElement(Route, { path: '2001', component: Antarctica }),
 	      React.createElement(Route, { path: '2002', component: Everest }),
@@ -192,6 +196,7 @@
 	      React.createElement(Route, { path: '2009', component: Petra }),
 	      React.createElement(Route, { path: '2010', component: Rwanda }),
 	      React.createElement(Route, { path: '2011', component: Zambia }),
+	      React.createElement(Route, { path: 'trip', component: NewTrip }),
 	      React.createElement(Route, { path: 'tags/mothernature', component: MotherNatureTag }),
 	      React.createElement(Route, { path: 'tags/inthemountain', component: InTheMountainTag }),
 	      React.createElement(Route, { path: 'tags/architecturalwonders', component: ArchitecturalWondersTag }),
@@ -25168,17 +25173,26 @@
 	    };
 
 	    var isLoggedIn = this.state.isLogged;
+	    var username = this.state.username;
 	    var greeting = void 0;
 	    if (isLoggedIn) {
-	      greeting = React.createElement(
-	        Link,
-	        { to: {
-	            pathname: "/profile",
-	            state: { trips: this.state.trips, user: this.state.user, accessToken: this.state.accessToken }
-	          }, className: 'profileLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
-	        this.state.user.username,
-	        '\'s profile'
-	      );
+	      if (username === 'admin') {
+	        greeting = React.createElement(
+	          Link,
+	          { to: '/createTrip', className: 'profileLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
+	          'Add new trip'
+	        );
+	      } else {
+	        greeting = React.createElement(
+	          Link,
+	          { to: {
+	              pathname: "/profile",
+	              state: { trips: this.state.trips, user: this.state.user, accessToken: this.state.accessToken }
+	            }, className: 'profileLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
+	          username,
+	          '\'s profile'
+	        );
+	      }
 	    } else {
 	      greeting = React.createElement('h1', null);
 	    }
@@ -25479,6 +25493,8 @@
 
 	var ADD_TRIP_FOR_USER_URL = "http://localhost:8080/api/nonsecured/add/trip?";
 
+	var ADD_TRIP_URL = "http://localhost:8080/api/nonsecured/trip";
+
 	module.exports = {
 	  getTemp: function getTemp(location) {
 	    var encodedLocation = encodeURIComponent(location);
@@ -25703,6 +25719,26 @@
 	      entertainment: entertainment,
 	      tripLength: tripLength,
 	      tripCompanion: tripCompanion
+	    }, { headers: { "Content-Type": "application/json" }
+	    }).then(function (r) {
+	      return console.log(r.status);
+	    }).catch(function (e) {
+	      return console.log(e);
+	    });
+	  },
+	  addTrip: function addTrip(category, region, country, title, price, tags, duration, departure_date, end_date_to_sign, destination) {
+	    return axios.post(ADD_TRIP_URL, {
+	      category: category,
+	      country: country,
+	      region: region,
+	      title: title,
+	      price: price,
+	      tags: tags,
+	      duration: duration,
+	      rating: 0,
+	      departure_date: departure_date,
+	      end_date_to_sign: end_date_to_sign,
+	      destination: destination
 	    }, { headers: { "Content-Type": "application/json" }
 	    }).then(function (r) {
 	      return console.log(r.status);
@@ -27552,13 +27588,14 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      trip: {}
+	      trip: {},
+	      id: this.props.id
 	    };
 	  },
-	  handleDescription: function handleDescription(event) {
+	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
-	    var id = this.props.id;
+	    var id = this.state.id;
 
 
 	    backendApi.getTripById(id).then(function (response) {
@@ -27569,13 +27606,36 @@
 	      console.log(error);
 	    });
 	  },
-	  render: function render() {
-	    var price = this.props.price;
-	    var title = this.props.title;
-	    var rating = this.props.rating;
-	    var departure_date = this.props.departure_date;
+	  handleDescription: function handleDescription(event) {
+	    var _this2 = this;
+
 	    var id = this.props.id;
 
+
+	    backendApi.getTripById(id).then(function (response) {
+	      _this2.setState({
+	        trip: response.data
+	      });
+	    }).catch(function (error) {
+	      console.log(error);
+	    });
+	  },
+	  render: function render() {
+	    var _props = this.props,
+	        price = _props.price,
+	        title = _props.title,
+	        rating = _props.rating,
+	        departure_date = _props.departure_date,
+	        id = _props.id;
+
+
+	    var pageToOpen = '';
+	    if (id > 2011) {
+	      pageToOpen = '/trip';
+	      console.log('Trip:', this.state.trip);
+	    } else {
+	      pageToOpen = '/' + id;
+	    }
 	    return React.createElement(
 	      'div',
 	      { className: 'content-card-v2 content-card-item trip-card' },
@@ -27631,7 +27691,7 @@
 	          { className: 'content-card-footer' },
 	          React.createElement(
 	            Link,
-	            { to: '/' + this.props.id, className: 'detail-sm cta-text', onClick: this.handleDescription },
+	            { to: { pathname: '/trip', state: { trip: this.state.trip } }, className: 'detail-sm cta-text', onClick: this.handleDescription },
 	            'Learn more'
 	          )
 	        )
@@ -30295,6 +30355,452 @@
 
 	'use strict';
 
+	var React = __webpack_require__(8);
+	var backendApi = __webpack_require__(226);
+
+	var CreateTrip = React.createClass({
+	  displayName: 'CreateTrip',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      selectedOption: null
+	    };
+	  },
+	  handleAddTrip: function handleAddTrip() {
+	    var title = this.refs.title.value;
+	    var region = this.refs.region.value;
+	    var country = this.refs.country.value;
+	    var highlights = this.refs.highlights.value;
+	    var description = this.refs.description.value;
+	    var dates = this.refs.dates.value;
+	    var costs = this.refs.costs.value;
+	    var duration = this.refs.duration.value;
+	    var destination = this.state.destination;
+	    var category = this.state.category;
+
+	    var architecturalWonders = this.refs.architecturalWonders.checked;
+	    var motherNature = this.refs.motherNature.checked;
+	    var art = this.refs.art.checked;
+	    var ice = this.refs.ice.checked;
+	    var fauna = this.refs.fauna.checked;
+	    var farEast = this.refs.farEast.checked;
+	    var historyMistery = this.refs.historyMistery.checked;
+	    var mountains = this.refs.mountains.checked;
+	    var biking = this.refs.biking.checked;
+	    var photoBomb = this.refs.photoBomb.checked;
+	    var tags = '';
+	    if (architecturalWonders) {
+	      tags += 'Architectural wonders,';
+	    }
+	    if (motherNature) {
+	      tags += 'Mother nature,';
+	    }
+	    if (art) {
+	      tags += 'Inspiring art,';
+	    }
+	    if (ice) {
+	      tags += 'Ice & cold,';
+	    }
+	    if (fauna) {
+	      tags += 'Fascinating fauna,';
+	    }
+	    if (farEast) {
+	      tags += 'Far far East,';
+	    }
+	    if (historyMistery) {
+	      tags += 'History and mistery,';
+	    }
+	    if (mountains) {
+	      tags += 'In the mountains,';
+	    }
+	    if (biking) {
+	      tags += 'Biking and hiking,';
+	    }
+	    if (photoBomb) {
+	      tags += 'Photography bomb,';
+	    }
+
+	    backendApi.addTrip(category, region, country, title, costs, tags, duration, null, null, destination).then(function (response) {
+	      console.log(response);
+	    }, function (errorMessage) {
+	      console.log(errorMessage);
+	    });
+	  },
+	  handleChangeDestination: function handleChangeDestination(event) {
+	    this.setState({
+	      destination: event.target.value
+	    });
+	  },
+	  handleChangeCategory: function handleChangeCategory(event) {
+	    this.setState({
+	      category: event.target.value
+	    });
+	  },
+	  render: function render() {
+	    return React.createElement(
+	      'article',
+	      { className: 'event-content trip-content' },
+	      React.createElement(
+	        'div',
+	        { className: 'container' },
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'div',
+	            { className: 'col-md-8' },
+	            React.createElement(
+	              'div',
+	              { className: 'row' },
+	              React.createElement(
+	                'header',
+	                { className: 'item-header trip-header js-item-header' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'col-md-12' },
+	                  React.createElement('input', { className: 'inputFieldsCreateTrip', type: 'text', placeholder: 'Enter country', ref: 'country', required: true }),
+	                  React.createElement('input', { className: 'inputFieldsCreateTrip', type: 'text', placeholder: 'Enter region', ref: 'region', required: true }),
+	                  React.createElement('input', { className: 'inputFieldsCreateTrip', type: 'text', placeholder: 'Enter title', ref: 'title', required: true })
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'row' },
+	              React.createElement(
+	                'div',
+	                { className: 'content-body event-content-body col-md-11 trip-content-body' },
+	                React.createElement(
+	                  'section',
+	                  { id: 'event-body', className: 'item-body' },
+	                  React.createElement(
+	                    'h3',
+	                    { className: 'event-body-subheading' },
+	                    'HIGHLIGHTS'
+	                  ),
+	                  React.createElement('textarea', { placeholder: 'Enter highlights', ref: 'highlights', required: true }),
+	                  React.createElement(
+	                    'section',
+	                    { id: 'event-trip-itinerary' },
+	                    React.createElement(
+	                      'h5',
+	                      { className: 'event-body-heading' },
+	                      'Itinerary'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'trip-day-wrap' },
+	                      React.createElement(
+	                        'ul',
+	                        { className: 'tripsUl' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', required: true })
+	                      )
+	                    )
+	                  ),
+	                  React.createElement(
+	                    'section',
+	                    { id: 'event-trip-itinerary' },
+	                    React.createElement(
+	                      'h5',
+	                      { className: 'event-body-heading' },
+	                      'Tags'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'createTripTags' },
+	                      React.createElement(
+	                        'input',
+	                        { type: 'checkbox', ref: 'architecturalWonders', onChange: this.handleChange },
+	                        'Architectural wonders'
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'createTripTags' },
+	                      React.createElement(
+	                        'input',
+	                        { type: 'checkbox', ref: 'motherNature', onChange: this.handleChange },
+	                        'Mother nature'
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'createTripTags' },
+	                      React.createElement(
+	                        'input',
+	                        { type: 'checkbox', ref: 'art', onChange: this.handleChange },
+	                        'Inspiring art'
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'createTripTags' },
+	                      React.createElement(
+	                        'input',
+	                        { type: 'checkbox', ref: 'ice', onChange: this.handleChange },
+	                        'Ice & cold'
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'createTripTags' },
+	                      React.createElement(
+	                        'input',
+	                        { type: 'checkbox', ref: 'fauna', onChange: this.handleChange },
+	                        'Fascinating fauna'
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'createTripTags' },
+	                      React.createElement(
+	                        'input',
+	                        { type: 'checkbox', ref: 'farEast', onChange: this.handleChange },
+	                        'Far far East'
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'createTripTags' },
+	                      React.createElement(
+	                        'input',
+	                        { type: 'checkbox', ref: 'historyMistery', onChange: this.handleChange },
+	                        'History and mistery'
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'createTripTags' },
+	                      React.createElement(
+	                        'input',
+	                        { type: 'checkbox', ref: 'mountains', onChange: this.handleChange },
+	                        'In the mountains'
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'createTripTags' },
+	                      React.createElement(
+	                        'input',
+	                        { type: 'checkbox', ref: 'biking', onChange: this.handleChange },
+	                        'Biking and hiking'
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'createTripTags' },
+	                      React.createElement(
+	                        'input',
+	                        { type: 'checkbox', ref: 'photoBomb', onChange: this.handleChange },
+	                        'Photography bomb'
+	                      )
+	                    )
+	                  )
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'sort-div-create-trip' },
+	              React.createElement(
+	                'h5',
+	                { className: 'event-body-heading' },
+	                'Type of destination: '
+	              ),
+	              React.createElement(
+	                'span',
+	                { className: 'sort-form' },
+	                React.createElement(
+	                  'span',
+	                  { className: 'sort-type' },
+	                  React.createElement(
+	                    'input',
+	                    { type: 'radio', value: 'City', checked: this.state.destination === 'City',
+	                      onChange: this.handleChangeDestination },
+	                    'City \u2003\u2003'
+	                  )
+	                ),
+	                React.createElement(
+	                  'span',
+	                  { className: 'sort-type' },
+	                  React.createElement(
+	                    'input',
+	                    { type: 'radio', value: 'Mountain', checked: this.state.destination === 'Mountain',
+	                      onChange: this.handleChangeDestination },
+	                    'Mountain \u2003\u2003'
+	                  )
+	                ),
+	                React.createElement(
+	                  'span',
+	                  { className: 'sort-type' },
+	                  React.createElement(
+	                    'input',
+	                    { type: 'radio', value: 'Cold place', checked: this.state.destination === 'Cold place',
+	                      onChange: this.handleChangeDestination },
+	                    'Cold place \u2003\u2003'
+	                  )
+	                ),
+	                React.createElement(
+	                  'span',
+	                  { className: 'sort-type' },
+	                  React.createElement(
+	                    'input',
+	                    { type: 'radio', value: 'Historical place', checked: this.state.destination === 'Historical place',
+	                      onChange: this.handleChangeDestination },
+	                    'Historical place \u2003\u2003'
+	                  )
+	                ),
+	                React.createElement(
+	                  'span',
+	                  { className: 'sort-type' },
+	                  React.createElement(
+	                    'input',
+	                    { type: 'radio', value: 'Tropical place', checked: this.state.destination === 'Tropical place',
+	                      onChange: this.handleChangeDestination },
+	                    'Tropical place \u2003\u2003'
+	                  )
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'sort-div-create-trip' },
+	              React.createElement(
+	                'h5',
+	                { className: 'event-body-heading' },
+	                'Category: '
+	              ),
+	              React.createElement(
+	                'span',
+	                { className: 'sort-form' },
+	                React.createElement(
+	                  'span',
+	                  { className: 'sort-type' },
+	                  React.createElement(
+	                    'input',
+	                    { type: 'radio', value: 'HIDDEN_CITIES', checked: this.state.category === 'HIDDEN_CITIES',
+	                      onChange: this.handleChangeCategory },
+	                    'Hidden cities \u2003\u2003'
+	                  )
+	                ),
+	                React.createElement(
+	                  'span',
+	                  { className: 'sort-type' },
+	                  React.createElement(
+	                    'input',
+	                    { type: 'radio', value: 'CRUISING', checked: this.state.category === 'CRUISING',
+	                      onChange: this.handleChangeCategory },
+	                    'Cruising \u2003\u2003'
+	                  )
+	                ),
+	                React.createElement(
+	                  'span',
+	                  { className: 'sort-type' },
+	                  React.createElement(
+	                    'input',
+	                    { type: 'radio', value: 'SCIENCE_AND_NATURE', checked: this.state.category === 'SCIENCE_AND_NATURE',
+	                      onChange: this.handleChangeCategory },
+	                    'Science and nature \u2003\u2003'
+	                  )
+	                ),
+	                React.createElement(
+	                  'span',
+	                  { className: 'sort-type' },
+	                  React.createElement(
+	                    'input',
+	                    { type: 'radio', value: 'HISTORY_AND_CULTURE', checked: this.state.category === 'HISTORY_AND_CULTURE',
+	                      onChange: this.handleChangeCategory },
+	                    'History and culture \u2003\u2003'
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'aside',
+	            { className: 'content-siderail' },
+	            React.createElement(
+	              'div',
+	              { className: 'trip-detail-pane-wrap hidden-sm hidden-xs' },
+	              React.createElement(
+	                'div',
+	                { className: 'event-details-pane' },
+	                React.createElement(
+	                  'ul',
+	                  { className: 'event-details-top event-details-list' },
+	                  React.createElement(
+	                    'li',
+	                    null,
+	                    React.createElement(
+	                      'label',
+	                      { className: 'detail-sm event-details-label' },
+	                      'Dates'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'event-detail' },
+	                      React.createElement(
+	                        'div',
+	                        null,
+	                        React.createElement('input', { type: 'text', placeholder: 'Enter dates', ref: 'dates', required: true })
+	                      )
+	                    )
+	                  ),
+	                  React.createElement(
+	                    'li',
+	                    null,
+	                    React.createElement(
+	                      'label',
+	                      { className: 'detail-sm event-details-label' },
+	                      'Cost'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'event-detail' },
+	                      React.createElement('input', { type: 'text', placeholder: 'Enter costs', ref: 'costs', required: true })
+	                    )
+	                  ),
+	                  React.createElement(
+	                    'li',
+	                    null,
+	                    React.createElement(
+	                      'label',
+	                      { className: 'detail-sm event-details-label' },
+	                      'Number of days'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'event-detail' },
+	                      React.createElement('input', { type: 'text', placeholder: 'Enter duration', ref: 'duration', required: true })
+	                    )
+	                  )
+	                )
+	              )
+	            )
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'addTripButton' },
+	        React.createElement(
+	          'button',
+	          { type: 'submit', onClick: this.handleAddTrip },
+	          'Add trip'
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = CreateTrip;
+
+/***/ },
+/* 273 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	var React = __webpack_require__(8);
@@ -30303,7 +30809,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(226);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(274);
 
 	var MotherNatureTag = React.createClass({
 	  displayName: 'MotherNatureTag',
@@ -30344,7 +30850,7 @@
 	module.exports = MotherNatureTag;
 
 /***/ },
-/* 273 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30427,7 +30933,7 @@
 	module.exports = TripByTag;
 
 /***/ },
-/* 274 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30440,7 +30946,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(226);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(274);
 
 	var InTheMountainTag = React.createClass({
 	  displayName: 'InTheMountainTag',
@@ -30481,7 +30987,7 @@
 	module.exports = InTheMountainTag;
 
 /***/ },
-/* 275 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30494,7 +31000,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(226);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(274);
 
 	var ArchitecturalWondersTag = React.createClass({
 	  displayName: 'ArchitecturalWondersTag',
@@ -30535,7 +31041,7 @@
 	module.exports = ArchitecturalWondersTag;
 
 /***/ },
-/* 276 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30548,7 +31054,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(226);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(274);
 
 	var BikingAndHikingTag = React.createClass({
 	  displayName: 'BikingAndHikingTag',
@@ -30589,7 +31095,7 @@
 	module.exports = BikingAndHikingTag;
 
 /***/ },
-/* 277 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30602,7 +31108,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(226);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(274);
 
 	var HistoryAndMisteryTag = React.createClass({
 	  displayName: 'HistoryAndMisteryTag',
@@ -30643,7 +31149,7 @@
 	module.exports = HistoryAndMisteryTag;
 
 /***/ },
-/* 278 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30656,7 +31162,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(226);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(274);
 
 	var InspiringArtTag = React.createClass({
 	  displayName: 'InspiringArtTag',
@@ -30697,7 +31203,7 @@
 	module.exports = InspiringArtTag;
 
 /***/ },
-/* 279 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30710,7 +31216,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(226);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(274);
 
 	var IcecoldTag = React.createClass({
 	  displayName: 'IcecoldTag',
@@ -30751,7 +31257,7 @@
 	module.exports = IcecoldTag;
 
 /***/ },
-/* 280 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30764,7 +31270,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(226);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(274);
 
 	var PhotographyBombTag = React.createClass({
 	  displayName: 'PhotographyBombTag',
@@ -30805,7 +31311,7 @@
 	module.exports = PhotographyBombTag;
 
 /***/ },
-/* 281 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30818,7 +31324,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(226);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(274);
 
 	var FascinatingFaunaTag = React.createClass({
 	  displayName: 'FascinatingFaunaTag',
@@ -30859,7 +31365,7 @@
 	module.exports = FascinatingFaunaTag;
 
 /***/ },
-/* 282 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -30872,7 +31378,7 @@
 	    Link = _require.Link;
 
 	var backendApi = __webpack_require__(226);
-	var TripByTag = __webpack_require__(273);
+	var TripByTag = __webpack_require__(274);
 
 	var FarFarEastTag = React.createClass({
 	  displayName: 'FarFarEastTag',
@@ -30913,7 +31419,7 @@
 	module.exports = FarFarEastTag;
 
 /***/ },
-/* 283 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -31691,7 +32197,7 @@
 	module.exports = Barcelona;
 
 /***/ },
-/* 284 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -32426,7 +32932,7 @@
 	module.exports = Rome;
 
 /***/ },
-/* 285 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -33269,7 +33775,7 @@
 	module.exports = Morocco;
 
 /***/ },
-/* 286 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -34146,7 +34652,7 @@
 	module.exports = Persia;
 
 /***/ },
-/* 287 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35146,7 +35652,7 @@
 	module.exports = Mongolia;
 
 /***/ },
-/* 288 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -35915,17 +36421,17 @@
 	module.exports = Everest;
 
 /***/ },
-/* 289 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var React = __webpack_require__(8);
 
-	var _require = __webpack_require__(290),
+	var _require = __webpack_require__(291),
 	    connect = _require.connect;
 
-	var actions = __webpack_require__(324);
+	var actions = __webpack_require__(325);
 	var backendApi = __webpack_require__(226);
 
 	function mapStateToProps(state) {
@@ -36658,7 +37164,7 @@
 	module.exports = connect(mapStateToProps)(Antarctica);
 
 /***/ },
-/* 290 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36666,11 +37172,11 @@
 	exports.__esModule = true;
 	exports.connect = exports.Provider = undefined;
 
-	var _Provider = __webpack_require__(291);
+	var _Provider = __webpack_require__(292);
 
 	var _Provider2 = _interopRequireDefault(_Provider);
 
-	var _connect = __webpack_require__(293);
+	var _connect = __webpack_require__(294);
 
 	var _connect2 = _interopRequireDefault(_connect);
 
@@ -36680,7 +37186,7 @@
 	exports.connect = _connect2["default"];
 
 /***/ },
-/* 291 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -36690,7 +37196,7 @@
 
 	var _react = __webpack_require__(8);
 
-	var _storeShape = __webpack_require__(292);
+	var _storeShape = __webpack_require__(293);
 
 	var _storeShape2 = _interopRequireDefault(_storeShape);
 
@@ -36764,7 +37270,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ },
-/* 292 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36780,7 +37286,7 @@
 	});
 
 /***/ },
-/* 293 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -36792,23 +37298,23 @@
 
 	var _react = __webpack_require__(8);
 
-	var _storeShape = __webpack_require__(292);
+	var _storeShape = __webpack_require__(293);
 
 	var _storeShape2 = _interopRequireDefault(_storeShape);
 
-	var _shallowEqual = __webpack_require__(294);
+	var _shallowEqual = __webpack_require__(295);
 
 	var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
 
-	var _wrapActionCreators = __webpack_require__(295);
+	var _wrapActionCreators = __webpack_require__(296);
 
 	var _wrapActionCreators2 = _interopRequireDefault(_wrapActionCreators);
 
-	var _isPlainObject = __webpack_require__(313);
+	var _isPlainObject = __webpack_require__(314);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
-	var _hoistNonReactStatics = __webpack_require__(323);
+	var _hoistNonReactStatics = __webpack_require__(324);
 
 	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
 
@@ -37108,7 +37614,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ },
-/* 294 */
+/* 295 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -37139,7 +37645,7 @@
 	}
 
 /***/ },
-/* 295 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37147,7 +37653,7 @@
 	exports.__esModule = true;
 	exports["default"] = wrapActionCreators;
 
-	var _redux = __webpack_require__(296);
+	var _redux = __webpack_require__(297);
 
 	function wrapActionCreators(actionCreators) {
 	  return function (dispatch) {
@@ -37156,7 +37662,7 @@
 	}
 
 /***/ },
-/* 296 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -37164,27 +37670,27 @@
 	exports.__esModule = true;
 	exports.compose = exports.applyMiddleware = exports.bindActionCreators = exports.combineReducers = exports.createStore = undefined;
 
-	var _createStore = __webpack_require__(297);
+	var _createStore = __webpack_require__(298);
 
 	var _createStore2 = _interopRequireDefault(_createStore);
 
-	var _combineReducers = __webpack_require__(308);
+	var _combineReducers = __webpack_require__(309);
 
 	var _combineReducers2 = _interopRequireDefault(_combineReducers);
 
-	var _bindActionCreators = __webpack_require__(310);
+	var _bindActionCreators = __webpack_require__(311);
 
 	var _bindActionCreators2 = _interopRequireDefault(_bindActionCreators);
 
-	var _applyMiddleware = __webpack_require__(311);
+	var _applyMiddleware = __webpack_require__(312);
 
 	var _applyMiddleware2 = _interopRequireDefault(_applyMiddleware);
 
-	var _compose = __webpack_require__(312);
+	var _compose = __webpack_require__(313);
 
 	var _compose2 = _interopRequireDefault(_compose);
 
-	var _warning = __webpack_require__(309);
+	var _warning = __webpack_require__(310);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -37208,7 +37714,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ },
-/* 297 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37217,7 +37723,7 @@
 	exports.ActionTypes = undefined;
 	exports["default"] = createStore;
 
-	var _isPlainObject = __webpack_require__(298);
+	var _isPlainObject = __webpack_require__(299);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
@@ -37429,12 +37935,12 @@
 	}
 
 /***/ },
-/* 298 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGetTag = __webpack_require__(299),
-	    getPrototype = __webpack_require__(305),
-	    isObjectLike = __webpack_require__(307);
+	var baseGetTag = __webpack_require__(300),
+	    getPrototype = __webpack_require__(306),
+	    isObjectLike = __webpack_require__(308);
 
 	/** `Object#toString` result references. */
 	var objectTag = '[object Object]';
@@ -37497,12 +38003,12 @@
 
 
 /***/ },
-/* 299 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(300),
-	    getRawTag = __webpack_require__(303),
-	    objectToString = __webpack_require__(304);
+	var Symbol = __webpack_require__(301),
+	    getRawTag = __webpack_require__(304),
+	    objectToString = __webpack_require__(305);
 
 	/** `Object#toString` result references. */
 	var nullTag = '[object Null]',
@@ -37531,10 +38037,10 @@
 
 
 /***/ },
-/* 300 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(301);
+	var root = __webpack_require__(302);
 
 	/** Built-in value references. */
 	var Symbol = root.Symbol;
@@ -37543,10 +38049,10 @@
 
 
 /***/ },
-/* 301 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var freeGlobal = __webpack_require__(302);
+	var freeGlobal = __webpack_require__(303);
 
 	/** Detect free variable `self`. */
 	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -37558,7 +38064,7 @@
 
 
 /***/ },
-/* 302 */
+/* 303 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
@@ -37569,10 +38075,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 303 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(300);
+	var Symbol = __webpack_require__(301);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -37621,7 +38127,7 @@
 
 
 /***/ },
-/* 304 */
+/* 305 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -37649,10 +38155,10 @@
 
 
 /***/ },
-/* 305 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var overArg = __webpack_require__(306);
+	var overArg = __webpack_require__(307);
 
 	/** Built-in value references. */
 	var getPrototype = overArg(Object.getPrototypeOf, Object);
@@ -37661,7 +38167,7 @@
 
 
 /***/ },
-/* 306 */
+/* 307 */
 /***/ function(module, exports) {
 
 	/**
@@ -37682,7 +38188,7 @@
 
 
 /***/ },
-/* 307 */
+/* 308 */
 /***/ function(module, exports) {
 
 	/**
@@ -37717,7 +38223,7 @@
 
 
 /***/ },
-/* 308 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -37725,13 +38231,13 @@
 	exports.__esModule = true;
 	exports["default"] = combineReducers;
 
-	var _createStore = __webpack_require__(297);
+	var _createStore = __webpack_require__(298);
 
-	var _isPlainObject = __webpack_require__(298);
+	var _isPlainObject = __webpack_require__(299);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
-	var _warning = __webpack_require__(309);
+	var _warning = __webpack_require__(310);
 
 	var _warning2 = _interopRequireDefault(_warning);
 
@@ -37850,7 +38356,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ },
-/* 309 */
+/* 310 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -37879,7 +38385,7 @@
 	}
 
 /***/ },
-/* 310 */
+/* 311 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -37935,7 +38441,7 @@
 	}
 
 /***/ },
-/* 311 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37945,7 +38451,7 @@
 	exports.__esModule = true;
 	exports["default"] = applyMiddleware;
 
-	var _compose = __webpack_require__(312);
+	var _compose = __webpack_require__(313);
 
 	var _compose2 = _interopRequireDefault(_compose);
 
@@ -37997,7 +38503,7 @@
 	}
 
 /***/ },
-/* 312 */
+/* 313 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -38031,12 +38537,12 @@
 	}
 
 /***/ },
-/* 313 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGetTag = __webpack_require__(314),
-	    getPrototype = __webpack_require__(320),
-	    isObjectLike = __webpack_require__(322);
+	var baseGetTag = __webpack_require__(315),
+	    getPrototype = __webpack_require__(321),
+	    isObjectLike = __webpack_require__(323);
 
 	/** `Object#toString` result references. */
 	var objectTag = '[object Object]';
@@ -38099,12 +38605,12 @@
 
 
 /***/ },
-/* 314 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(315),
-	    getRawTag = __webpack_require__(318),
-	    objectToString = __webpack_require__(319);
+	var Symbol = __webpack_require__(316),
+	    getRawTag = __webpack_require__(319),
+	    objectToString = __webpack_require__(320);
 
 	/** `Object#toString` result references. */
 	var nullTag = '[object Null]',
@@ -38133,10 +38639,10 @@
 
 
 /***/ },
-/* 315 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var root = __webpack_require__(316);
+	var root = __webpack_require__(317);
 
 	/** Built-in value references. */
 	var Symbol = root.Symbol;
@@ -38145,10 +38651,10 @@
 
 
 /***/ },
-/* 316 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var freeGlobal = __webpack_require__(317);
+	var freeGlobal = __webpack_require__(318);
 
 	/** Detect free variable `self`. */
 	var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -38160,7 +38666,7 @@
 
 
 /***/ },
-/* 317 */
+/* 318 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
@@ -38171,10 +38677,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 318 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(315);
+	var Symbol = __webpack_require__(316);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -38223,7 +38729,7 @@
 
 
 /***/ },
-/* 319 */
+/* 320 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -38251,10 +38757,10 @@
 
 
 /***/ },
-/* 320 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var overArg = __webpack_require__(321);
+	var overArg = __webpack_require__(322);
 
 	/** Built-in value references. */
 	var getPrototype = overArg(Object.getPrototypeOf, Object);
@@ -38263,7 +38769,7 @@
 
 
 /***/ },
-/* 321 */
+/* 322 */
 /***/ function(module, exports) {
 
 	/**
@@ -38284,7 +38790,7 @@
 
 
 /***/ },
-/* 322 */
+/* 323 */
 /***/ function(module, exports) {
 
 	/**
@@ -38319,7 +38825,7 @@
 
 
 /***/ },
-/* 323 */
+/* 324 */
 /***/ function(module, exports) {
 
 	/**
@@ -38375,7 +38881,7 @@
 
 
 /***/ },
-/* 324 */
+/* 325 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -38427,7 +38933,7 @@
 	};
 
 /***/ },
-/* 325 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39177,7 +39683,7 @@
 	module.exports = Brazil;
 
 /***/ },
-/* 326 */
+/* 327 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -39901,7 +40407,7 @@
 	module.exports = Petra;
 
 /***/ },
-/* 327 */
+/* 328 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -40630,7 +41136,7 @@
 	module.exports = Zambia;
 
 /***/ },
-/* 328 */
+/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -41359,7 +41865,199 @@
 	module.exports = Rwanda;
 
 /***/ },
-/* 329 */
+/* 330 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(8);
+	var backendApi = __webpack_require__(226);
+
+	var NewTrip = React.createClass({
+	  displayName: 'NewTrip',
+
+	  handleFavourites: function handleFavourites() {
+	    var _props = this.props,
+	        dispatch = _props.dispatch,
+	        username = _props.username;
+
+	    console.log('Username:', username);
+	    backendApi.addTripForUser(username, "2001").then(function (response) {
+	      console.log('Response form antarctica', response);
+	    }, function (errorMessage) {
+	      console.log(errorMessage);
+	    });
+	  },
+	  componentDidMount: function componentDidMount() {
+	    var trip = this.props.location.state.trip;
+	    console.log(trip);
+	  },
+	  render: function render() {
+	    var trip = this.props.location.state.trip;
+	    return React.createElement(
+	      'article',
+	      { className: 'event-content trip-content' },
+	      React.createElement(
+	        'div',
+	        { className: 'container' },
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'div',
+	            { className: 'col-md-8' },
+	            React.createElement(
+	              'div',
+	              { className: 'row' },
+	              React.createElement(
+	                'header',
+	                { className: 'item-header trip-header js-item-header' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'col-md-12' },
+	                  React.createElement(
+	                    'h2',
+	                    { className: 'detail-sm item-supertitle' },
+	                    trip.country
+	                  ),
+	                  React.createElement(
+	                    'h1',
+	                    { className: 'title-lg item-title trip-title' },
+	                    trip.title
+	                  )
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'row' },
+	              React.createElement(
+	                'div',
+	                { className: 'content-body event-content-body col-md-11 trip-content-body' },
+	                React.createElement(
+	                  'section',
+	                  { id: 'event-body', className: 'item-body' },
+	                  React.createElement(
+	                    'h3',
+	                    { className: 'event-body-subheading' },
+	                    'HIGHLIGHTS'
+	                  ),
+	                  React.createElement(
+	                    'ul',
+	                    null,
+	                    React.createElement(
+	                      'li',
+	                      null,
+	                      'A dazzling landscape of vivid emeralds and violets, intense crimson light and sweeping panoramas of blue ice'
+	                    ),
+	                    React.createElement(
+	                      'li',
+	                      null,
+	                      'Seabirds, whales, penguins and more...'
+	                    )
+	                  ),
+	                  React.createElement(
+	                    'section',
+	                    { id: 'event-trip-itinerary' },
+	                    React.createElement(
+	                      'h5',
+	                      { className: 'event-body-heading' },
+	                      'Itinerary'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'trip-day-wrap' },
+	                      trip.description
+	                    )
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'aside',
+	            { className: 'content-siderail' },
+	            React.createElement(
+	              'div',
+	              { className: 'trip-detail-pane-wrap hidden-sm hidden-xs' },
+	              React.createElement(
+	                'div',
+	                { className: 'event-details-pane' },
+	                React.createElement(
+	                  'ul',
+	                  { className: 'event-details-top event-details-list' },
+	                  React.createElement(
+	                    'li',
+	                    null,
+	                    React.createElement(
+	                      'label',
+	                      { className: 'detail-sm event-details-label' },
+	                      'Dates'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'event-detail' },
+	                      React.createElement(
+	                        'div',
+	                        null,
+	                        'Apr 21\u2013Apr 30, 2019'
+	                      )
+	                    )
+	                  ),
+	                  React.createElement(
+	                    'li',
+	                    null,
+	                    React.createElement(
+	                      'label',
+	                      { className: 'detail-sm event-details-label' },
+	                      'Cost'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'event-detail' },
+	                      '$',
+	                      trip.price,
+	                      ',00 USD'
+	                    )
+	                  ),
+	                  React.createElement(
+	                    'li',
+	                    null,
+	                    React.createElement(
+	                      'label',
+	                      { className: 'detail-sm event-details-label' },
+	                      'Itinerary'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'event-detail' },
+	                      trip.duration,
+	                      ' days, 8 nights'
+	                    )
+	                  )
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'nav',
+	              { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
+	              React.createElement(
+	                'button',
+	                { className: 'favouriteButton', onClick: this.handleFavourites },
+	                'Add to favourites'
+	              )
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = NewTrip;
+
+/***/ },
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -41367,9 +42065,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var redux = __webpack_require__(296);
+	var redux = __webpack_require__(297);
 
-	var _require = __webpack_require__(330),
+	var _require = __webpack_require__(332),
 	    setLoggedUserReducer = _require.setLoggedUserReducer,
 	    setIsUserLoggedReducer = _require.setIsUserLoggedReducer,
 	    setAccessTokenReducer = _require.setAccessTokenReducer,
@@ -41395,7 +42093,7 @@
 	};
 
 /***/ },
-/* 330 */
+/* 332 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -41487,16 +42185,16 @@
 	};
 
 /***/ },
-/* 331 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(332);
+	var content = __webpack_require__(334);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -41513,10 +42211,10 @@
 	}
 
 /***/ },
-/* 332 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -41527,7 +42225,7 @@
 
 
 /***/ },
-/* 333 */
+/* 335 */
 /***/ function(module, exports) {
 
 	/*
@@ -41583,7 +42281,7 @@
 
 
 /***/ },
-/* 334 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -41837,16 +42535,16 @@
 
 
 /***/ },
-/* 335 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(336);
+	var content = __webpack_require__(338);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -41863,10 +42561,10 @@
 	}
 
 /***/ },
-/* 336 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -41877,16 +42575,16 @@
 
 
 /***/ },
-/* 337 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(338);
+	var content = __webpack_require__(340);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -41903,30 +42601,30 @@
 	}
 
 /***/ },
-/* 338 */
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
 	// module
-	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n  margin-left: -3px;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n  height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1196px;\r\n  margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n  margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n  height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n\r\n.tmpBtn {\r\n  opacity: 0;\r\n  margin: -16px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n  margin-left: -3px;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n  height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1196px;\r\n  margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n  margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n  height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n\r\n.tmpBtn {\r\n  opacity: 0;\r\n  margin: -16px;\r\n}\r\n\r\n.addTripButton {\r\n  margin: auto;\r\n  width: 50%;\r\n}\r\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 339 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(340);
+	var content = __webpack_require__(342);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -41943,10 +42641,10 @@
 	}
 
 /***/ },
-/* 340 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -41957,16 +42655,16 @@
 
 
 /***/ },
-/* 341 */
+/* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(342);
+	var content = __webpack_require__(344);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -41983,10 +42681,10 @@
 	}
 
 /***/ },
-/* 342 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -41997,16 +42695,16 @@
 
 
 /***/ },
-/* 343 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(344);
+	var content = __webpack_require__(346);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -42023,10 +42721,10 @@
 	}
 
 /***/ },
-/* 344 */
+/* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -42037,16 +42735,16 @@
 
 
 /***/ },
-/* 345 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(346);
+	var content = __webpack_require__(348);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -42063,10 +42761,10 @@
 	}
 
 /***/ },
-/* 346 */
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -42077,16 +42775,16 @@
 
 
 /***/ },
-/* 347 */
+/* 349 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(348);
+	var content = __webpack_require__(350);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -42103,10 +42801,10 @@
 	}
 
 /***/ },
-/* 348 */
+/* 350 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -42117,16 +42815,16 @@
 
 
 /***/ },
-/* 349 */
+/* 351 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(350);
+	var content = __webpack_require__(352);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -42143,10 +42841,10 @@
 	}
 
 /***/ },
-/* 350 */
+/* 352 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -42157,16 +42855,16 @@
 
 
 /***/ },
-/* 351 */
+/* 353 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(352);
+	var content = __webpack_require__(354);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -42183,10 +42881,10 @@
 	}
 
 /***/ },
-/* 352 */
+/* 354 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -42197,16 +42895,16 @@
 
 
 /***/ },
-/* 353 */
+/* 355 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(354);
+	var content = __webpack_require__(356);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -42223,10 +42921,10 @@
 	}
 
 /***/ },
-/* 354 */
+/* 356 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -42237,16 +42935,16 @@
 
 
 /***/ },
-/* 355 */
+/* 357 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(356);
+	var content = __webpack_require__(358);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -42263,10 +42961,10 @@
 	}
 
 /***/ },
-/* 356 */
+/* 358 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -42277,16 +42975,16 @@
 
 
 /***/ },
-/* 357 */
+/* 359 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(358);
+	var content = __webpack_require__(360);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -42303,10 +43001,10 @@
 	}
 
 /***/ },
-/* 358 */
+/* 360 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
@@ -42317,16 +43015,16 @@
 
 
 /***/ },
-/* 359 */
+/* 361 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(360);
+	var content = __webpack_require__(362);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(334)(content, {});
+	var update = __webpack_require__(336)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -42343,15 +43041,55 @@
 	}
 
 /***/ },
-/* 360 */
+/* 362 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(333)();
+	exports = module.exports = __webpack_require__(335)();
 	// imports
 
 
 	// module
 	exports.push([module.id, ".profileNav {\r\n  display: inline-block;\r\n  float: left;\r\n  margin-left: 200px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\nprofileLink\r\n.h3-title-profile {\r\n  color: #455A3B;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n\r\n.additionalQuestionLabel {\r\n  font-size: 15px;\r\n}\r\n\r\n.editInfoButton {\r\n  width: 50%;\r\n}\r\n\r\n.submitInfoButton {\r\n  margin: auto;\r\n  width: 50%;\r\n}\r\n\r\n.rightProfile {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n}\r\n\r\n.rightProfileHidden {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n  display: none !important;\r\n}\r\n\r\n.profileContainer {\r\n  margin-right: 200px;\r\n  margin-top: 25px;\r\n  display: inline-block;\r\n}\r\n\r\n.favDestLabel {\r\n  text-align: center;\r\n  width: 100%;\r\n}", ""]);
+
+	// exports
+
+
+/***/ },
+/* 363 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(364);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(336)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!../../node_modules/css-loader/index.js!./createTrip.css", function() {
+				var newContent = require("!!../../node_modules/css-loader/index.js!./createTrip.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 364 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(335)();
+	// imports
+
+
+	// module
+	exports.push([module.id, ".inputFieldsCreateTrip {\r\n    width: 400px !important;\r\n}\r\n\r\n.sort-div-create-trip {\r\n    margin-bottom: 10px;\r\n}\r\n\r\n.createTripTags {\r\n    display: inline-block;\r\n}", ""]);
 
 	// exports
 

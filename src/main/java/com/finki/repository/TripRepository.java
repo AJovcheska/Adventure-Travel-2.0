@@ -1,5 +1,6 @@
 package com.finki.repository;
 
+import com.finki.domain.Trip;
 import com.finki.domain.TripDto;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,5 +31,8 @@ public interface TripRepository {
     
     @Transactional(readOnly = true)
     void addTripForUser(String username, String id);
+
+    @Transactional(readOnly = true)
+    void addTrip(Trip trip);
 
 }

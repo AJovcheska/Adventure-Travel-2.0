@@ -44,13 +44,19 @@ create table oauth_refresh_token (
   authentication blob
 );
 
+create sequence trip_seq
+ start with     2000
+ increment by   1
+ nocache
+ nocycle;
+
 create table trip (
 
-  id number(19,0) not null,
+  id number(19,0) not null default nextval('trip_seq'),
 
-  category varchar2 (40),
-  region varchar2 (40),
-  country varchar2 (40),
+  category varchar2 (90),
+  region varchar2 (90),
+  country varchar2 (90),
   title varchar2(70),
   price number (19,0),
   tags varchar2 (150),
@@ -59,6 +65,7 @@ create table trip (
   departure_date date,
   end_date_to_sign date,
   destination varchar2(40),
+  description varchar2(500),
 
   primary key (id)
 );

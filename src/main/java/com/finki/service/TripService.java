@@ -65,4 +65,6 @@ public class TripService {
     }
 
     public void addTripForUser(String username, String id) { tripRepository.addTripForUser(username, id); }
+
+    public void addTrip(Trip trip) { tripRepository.addTrip(trip); }
 }

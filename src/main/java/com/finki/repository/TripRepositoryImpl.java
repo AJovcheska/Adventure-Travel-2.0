@@ -1,5 +1,7 @@
 package com.finki.repository;
 
+import com.finki.domain.Category;
+import com.finki.domain.Trip;
 import com.finki.domain.TripDto;
 import com.finki.mapper.TripMapper;
 import com.finki.queries.TripQueries;
@@ -75,6 +77,25 @@ public class TripRepositoryImpl implements TripRepository {
         map.addValue("username", username);
         map.addValue("tripId", id);
         jdbcTemplate.update(tripQueries.getAddTripForUser(),
+                map);
+    }
+
+    @Override
+    public void addTrip(Trip trip) {
+        MapSqlParameterSource map = new MapSqlParameterSource();
+        map.addValue("category", trip.getCategory().name());
+        map.addValue("region", trip.getRegion());
+        map.addValue("country", trip.getCountry());
+        map.addValue("title", trip.getTitle());
+        map.addValue("price", trip.getPrice());
+        map.addValue("tags", trip.getTags().substring(0, trip.getTags().length()-1));
+        map.addValue("duration", trip.getDuration());
+        map.addValue("dateFrom", trip.getDepartureDate());
+        map.addValue("dateTo", trip.getEndDateToSign());
+        map.addValue("destination", trip.getDestination());
+        map.addValue("rating", trip.getRating());
+        map.addValue("description", trip.getDescription());
+        jdbcTemplate.update(tripQueries.getAddTrip(),
                 map);
     }
 

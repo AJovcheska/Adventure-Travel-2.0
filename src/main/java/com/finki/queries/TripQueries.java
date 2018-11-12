@@ -31,6 +31,8 @@ public class TripQueries {
     @Value("${add-trip-for-user}")
     private String addTripForUser;
 
+    @Value("${add-trip}")
+    private String addTrip;
 }
 
 

@@ -71,15 +71,23 @@ var HomePage = React.createClass({
     };
 
     var isLoggedIn = this.state.isLogged;
+    var username = this.state.username;
     let greeting;
     if (isLoggedIn) {
-      greeting =
-        <Link to={{
-          pathname: "/profile",
-          state: {trips: this.state.trips, user: this.state.user, accessToken: this.state.accessToken}
-        }} className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
-          {this.state.user.username}'s profile
-        </Link>;
+      if (username === 'admin') {
+        greeting =
+          <Link to="/createTrip" className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
+            Add new trip
+          </Link>;
+      } else {
+        greeting =
+          <Link to={{
+            pathname: "/profile",
+            state: {trips: this.state.trips, user: this.state.user, accessToken: this.state.accessToken}
+          }} className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
+            {username}'s profile
+          </Link>;
+      }
     } else {
       greeting = <h1></h1>;
     }

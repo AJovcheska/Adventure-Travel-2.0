@@ -42,6 +42,7 @@ module.exports = {
       ErrorPage: 'app/components/ErrorPage.jsx',
       ProfileTrip: 'app/components/ProfileTrip.jsx',
       TripListProfile: 'app/components/TripListProfile.jsx',
+      CreateTrip: 'app/components/CreateTrip.jsx',
 
       // tags
       MotherNatureTag: 'app/components/tags/MotherNatureTag.jsx',
@@ -67,6 +68,7 @@ module.exports = {
       Petra: 'app/components/trip/Petra.jsx',
       Zambia: 'app/components/trip/Zambia.jsx',
       Rwanda: 'app/components/trip/Rwanda.jsx',
+      NewTrip: 'app/components/trip/NewTrip.jsx',
 
       // styles
       applicationStyles: 'app/styles/app.css',
@@ -81,6 +83,7 @@ module.exports = {
       homePageStyle: 'app/styles/homePage.css',
       tripsByTagsStyle: 'app/styles/tripsByTag.css',
       profileStyle: 'app/styles/profile.css',
+      createTripStyle: 'app/styles/createTrip.css',
 
       // trips css
       barcelonaStyle: 'app/styles/barcelona.css',

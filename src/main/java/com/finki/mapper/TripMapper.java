@@ -22,6 +22,8 @@ public class TripMapper implements RowMapper<TripDto> {
         trip.setDepartureDate(resultSet.getDate("departure_date"));
         trip.setEndDateToSign(resultSet.getDate("end_date_to_sign"));
         trip.setDestination(resultSet.getString("destination"));
+        trip.setDuration(resultSet.getInt("duration"));
+        trip.setDescription(resultSet.getString("description"));
         return trip;
     }
 }

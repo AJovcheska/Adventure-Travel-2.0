@@ -31,4 +31,8 @@ public class Trip {
     private Date endDateToSign;
 
     private String destination;
+
+    private Integer duration;
+
+    private String description;
 }

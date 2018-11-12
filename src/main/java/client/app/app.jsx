@@ -11,6 +11,7 @@ var Profile = require('Profile');
 var LoginForm = require('LoginForm');
 var SuccessRegistration = require('SuccessRegistration');
 var ErrorPage = require('ErrorPage');
+var CreateTrip = require('CreateTrip');
 
 var MotherNatureTag = require('MotherNatureTag');
 var InTheMountainTag = require('InTheMountainTag');
@@ -34,6 +35,7 @@ var Brazil = require('Brazil');
 var Petra = require('Petra');
 var Zambia = require('Zambia');
 var Rwanda = require('Rwanda');
+var NewTrip = require('NewTrip');
 
 var actions = require('actions');
 var store = require('configureStore').configure();
@@ -61,6 +63,7 @@ require('style!css!barcelonaStyle');
 require('style!css!homePageStyle');
 require('style!css!tripsByTagsStyle');
 require('style!css!profileStyle');
+require('style!css!createTripStyle');
 
 ReactDOM.render(
   <Provider store={store}>
@@ -72,6 +75,7 @@ ReactDOM.render(
         <Route path="description" component={TripDescription}/>
         <Route path="profile" component={Profile}/>
         <Route path="login" component={LoginForm}/>
+        <Route path="createTrip" component={CreateTrip}/>
 
         <Route path="2000" component={Rome}/>
         <Route path="2001" component={Antarctica}/>
@@ -84,6 +88,7 @@ ReactDOM.render(
         <Route path="2009" component={Petra}/>
         <Route path="2010" component={Rwanda}/>
         <Route path="2011" component={Zambia}/>
+        <Route path="trip" component={NewTrip}/>
 
         <Route path="tags/mothernature" component={MotherNatureTag}/>
         <Route path="tags/inthemountain" component={InTheMountainTag}/>
