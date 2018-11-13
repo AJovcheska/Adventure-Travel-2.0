@@ -62,10 +62,11 @@ create table trip (
   tags varchar2 (150),
   duration number (5, 0),
   rating decimal (3, 0),
-  departure_date date,
+  departure_date varchar2(50),
   end_date_to_sign date,
   destination varchar2(40),
   description varchar2(500),
+  highlights varchar2(500),
 
   primary key (id)
 );

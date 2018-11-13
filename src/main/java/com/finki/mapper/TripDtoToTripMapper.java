@@ -22,6 +22,7 @@ public final class TripDtoToTripMapper {
         trip.setDestination(tripDto.getDestination());
         trip.setDuration(tripDto.getDuration());
         trip.setDescription(tripDto.getDescription());
+        trip.setHighlights(tripDto.getHighlights());
         return trip;
     }
 }

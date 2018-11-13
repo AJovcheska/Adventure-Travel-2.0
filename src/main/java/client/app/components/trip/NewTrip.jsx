@@ -37,8 +37,7 @@ var NewTrip = React.createClass({
                   <section id="event-body" className="item-body">
                     <h3 className="event-body-subheading">HIGHLIGHTS</h3>
                     <ul>
-                      <li>A dazzling landscape of vivid emeralds and violets, intense crimson light and sweeping panoramas of blue ice</li>
-                      <li>Seabirds, whales, penguins and more...</li>
+                      {trip.highlights}
                     </ul>
                     <section id="event-trip-itinerary">
                       <h5 className="event-body-heading">Itinerary</h5>
@@ -57,7 +56,7 @@ var NewTrip = React.createClass({
                     <li>
                       <label className="detail-sm event-details-label">Dates</label>
                       <div className="event-detail">
-                        <div>Apr 21–Apr 30, 2019</div>
+                        <div>{trip.departureDate}</div>
                       </div>
                     </li>
                     <li>
@@ -69,7 +68,7 @@ var NewTrip = React.createClass({
                     <li>
                       <label className="detail-sm event-details-label">Itinerary</label>
                       <div className="event-detail">
-                        {trip.duration} days, 8 nights
+                        {trip.duration} days, {trip.duration + 1} nights
                       </div>
                     </li>
                   </ul>

@@ -25726,7 +25726,7 @@
 	      return console.log(e);
 	    });
 	  },
-	  addTrip: function addTrip(category, region, country, title, price, tags, duration, departure_date, end_date_to_sign, destination) {
+	  addTrip: function addTrip(category, region, country, title, price, tags, duration, departure_date, end_date_to_sign, destination, description, highlights) {
 	    return axios.post(ADD_TRIP_URL, {
 	      category: category,
 	      country: country,
@@ -25736,9 +25736,11 @@
 	      tags: tags,
 	      duration: duration,
 	      rating: 0,
-	      departure_date: departure_date,
+	      departureDate: departure_date,
 	      end_date_to_sign: end_date_to_sign,
-	      destination: destination
+	      destination: destination,
+	      description: description,
+	      highlights: highlights
 	    }, { headers: { "Content-Type": "application/json" }
 	    }).then(function (r) {
 	      return console.log(r.status);
@@ -27631,10 +27633,17 @@
 
 	    var pageToOpen = '';
 	    if (id > 2011) {
-	      pageToOpen = '/trip';
-	      console.log('Trip:', this.state.trip);
+	      pageToOpen = React.createElement(
+	        Link,
+	        { to: { pathname: '/trip', state: { trip: this.state.trip } }, className: 'detail-sm cta-text', onClick: this.handleDescription },
+	        'Learn more'
+	      );
 	    } else {
-	      pageToOpen = '/' + id;
+	      pageToOpen = React.createElement(
+	        Link,
+	        { to: '/' + id, className: 'detail-sm cta-text', onClick: this.handleDescription },
+	        'Learn more'
+	      );
 	    }
 	    return React.createElement(
 	      'div',
@@ -27689,11 +27698,7 @@
 	        React.createElement(
 	          'div',
 	          { className: 'content-card-footer' },
-	          React.createElement(
-	            Link,
-	            { to: { pathname: '/trip', state: { trip: this.state.trip } }, className: 'detail-sm cta-text', onClick: this.handleDescription },
-	            'Learn more'
-	          )
+	          pageToOpen
 	        )
 	      ),
 	      React.createElement(
@@ -30420,7 +30425,7 @@
 	      tags += 'Photography bomb,';
 	    }
 
-	    backendApi.addTrip(category, region, country, title, costs, tags, duration, null, null, destination).then(function (response) {
+	    backendApi.addTrip(category, region, country, title, costs, tags, duration, dates, null, destination, description, highlights).then(function (response) {
 	      console.log(response);
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
@@ -30742,7 +30747,7 @@
 	                      React.createElement(
 	                        'div',
 	                        null,
-	                        React.createElement('input', { type: 'text', placeholder: 'Enter dates', ref: 'dates', required: true })
+	                        React.createElement('input', { type: 'text', placeholder: 'Enter dates (example: Apr 21\u2013Apr 30, 2019)', ref: 'dates', required: true })
 	                      )
 	                    )
 	                  ),
@@ -41945,16 +41950,7 @@
 	                  React.createElement(
 	                    'ul',
 	                    null,
-	                    React.createElement(
-	                      'li',
-	                      null,
-	                      'A dazzling landscape of vivid emeralds and violets, intense crimson light and sweeping panoramas of blue ice'
-	                    ),
-	                    React.createElement(
-	                      'li',
-	                      null,
-	                      'Seabirds, whales, penguins and more...'
-	                    )
+	                    trip.highlights
 	                  ),
 	                  React.createElement(
 	                    'section',
@@ -42000,7 +41996,7 @@
 	                      React.createElement(
 	                        'div',
 	                        null,
-	                        'Apr 21\u2013Apr 30, 2019'
+	                        trip.departureDate
 	                      )
 	                    )
 	                  ),
@@ -42032,7 +42028,9 @@
 	                      'div',
 	                      { className: 'event-detail' },
 	                      trip.duration,
-	                      ' days, 8 nights'
+	                      ' days, ',
+	                      trip.duration + 1,
+	                      ' nights'
 	                    )
 	                  )
 	                )

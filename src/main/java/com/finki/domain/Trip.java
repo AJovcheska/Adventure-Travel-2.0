@@ -26,7 +26,7 @@ public class Trip {
 
     private Integer rating;
 
-    private Date departureDate;
+    private String departureDate;
 
     private Date endDateToSign;
 
@@ -35,4 +35,6 @@ public class Trip {
     private Integer duration;
 
     private String description;
+
+    private String highlights;
 }

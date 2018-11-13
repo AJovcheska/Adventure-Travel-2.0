@@ -258,7 +258,7 @@ module.exports = {
     }) .then(r => console.log(r.status))
       .catch(e => console.log(e));
   },
-  addTrip: function(category,region,country,title,price,tags,duration,departure_date,end_date_to_sign,destination) {
+  addTrip: function(category,region,country,title,price,tags,duration,departure_date,end_date_to_sign,destination,description,highlights) {
     return axios.post(ADD_TRIP_URL,
       {
         category: category,
@@ -269,9 +269,11 @@ module.exports = {
         tags: tags,
         duration: duration,
         rating: 0,
-        departure_date: departure_date,
+        departureDate: departure_date,
         end_date_to_sign: end_date_to_sign,
-        destination: destination
+        destination: destination,
+        description: description,
+        highlights: highlights
       },
       { headers: {"Content-Type": "application/json"}
       }) .then(r => console.log(r.status))

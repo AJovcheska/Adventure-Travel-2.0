@@ -24,7 +24,7 @@ public class TripDto {
 
     private String tags;
 
-    private Date departureDate;
+    private String departureDate;
 
     private Date endDateToSign;
 
@@ -33,4 +33,6 @@ public class TripDto {
     private Integer duration;
 
     private String description;
+
+    private String highlights;
 }

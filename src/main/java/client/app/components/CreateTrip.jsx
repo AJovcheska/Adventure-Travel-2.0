@@ -61,7 +61,7 @@ var CreateTrip = React.createClass({
       tags+='Photography bomb,'
     }
 
-    backendApi.addTrip(category,region,country,title,costs,tags,duration,null,null,destination).then((response) => {
+    backendApi.addTrip(category,region,country,title,costs,tags,duration,dates,null,destination,description,highlights).then((response) => {
       console.log(response);
     }, function (errorMessage) {
       console.log(errorMessage);
@@ -180,7 +180,7 @@ var CreateTrip = React.createClass({
                       <label className="detail-sm event-details-label">Dates</label>
                       <div className="event-detail">
                         <div>
-                          <input type="text" placeholder="Enter dates" ref="dates" required/>
+                          <input type="text" placeholder="Enter dates (example: Apr 21–Apr 30, 2019)" ref="dates" required/>
                         </div>
                       </div>
                     </li>

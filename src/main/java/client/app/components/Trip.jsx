@@ -36,10 +36,9 @@ var Trip = React.createClass({
 
     var pageToOpen = '';
     if (id > 2011) {
-      pageToOpen = '/trip';
-      console.log('Trip:', this.state.trip);
+      pageToOpen = <Link to={{ pathname: '/trip', state: { trip: this.state.trip} }} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>
     } else {
-      pageToOpen = `/${id}`;
+      pageToOpen = <Link to={`/${id}`} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>
     }
     return (
       <div className="content-card-v2 content-card-item trip-card">
@@ -56,7 +55,7 @@ var Trip = React.createClass({
             <div className="trip-rating" id="trip-card-rating">{rating} stars</div>
           </div>
           <div className="content-card-footer">
-            <Link to={{ pathname: '/trip', state: { trip: this.state.trip} }} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>
+            {pageToOpen}
           </div>
         </div>
         <div className="clearfix">
