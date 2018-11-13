@@ -59,7 +59,7 @@ create table trip (
   country varchar2 (90),
   title varchar2(70),
   price number (19,0),
-  tags varchar2 (150),
+  tags varchar2 (400),
   duration number (5, 0),
   rating decimal (3, 0),
   departure_date varchar2(50),

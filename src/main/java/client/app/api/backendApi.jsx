@@ -276,7 +276,12 @@ module.exports = {
         highlights: highlights
       },
       { headers: {"Content-Type": "application/json"}
-      }) .then(r => console.log(r.status))
-      .catch(e => console.log(e));
+      }) .then(function (res) {
+        if (res.data.cod && res.data.message) {
+          throw new Error(res.data.message);
+        } else {
+          return res;
+        }
+      }).catch(e => console.log(e));
   }
 }

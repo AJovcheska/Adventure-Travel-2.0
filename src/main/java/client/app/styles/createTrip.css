@@ -9,3 +9,9 @@
 .createTripTags {
     display: inline-block;
 }
+
+.fileInputType {
+    margin-top: 30px;
+    margin-left: -20px;
+    width: 319px;
+}
