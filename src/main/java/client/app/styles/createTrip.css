@@ -15,3 +15,20 @@
     margin-left: -20px;
     width: 319px;
 }
+
+.sort-type-trip {
+    color: #C1B599;
+}
+
+.title-createTrip {
+    color: white;
+}
+
+.event-content {
+    margin-top: -24px;
+}
+
+.addTripButton {
+    margin: auto;
+    width: 15%;
+}

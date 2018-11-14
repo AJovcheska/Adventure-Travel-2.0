@@ -3,6 +3,7 @@ var {Link} = require('react-router');
 var Trip = require('Trip');
 var backendApi = require('backendApi');
 var TripList = require('TripList');
+var {connect} = require('react-redux');
 
 var Destinations = React.createClass({
   getInitialState: function () {
@@ -12,6 +13,8 @@ var Destinations = React.createClass({
     };
   },
   componentDidMount: function() {
+    var {username} = this.props;
+    console.log('Username', username);
     backendApi.getTrips([], [], 'price').then((response) => {
       this.setState({
         trips: response.data
@@ -143,4 +146,10 @@ var Destinations = React.createClass({
   }
 });
 
-module.exports = Destinations;
+module.exports = connect(
+  (state) => {
+    return {
+      username: state.username
+    };
+  }
+)(Destinations);

@@ -2,6 +2,9 @@ var React = require('react');
 var backendApi = require('backendApi');
 var {browserHistory} = require('react-router');
 var {Link} = require('react-router');
+var {connect} = require('react-redux');
+var actions = require('actions');
+
 
 var HomePage = React.createClass({
   getInitialState: function () {
@@ -16,6 +19,7 @@ var HomePage = React.createClass({
   handleLogin: function (e) {
     var password = this.refs.password.value;
     var username = this.refs.username.value;
+    var {dispatch} = this.props;
     backendApi.getRefreshToken(username, password).then((response) => {
       backendApi.getAccessToken(response).then((res) => {
         backendApi.loginUser(res, username).then((result) => {
@@ -27,6 +31,9 @@ var HomePage = React.createClass({
               username: username,
               trips: result
             });
+            dispatch(actions.setLoggedUser(username));
+            dispatch(actions.setAccessToken(res));
+            dispatch(actions.setTripsForLoggedUser(result));
             console.log(username);
             console.log(res);
             backendApi.getUserByUsername(res, username).then((user) => {
@@ -35,10 +42,13 @@ var HomePage = React.createClass({
                   user: user,
                   isLogged: true
                 });
+                dispatch(actions.setUserObject(user));
+                dispatch(actions.setIsUserLogged(true));
               } else {
                 this.setState({
                   isLogged: false
                 });
+                dispatch(actions.setIsUserLogged(false));
               }
             }, function (errorMessage) {
               console.log(errorMessage);
@@ -186,4 +196,4 @@ var HomePage = React.createClass({
   }
 });
 
-module.exports = HomePage;
+module.exports = connect()(HomePage);

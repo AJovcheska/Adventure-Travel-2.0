@@ -1,15 +1,11 @@
 var React = require('react');
 var backendApi = require('backendApi');
-var {DatePicker} = require('react-datepicker');
-var moment = require('moment');
 var axios = require('axios');
-var ReactFileReader = require('react-file-reader');
 
 var CreateTrip = React.createClass({
   getInitialState: function() {
     return{
       selectedOption: null,
-      startDate: moment(),
       selectedFile: null
     };
   },
@@ -142,13 +138,22 @@ var CreateTrip = React.createClass({
       )
     });
   },
+  onChange: function() {
+    this.setState({
+      startDate: this.state.startDate
+    });
+  },
   render: function() {
+    const masterBackground = "../images/japan_honshu_island_2-wallpaper-2048x1152.jpg";
+    var masterImgStyle = {
+      backgroundImage: `url(${masterBackground})`
+    };
     return (
-      <article className="event-content trip-content">
+      <article className="event-content trip-content" style={masterImgStyle}>
         <div className="container">
           <div className="row">
             <div className="col-md-8">
-              <h2>Add new trip</h2>
+              <h2 className="title-createTrip">Add new trip</h2>
               <div className="row">
                 <header className="item-header trip-header js-item-header">
                   <div className="col-md-12">
@@ -169,8 +174,8 @@ var CreateTrip = React.createClass({
                         </ul>
                       </div>
                     </section>
-                    <section id="event-trip-itinerary">
-                      <h5 className="event-body-heading">Tags</h5>
+                    <section className="item-body sort-type-trip" id="event-trip-itinerary">
+                      <h5 className="event-body-heading sort-type-trip">Tags</h5>
                       <div className="createTripTags"><input type="checkbox" ref="architecturalWonders" onChange={this.handleChange}>Architectural wonders</input></div>
                       <div className="createTripTags"><input type="checkbox" ref="motherNature" onChange={this.handleChange}>Mother nature</input></div>
                       <div className="createTripTags"><input type="checkbox" ref="art" onChange={this.handleChange}>Inspiring art</input></div>
@@ -188,25 +193,25 @@ var CreateTrip = React.createClass({
               </div>
 
               <div className="sort-div-create-trip">
-                <h5 className="event-body-heading">Type of destination: </h5>
+                <h5 className="event-body-heading sort-type-trip">Type of destination: </h5>
                 <span className="sort-form">
-                  <span className="sort-type">
+                  <span className="sort-type-trip">
                       <input type="radio" value="City" checked={this.state.destination === 'City'}
                              onChange={this.handleChangeDestination}>City &emsp;&emsp;</input>
                   </span>
-                  <span className="sort-type">
+                  <span className="sort-type-trip">
                       <input type="radio" value="Mountain" checked={this.state.destination === 'Mountain'}
                              onChange={this.handleChangeDestination}>Mountain &emsp;&emsp;</input>
                   </span>
-                  <span className="sort-type">
+                  <span className="sort-type-trip">
                       <input type="radio" value="Cold place" checked={this.state.destination === 'Cold place'}
                              onChange={this.handleChangeDestination}>Cold place &emsp;&emsp;</input>
                   </span>
-                  <span className="sort-type">
+                  <span className="sort-type-trip">
                       <input type="radio" value="Historical place" checked={this.state.destination === 'Historical place'}
                              onChange={this.handleChangeDestination}>Historical place &emsp;&emsp;</input>
                   </span>
-                  <span className="sort-type">
+                  <span className="sort-type-trip">
                       <input type="radio" value="Tropical place" checked={this.state.destination === 'Tropical place'}
                              onChange={this.handleChangeDestination}>Tropical place &emsp;&emsp;</input>
                   </span>
@@ -214,7 +219,7 @@ var CreateTrip = React.createClass({
               </div>
 
               <div className="sort-div-create-trip">
-                <h5 className="event-body-heading">Category: </h5>
+                <h5 className="event-body-heading sort-type-trip">Category: </h5>
                 <span className="sort-form">
                   <span className="sort-type">
                       <input type="radio" value="HIDDEN_CITIES" checked={this.state.category === 'HIDDEN_CITIES'}
@@ -243,7 +248,7 @@ var CreateTrip = React.createClass({
                       <label className="detail-sm event-details-label">Dates</label>
                       <div className="event-detail">
                         <div>
-                          <input type="text" placeholder="Enter dates (example: Apr 21–Apr 30, 2019)" ref="dates" required/>
+                          <input type="text" placeholder="Enter dates" ref="dates" required/>
                         </div>
                       </div>
                     </li>
