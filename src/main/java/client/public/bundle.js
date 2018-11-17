@@ -25740,7 +25740,7 @@
 	      return console.log(e);
 	    });
 	  },
-	  addTrip: function addTrip(category, region, country, title, price, tags, duration, departure_date, end_date_to_sign, destination, description, highlights) {
+	  addTrip: function addTrip(category, region, country, title, price, tags, duration, departure_date, end_date_to_sign, destination, description, highlights, image) {
 	    return axios.post(ADD_TRIP_URL, {
 	      category: category,
 	      country: country,
@@ -25754,7 +25754,8 @@
 	      end_date_to_sign: end_date_to_sign,
 	      destination: destination,
 	      description: description,
-	      highlights: highlights
+	      highlights: highlights,
+	      image: image
 	    }, { headers: { "Content-Type": "application/json" }
 	    }).then(function (res) {
 	      if (res.data.cod && res.data.message) {
@@ -29185,7 +29186,7 @@
 	      regions.push('South America');
 	    }
 
-	    backendApi.getTrips(categories, regions, sortBy, "Mountain").then(function (response) {
+	    backendApi.getTrips(categories, regions, sortBy, "Tropical place").then(function (response) {
 	      _this2.setState({
 	        trips: response.data
 	      });
@@ -29425,7 +29426,8 @@
 	        title = _props.title,
 	        rating = _props.rating,
 	        departure_date = _props.departure_date,
-	        id = _props.id;
+	        id = _props.id,
+	        image = _props.image;
 
 
 	    var pageToOpen = '';
@@ -29448,7 +29450,7 @@
 	      React.createElement(
 	        'figure',
 	        { className: 'content-card-figure js-content-card-figure' },
-	        React.createElement('img', { src: '../images/' + this.props.id + '.jpg', className: 'img-responsive content-card-img lazyloaded trip-img' })
+	        React.createElement('img', { src: '../images/' + image, className: 'img-responsive content-card-img lazyloaded trip-img' })
 	      ),
 	      React.createElement(
 	        'div',
@@ -32155,7 +32157,7 @@
 /* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(__dirname) {'use strict';
+	'use strict';
 
 	var React = __webpack_require__(8);
 	var backendApi = __webpack_require__(226);
@@ -32186,6 +32188,9 @@
 	    var duration = this.refs.duration.value;
 	    var destination = this.state.destination;
 	    var category = this.state.category;
+
+	    var image = this.state.selectedFile.name;
+	    console.log(image);
 
 	    var architecturalWonders = this.refs.architecturalWonders.checked;
 	    var motherNature = this.refs.motherNature.checked;
@@ -32229,7 +32234,8 @@
 	      tags += 'Photography bomb,';
 	    }
 
-	    backendApi.addTrip(category, region, country, title, costs, tags, duration, dates, null, destination, description, highlights).then(function (response) {
+	    console.log(image);
+	    backendApi.addTrip(category, region, country, title, costs, tags, duration, dates, null, destination, description, highlights, image).then(function (response) {
 	      console.log('Response 123', response.status);
 	      if (response.status === 200) {
 	        _this.refs.title.value = '';
@@ -32255,7 +32261,8 @@
 	        _this.setState({
 	          selectedOption: null,
 	          destination: null,
-	          category: null
+	          category: null,
+	          selectedFile: null
 	        });
 	      }
 	    }, function (errorMessage) {
@@ -32274,31 +32281,6 @@
 	  },
 	  fileChangedHandler: function fileChangedHandler(event) {
 	    this.setState({ selectedFile: event.target.files[0] });
-	  },
-	  uploadHandler: function uploadHandler() {
-	    var formData = new FormData();
-	    var name = this.state.selectedFile.name;
-	    console.log(name);
-	    formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
-	    axios.post('upload', formData, {
-	      onUploadProgress: function onUploadProgress(progressEvent) {
-	        console.log(progressEvent.loaded / progressEvent.total);
-	      }
-	    });
-
-	    app.post('/upload', function (req, res, next) {
-	      var uploadFile = req.files.file;
-	      var fileName = req.files.file.name;
-	      uploadFile.mv(__dirname + '/public/files/' + fileName, function (err) {
-	        if (err) {
-	          return res.status(500).send(err);
-	        }
-
-	        res.json({
-	          file: 'public/' + req.files.file.name
-	        });
-	      });
-	    });
 	  },
 	  onChange: function onChange() {
 	    this.setState({
@@ -32644,7 +32626,8 @@
 	                  )
 	                )
 	              )
-	            )
+	            ),
+	            React.createElement('input', { className: 'fileInputType', type: 'file', onChange: this.fileChangedHandler })
 	          )
 	        )
 	      ),
@@ -32662,7 +32645,6 @@
 	});
 
 	module.exports = CreateTrip;
-	/* WEBPACK VAR INJECTION */}.call(exports, "/"))
 
 /***/ },
 /* 308 */
@@ -64861,7 +64843,7 @@
 	                      { className: 'event-detail' },
 	                      trip.duration,
 	                      ' days, ',
-	                      trip.duration + 1,
+	                      trip.duration - 1,
 	                      ' nights'
 	                    )
 	                  )
@@ -65919,7 +65901,7 @@
 
 
 	// module
-	exports.push([module.id, ".inputFieldsCreateTrip {\r\n    width: 400px !important;\r\n}\r\n\r\n.sort-div-create-trip {\r\n    margin-bottom: 10px;\r\n}\r\n\r\n.createTripTags {\r\n    display: inline-block;\r\n}\r\n\r\n.fileInputType {\r\n    margin-top: 30px;\r\n    margin-left: -20px;\r\n    width: 319px;\r\n}\r\n\r\n.sort-type-trip {\r\n    color: #C1B599;\r\n}\r\n\r\n.title-createTrip {\r\n    color: white;\r\n}\r\n\r\n.event-content {\r\n    margin-top: -24px;\r\n}\r\n\r\n.addTripButton {\r\n    margin: auto;\r\n    width: 15%;\r\n}", ""]);
+	exports.push([module.id, ".inputFieldsCreateTrip {\r\n    width: 400px !important;\r\n}\r\n\r\n.sort-div-create-trip {\r\n    margin-bottom: 10px;\r\n}\r\n\r\n.createTripTags {\r\n    display: inline-block;\r\n}\r\n\r\n.fileInputType {\r\n    margin-top: 30px;\r\n    margin-left: -20px;\r\n    width: 319px;\r\n    background-color: white;\r\n}\r\n\r\n.sort-type-trip {\r\n    color: #C1B599;\r\n}\r\n\r\n.title-createTrip {\r\n    color: white;\r\n}\r\n\r\n.event-content {\r\n    margin-top: -24px;\r\n}\r\n\r\n.addTripButton {\r\n    margin: auto;\r\n    width: 15%;\r\n}", ""]);
 
 	// exports
 

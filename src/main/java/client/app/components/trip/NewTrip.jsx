@@ -68,7 +68,7 @@ var NewTrip = React.createClass({
                     <li>
                       <label className="detail-sm event-details-label">Itinerary</label>
                       <div className="event-detail">
-                        {trip.duration} days, {trip.duration + 1} nights
+                        {trip.duration} days, {trip.duration - 1} nights
                       </div>
                     </li>
                   </ul>

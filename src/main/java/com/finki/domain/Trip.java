@@ -37,4 +37,6 @@ public class Trip {
     private String description;
 
     private String highlights;
+
+    private String image;
 }

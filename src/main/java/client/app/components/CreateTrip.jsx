@@ -24,6 +24,9 @@ var CreateTrip = React.createClass({
     var destination = this.state.destination;
     var category = this.state.category;
 
+    var image = this.state.selectedFile.name;
+    console.log(image);
+
     var architecturalWonders = this.refs.architecturalWonders.checked;
     var motherNature = this.refs.motherNature.checked;
     var art = this.refs.art.checked;
@@ -66,7 +69,8 @@ var CreateTrip = React.createClass({
       tags+='Photography bomb,'
     }
 
-    backendApi.addTrip(category,region,country,title,costs,tags,duration,dates,null,destination,description,highlights).then((response) => {
+    console.log(image);
+    backendApi.addTrip(category,region,country,title,costs,tags,duration,dates,null,destination,description,highlights,image).then((response) => {
       console.log('Response 123', response.status);
       if (response.status === 200) {
         this.refs.title.value = '';
@@ -92,7 +96,8 @@ var CreateTrip = React.createClass({
         this.setState({
           selectedOption: null,
           destination: null,
-          category: null
+          category: null,
+          selectedFile: null
         });
       }
     }, function (errorMessage) {
@@ -112,34 +117,6 @@ var CreateTrip = React.createClass({
   },
   fileChangedHandler: function(event) {
     this.setState({selectedFile: event.target.files[0]})
-  },
-  uploadHandler: function() {
-    const formData = new FormData();
-    var name = this.state.selectedFile.name;
-    console.log(name);
-    formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
-    axios.post('upload', formData, {
-      onUploadProgress: progressEvent => {
-        console.log(progressEvent.loaded / progressEvent.total)
-      }
-    });
-
-    app.post('/upload', (req, res, next) => {
-      let uploadFile = req.files.file;
-      const fileName = req.files.file.name;
-      uploadFile.mv(
-        `${__dirname}/public/files/${fileName}`,
-        function (err) {
-          if (err) {
-            return res.status(500).send(err)
-          }
-
-          res.json({
-            file: `public/${req.files.file.name}`,
-          })
-        },
-      )
-    });
   },
   onChange: function() {
     this.setState({
@@ -274,8 +251,7 @@ var CreateTrip = React.createClass({
                 {/*selected={this.state.startDate}*/}
                 {/*onChange={this.handleChange}*/}
               {/*/>*/}
-              {/*<input className="fileInputType" type="file" onChange={this.fileChangedHandler}/>*/}
-              {/*<button className="fileInputType" onClick={this.uploadHandler}>Upload image</button>*/}
+              <input className="fileInputType" type="file" onChange={this.fileChangedHandler}/>
             </aside>
           </div>
         </div>

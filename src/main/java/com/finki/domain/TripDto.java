@@ -35,4 +35,6 @@ public class TripDto {
     private String description;
 
     private String highlights;
+
+    private String image;
 }

@@ -67,6 +67,7 @@ create table trip (
   destination varchar2(40),
   description varchar2(500),
   highlights varchar2(500),
+  image varchar2(200),
 
   primary key (id)
 );

@@ -32,18 +32,18 @@ var Trip = React.createClass({
     });
   },
   render: function() {
-    var {price,title,rating,departure_date,id} = this.props;
+    var {price,title,rating,departure_date,id,image} = this.props;
 
     var pageToOpen = '';
     if (id > 2011) {
-      pageToOpen = <Link to={{ pathname: '/trip', state: { trip: this.state.trip} }} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>
+      pageToOpen = <Link to={{ pathname: '/trip', state: { trip: this.state.trip} }} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>;
     } else {
-      pageToOpen = <Link to={`/${id}`} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>
+      pageToOpen = <Link to={`/${id}`} className="detail-sm cta-text" onClick={this.handleDescription}>Learn more</Link>;
     }
     return (
       <div className="content-card-v2 content-card-item trip-card">
         <figure className="content-card-figure js-content-card-figure">
-          <img src = {`../images/${this.props.id}.jpg`}  className="img-responsive content-card-img lazyloaded trip-img"></img>
+          <img src = {`../images/${image}`}  className="img-responsive content-card-img lazyloaded trip-img"/>
         </figure>
         <div className="content-card-text">
           <h3 className="content-card-v2-title" id="trip-card-title"><span><strong>{title}</strong></span></h3>

@@ -81,7 +81,7 @@ var Destinations = React.createClass({
       regions.push('South America');
     }
 
-    backendApi.getTrips(categories, regions, sortBy, "Mountain").then((response) => {
+    backendApi.getTrips(categories, regions, sortBy, "Tropical place").then((response) => {
       this.setState({
         trips: response.data
       });

@@ -25,6 +25,7 @@ public class TripMapper implements RowMapper<TripDto> {
         trip.setDuration(resultSet.getInt("duration"));
         trip.setDescription(resultSet.getString("description"));
         trip.setHighlights(resultSet.getString("highlights"));
+        trip.setImage(resultSet.getString("image"));
         return trip;
     }
 }
