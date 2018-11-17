@@ -15,7 +15,7 @@ var Destinations = React.createClass({
   componentDidMount: function() {
     var {username} = this.props;
     console.log('Username', username);
-    backendApi.getTrips([], [], 'price').then((response) => {
+    backendApi.getTrips([], [], 'price', "Tropical place").then((response) => {
       this.setState({
         trips: response.data
       });
@@ -81,7 +81,7 @@ var Destinations = React.createClass({
       regions.push('South America');
     }
 
-    backendApi.getTrips(categories, regions, sortBy).then((response) => {
+    backendApi.getTrips(categories, regions, sortBy, "Mountain").then((response) => {
       this.setState({
         trips: response.data
       });

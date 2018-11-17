@@ -27,14 +27,14 @@ public class TripController {
     @Autowired
     private PreferenceCalculator preferenceCalculator;
 
-    @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
+    @RequestMapping(method = RequestMethod.GET)
     public String sayHello() {
         return "Hello User!";
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/nonsecured/trips")
     @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, value = "/nonsecured/trips")
     public ResponseEntity<List<Trip>> getTrips() {
         return ResponseEntity.ok(tripService.getAll());
     }
@@ -62,8 +62,9 @@ public class TripController {
     public ResponseEntity<List<Trip>> getSelectedTrips(@RequestParam(required = false) List<String> region,
                                                        @RequestParam(required = false) List<String> category,
                                                        @RequestParam String sortBy,
-                                                       @RequestParam boolean ascending) {
-        return ResponseEntity.ok(tripService.getSelectedTrips(region, category, sortBy, ascending));
+                                                       @RequestParam boolean ascending,
+                                                       @RequestParam String destination) {
+        return ResponseEntity.ok(tripService.getSelectedTrips(region, category, sortBy, ascending, destination));
     }
 
     @ResponseBody

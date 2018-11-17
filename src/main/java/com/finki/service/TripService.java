@@ -44,8 +44,24 @@ public class TripService {
         return trips;
     }
 
-    public List<Trip> getSelectedTrips(List<String> regions, List<String> categories, String sortBy, boolean ascending) {
-        return mapTripDtoListToTripList(tripRepository.findSelectedTrips(regions, categories, sortBy, ascending));
+    public List<Trip> getSelectedTrips(List<String> regions, List<String> categories, String sortBy, boolean ascending, String destination) {
+        List<Trip> allTrips = mapTripDtoListToTripList(tripRepository.findSelectedTrips(regions, categories, sortBy, ascending));
+        if (destination != null && !destination.isEmpty()) {
+            List<Trip> sameAsDestination = new ArrayList<>();
+            List<Trip> toReturn = new ArrayList<>();
+            for (Trip tripDto : allTrips) {
+                if (tripDto.getDestination().equals(destination)) {
+                    sameAsDestination.add(tripDto);
+                }
+            }
+            allTrips.removeAll(sameAsDestination);
+
+            toReturn.addAll(sameAsDestination);
+            toReturn.addAll(allTrips);
+            return toReturn;
+
+        }
+        return allTrips;
     }
 
     public List<Trip> getByTag(String tag) {
@@ -67,4 +83,5 @@ public class TripService {
     public void addTripForUser(String username, String id) { tripRepository.addTripForUser(username, id); }
 
     public void addTrip(Trip trip) { tripRepository.addTrip(trip); }
+
 }

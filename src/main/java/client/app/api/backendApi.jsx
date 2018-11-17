@@ -43,7 +43,7 @@ module.exports = {
       throw new Error(res.data.message);
     });
   },
-  getTrips: function(categories, regions, sortBy) {
+  getTrips: function(categories, regions, sortBy, userDestination) {
     var params = new URLSearchParams();
     for (var i = 0; i < categories.length; i++) {
       params.append("category", categories[i]);
@@ -54,6 +54,7 @@ module.exports = {
     }
     params.append("sortBy", sortBy);
     params.append("ascending", true);
+    params.append("destination", userDestination);
     return axios.get(GET_ALL_DESTINATIONS_URL,
       {
         params: params

@@ -1,12 +1,15 @@
 var React = require('react');
 var backendApi = require('backendApi');
 var axios = require('axios');
+var DatePicker = require('react-datepicker');
+var moment = require('moment');
 
 var CreateTrip = React.createClass({
   getInitialState: function() {
     return{
       selectedOption: null,
-      selectedFile: null
+      selectedFile: null,
+      startDate: moment()
     };
   },
   handleAddTrip: function() {
@@ -267,6 +270,10 @@ var CreateTrip = React.createClass({
                   </ul>
                 </div>
               </div>
+              {/*<DatePicker*/}
+                {/*selected={this.state.startDate}*/}
+                {/*onChange={this.handleChange}*/}
+              {/*/>*/}
               {/*<input className="fileInputType" type="file" onChange={this.fileChangedHandler}/>*/}
               {/*<button className="fileInputType" onClick={this.uploadHandler}>Upload image</button>*/}
             </aside>
