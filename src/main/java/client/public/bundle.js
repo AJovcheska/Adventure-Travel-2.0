@@ -32161,7 +32161,6 @@
 
 	var React = __webpack_require__(8);
 	var backendApi = __webpack_require__(226);
-	var axios = __webpack_require__(227);
 	var DatePicker = __webpack_require__(308);
 	var moment = __webpack_require__(311);
 
@@ -32190,7 +32189,6 @@
 	    var category = this.state.category;
 
 	    var image = this.state.selectedFile.name;
-	    console.log(image);
 
 	    var architecturalWonders = this.refs.architecturalWonders.checked;
 	    var motherNature = this.refs.motherNature.checked;
@@ -32234,9 +32232,7 @@
 	      tags += 'Photography bomb,';
 	    }
 
-	    console.log(image);
 	    backendApi.addTrip(category, region, country, title, costs, tags, duration, dates, null, destination, description, highlights, image).then(function (response) {
-	      console.log('Response 123', response.status);
 	      if (response.status === 200) {
 	        _this.refs.title.value = '';
 	        _this.refs.region.value = '';
@@ -32282,9 +32278,9 @@
 	  fileChangedHandler: function fileChangedHandler(event) {
 	    this.setState({ selectedFile: event.target.files[0] });
 	  },
-	  onChange: function onChange() {
+	  onChange: function onChange(date) {
 	    this.setState({
-	      startDate: this.state.startDate
+	      startDate: date
 	    });
 	  },
 	  render: function render() {

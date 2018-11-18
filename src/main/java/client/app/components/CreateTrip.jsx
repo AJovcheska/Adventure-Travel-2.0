@@ -1,6 +1,5 @@
 var React = require('react');
 var backendApi = require('backendApi');
-var axios = require('axios');
 var DatePicker = require('react-datepicker');
 var moment = require('moment');
 
@@ -25,7 +24,6 @@ var CreateTrip = React.createClass({
     var category = this.state.category;
 
     var image = this.state.selectedFile.name;
-    console.log(image);
 
     var architecturalWonders = this.refs.architecturalWonders.checked;
     var motherNature = this.refs.motherNature.checked;
@@ -69,9 +67,7 @@ var CreateTrip = React.createClass({
       tags+='Photography bomb,'
     }
 
-    console.log(image);
     backendApi.addTrip(category,region,country,title,costs,tags,duration,dates,null,destination,description,highlights,image).then((response) => {
-      console.log('Response 123', response.status);
       if (response.status === 200) {
         this.refs.title.value = '';
         this.refs.region.value = '';
@@ -118,9 +114,9 @@ var CreateTrip = React.createClass({
   fileChangedHandler: function(event) {
     this.setState({selectedFile: event.target.files[0]})
   },
-  onChange: function() {
+  onChange: function(date) {
     this.setState({
-      startDate: this.state.startDate
+      startDate: date
     });
   },
   render: function() {
@@ -249,7 +245,7 @@ var CreateTrip = React.createClass({
               </div>
               {/*<DatePicker*/}
                 {/*selected={this.state.startDate}*/}
-                {/*onChange={this.handleChange}*/}
+                {/*onChange={this.onChange}*/}
               {/*/>*/}
               <input className="fileInputType" type="file" onChange={this.fileChangedHandler}/>
             </aside>
