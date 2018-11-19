@@ -1,10 +1,8 @@
 var React = require('react');
 var backendApi = require('backendApi');
-var {browserHistory} = require('react-router');
 var {Link} = require('react-router');
 var {connect} = require('react-redux');
 var actions = require('actions');
-
 
 var HomePage = React.createClass({
   getInitialState: function () {

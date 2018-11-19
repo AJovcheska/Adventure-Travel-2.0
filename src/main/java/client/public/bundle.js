@@ -25096,13 +25096,10 @@
 	var backendApi = __webpack_require__(226);
 
 	var _require = __webpack_require__(166),
-	    browserHistory = _require.browserHistory;
+	    Link = _require.Link;
 
-	var _require2 = __webpack_require__(166),
-	    Link = _require2.Link;
-
-	var _require3 = __webpack_require__(253),
-	    connect = _require3.connect;
+	var _require2 = __webpack_require__(253),
+	    connect = _require2.connect;
 
 	var actions = __webpack_require__(287);
 
@@ -55512,6 +55509,11 @@
 	            'Learn more'
 	          )
 	        )
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'clearfix' },
+	        React.createElement('button', { className: 'tmpBtn', onClick: this.handleRemoveFromFavorites })
 	      )
 	    );
 	  }
@@ -65860,7 +65862,7 @@
 
 
 	// module
-	exports.push([module.id, ".profileNav {\r\n  display: inline-block;\r\n  float: left;\r\n  margin-left: 200px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\nprofileLink\r\n.h3-title-profile {\r\n  color: #455A3B;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n\r\n.additionalQuestionLabel {\r\n  font-size: 15px;\r\n}\r\n\r\n.editInfoButton {\r\n  width: 50%;\r\n}\r\n\r\n.submitInfoButton {\r\n  margin: auto;\r\n  width: 50%;\r\n}\r\n\r\n.rightProfile {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n}\r\n\r\n.rightProfileHidden {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n  display: none !important;\r\n}\r\n\r\n.profileContainer {\r\n  margin-right: 200px;\r\n  margin-top: 25px;\r\n  display: inline-block;\r\n}\r\n\r\n.favDestLabel {\r\n  text-align: center;\r\n  width: 100%;\r\n}", ""]);
+	exports.push([module.id, ".profileNav {\r\n  display: inline-block;\r\n  float: left;\r\n  margin-left: 200px;\r\n  margin-top: 30px;\r\n}\r\n\r\n.basicInfo {\r\n  margin-left: 10px;\r\n  color: #455A3B;\r\n  display: inline-block;\r\n}\r\n\r\n.profileImg {\r\n  margin-bottom: 12px;\r\n  margin-left: -21px;\r\n}\r\nprofileLink\r\n.h3-title-profile {\r\n  color: #455A3B;\r\n  display: block !important;\r\n  margin-left: 15px;\r\n  width: 200px;\r\n  margin-top: 20px;\r\n}\r\n\r\n.profile-placeholders {\r\n  margin-left: 15px;\r\n}\r\n\r\n.additionalQuestionLabel {\r\n  font-size: 15px;\r\n}\r\n\r\n.editInfoButton {\r\n  width: 50%;\r\n}\r\n\r\n.submitInfoButton {\r\n  margin: auto;\r\n  width: 50%;\r\n}\r\n\r\n.rightProfile {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n}\r\n\r\n.rightProfileHidden {\r\n  float: right;\r\n  display: inline-block;\r\n  border: dashed;\r\n  padding: 10px;\r\n  display: none !important;\r\n}\r\n\r\n.profileContainer {\r\n  margin-right: 200px;\r\n  margin-top: 100px;\r\n  display: inline-block;\r\n}\r\n\r\n.favDestLabel {\r\n  text-align: center;\r\n  width: 100%;\r\n}", ""]);
 
 	// exports
 
