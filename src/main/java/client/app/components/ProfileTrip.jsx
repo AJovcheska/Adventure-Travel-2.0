@@ -52,7 +52,7 @@ var ProfileTrip = React.createClass({
           </div>
         </div>
         <div className="clearfix">
-          <button type="submit" class="signupbtn" onClick={() => {
+          <button type="submit" class="deleteBtn" onClick={() => {
             this.props.onTripDelete(id);
           }}>Remove from favorites</button>
         </div>

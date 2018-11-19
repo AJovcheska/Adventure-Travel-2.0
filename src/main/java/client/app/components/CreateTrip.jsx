@@ -120,7 +120,7 @@ var CreateTrip = React.createClass({
     });
   },
   render: function() {
-    const masterBackground = "../images/japan_honshu_island_2-wallpaper-2048x1152.jpg";
+    const masterBackground = "../images/places_to_visit_before_you_die-wallpaper-2048x1152.jpg";
     var masterImgStyle = {
       backgroundImage: `url(${masterBackground})`
     };
@@ -197,19 +197,19 @@ var CreateTrip = React.createClass({
               <div className="sort-div-create-trip">
                 <h5 className="event-body-heading sort-type-trip">Category: </h5>
                 <span className="sort-form">
-                  <span className="sort-type">
+                  <span className="sort-type-trip">
                       <input type="radio" value="HIDDEN_CITIES" checked={this.state.category === 'HIDDEN_CITIES'}
                              onChange={this.handleChangeCategory}>Hidden cities &emsp;&emsp;</input>
                   </span>
-                  <span className="sort-type">
+                  <span className="sort-type-trip">
                       <input type="radio" value="CRUISING" checked={this.state.category === 'CRUISING'}
                              onChange={this.handleChangeCategory}>Cruising &emsp;&emsp;</input>
                   </span>
-                  <span className="sort-type">
+                  <span className="sort-type-trip">
                       <input type="radio" value="SCIENCE_AND_NATURE" checked={this.state.category === 'SCIENCE_AND_NATURE'}
                              onChange={this.handleChangeCategory}>Science and nature &emsp;&emsp;</input>
                   </span>
-                  <span className="sort-type">
+                  <span className="sort-type-trip">
                       <input type="radio" value="HISTORY_AND_CULTURE" checked={this.state.category === 'HISTORY_AND_CULTURE'}
                              onChange={this.handleChangeCategory}>History and culture &emsp;&emsp;</input>
                   </span>

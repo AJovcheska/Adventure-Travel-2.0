@@ -14,15 +14,14 @@
     margin-top: 30px;
     margin-left: -20px;
     width: 319px;
-    background-color: white;
 }
 
 .sort-type-trip {
-    color: #C1B599;
+    color: black;
 }
 
 .title-createTrip {
-    color: white;
+    margin-top: 20px;
 }
 
 .event-content {
@@ -32,4 +31,8 @@
 .addTripButton {
     margin: auto;
     width: 15%;
+}
+
+.sort-form-createTrip {
+    color: black;
 }

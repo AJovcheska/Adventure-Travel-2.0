@@ -29108,7 +29108,7 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      selectedOption: 'rating',
+	      selectedOption: 'price',
 	      trips: []
 	    };
 	  },
@@ -29126,16 +29126,13 @@
 	      alert(errorMessage);
 	    });
 	  },
-	  handleBoth: function handleBoth(event) {
-	    this.handleChangeSelectedOption(event);
-	    this.handleChange(event);
-	  },
-	  handleChangeSelectedOption: function handleChangeSelectedOption(event) {
+	  onSelectedOptionChange: function onSelectedOptionChange(e) {
 	    this.setState({
-	      selectedOption: event.target.value
+	      selectedOption: e.currentTarget.value
 	    });
+	    this.handleChange(e, true);
 	  },
-	  handleChange: function handleChange(event) {
+	  handleChange: function handleChange(event, flag) {
 	    var _this2 = this;
 
 	    var hidden_cities = this.refs.hidden_cities.checked;
@@ -29150,7 +29147,13 @@
 	    var North_America = this.refs.North_America.checked;
 	    var South_America = this.refs.South_America.checked;
 
-	    var sortBy = this.state.selectedOption;
+	    console.log(this.state.selectedOption);
+	    var sortBy = '';
+	    if (flag === true) {
+	      sortBy = event.currentTarget.value;
+	    } else {
+	      sortBy = this.state.selectedOption;
+	    }
 
 	    var categories = [];
 	    if (hidden_cities) {
@@ -29337,8 +29340,8 @@
 	              { className: 'sort-type' },
 	              React.createElement(
 	                'input',
-	                { type: 'radio', value: 'rating', checked: this.state.selectedOption === 'rating',
-	                  onChange: this.handleBoth },
+	                { type: 'radio', value: 'price', checked: this.state.selectedOption === 'price',
+	                  onChange: this.onSelectedOptionChange },
 	                'Price \u2003\u2003'
 	              )
 	            ),
@@ -29347,8 +29350,8 @@
 	              { className: 'sort-type' },
 	              React.createElement(
 	                'input',
-	                { type: 'radio', value: 'price', checked: this.state.selectedOption === 'price',
-	                  onChange: this.handleBoth },
+	                { type: 'radio', value: 'rating', checked: this.state.selectedOption === 'rating',
+	                  onChange: this.onSelectedOptionChange },
 	                'Rating'
 	              )
 	            )
@@ -32009,7 +32012,7 @@
 	        { className: 'clearfix' },
 	        React.createElement(
 	          'button',
-	          { type: 'submit', 'class': 'signupbtn', onClick: function onClick() {
+	          { type: 'submit', 'class': 'deleteBtn', onClick: function onClick() {
 	              _this2.props.onTripDelete(id);
 	            } },
 	          'Remove from favorites'
@@ -32284,7 +32287,7 @@
 	    });
 	  },
 	  render: function render() {
-	    var masterBackground = "../images/japan_honshu_island_2-wallpaper-2048x1152.jpg";
+	    var masterBackground = "../images/places_to_visit_before_you_die-wallpaper-2048x1152.jpg";
 	    var masterImgStyle = {
 	      backgroundImage: 'url(' + masterBackground + ')'
 	    };
@@ -32521,7 +32524,7 @@
 	                { className: 'sort-form' },
 	                React.createElement(
 	                  'span',
-	                  { className: 'sort-type' },
+	                  { className: 'sort-type-trip' },
 	                  React.createElement(
 	                    'input',
 	                    { type: 'radio', value: 'HIDDEN_CITIES', checked: this.state.category === 'HIDDEN_CITIES',
@@ -32531,7 +32534,7 @@
 	                ),
 	                React.createElement(
 	                  'span',
-	                  { className: 'sort-type' },
+	                  { className: 'sort-type-trip' },
 	                  React.createElement(
 	                    'input',
 	                    { type: 'radio', value: 'CRUISING', checked: this.state.category === 'CRUISING',
@@ -32541,7 +32544,7 @@
 	                ),
 	                React.createElement(
 	                  'span',
-	                  { className: 'sort-type' },
+	                  { className: 'sort-type-trip' },
 	                  React.createElement(
 	                    'input',
 	                    { type: 'radio', value: 'SCIENCE_AND_NATURE', checked: this.state.category === 'SCIENCE_AND_NATURE',
@@ -32551,7 +32554,7 @@
 	                ),
 	                React.createElement(
 	                  'span',
-	                  { className: 'sort-type' },
+	                  { className: 'sort-type-trip' },
 	                  React.createElement(
 	                    'input',
 	                    { type: 'radio', value: 'HISTORY_AND_CULTURE', checked: this.state.category === 'HISTORY_AND_CULTURE',
@@ -65897,7 +65900,7 @@
 
 
 	// module
-	exports.push([module.id, ".inputFieldsCreateTrip {\r\n    width: 400px !important;\r\n}\r\n\r\n.sort-div-create-trip {\r\n    margin-bottom: 10px;\r\n}\r\n\r\n.createTripTags {\r\n    display: inline-block;\r\n}\r\n\r\n.fileInputType {\r\n    margin-top: 30px;\r\n    margin-left: -20px;\r\n    width: 319px;\r\n    background-color: white;\r\n}\r\n\r\n.sort-type-trip {\r\n    color: #C1B599;\r\n}\r\n\r\n.title-createTrip {\r\n    color: white;\r\n}\r\n\r\n.event-content {\r\n    margin-top: -24px;\r\n}\r\n\r\n.addTripButton {\r\n    margin: auto;\r\n    width: 15%;\r\n}", ""]);
+	exports.push([module.id, ".inputFieldsCreateTrip {\r\n    width: 400px !important;\r\n}\r\n\r\n.sort-div-create-trip {\r\n    margin-bottom: 10px;\r\n}\r\n\r\n.createTripTags {\r\n    display: inline-block;\r\n}\r\n\r\n.fileInputType {\r\n    margin-top: 30px;\r\n    margin-left: -20px;\r\n    width: 319px;\r\n}\r\n\r\n.sort-type-trip {\r\n    color: black;\r\n}\r\n\r\n.title-createTrip {\r\n    margin-top: 20px;\r\n}\r\n\r\n.event-content {\r\n    margin-top: -24px;\r\n}\r\n\r\n.addTripButton {\r\n    margin: auto;\r\n    width: 15%;\r\n}\r\n\r\n.sort-form-createTrip {\r\n    color: black;\r\n}", ""]);
 
 	// exports
 

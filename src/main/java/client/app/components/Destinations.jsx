@@ -8,7 +8,7 @@ var {connect} = require('react-redux');
 var Destinations = React.createClass({
   getInitialState: function () {
     return {
-      selectedOption: 'rating',
+      selectedOption: 'price',
       trips: []
     };
   },
@@ -23,16 +23,13 @@ var Destinations = React.createClass({
       alert(errorMessage);
     });
   },
-  handleBoth: function(event) {
-    this.handleChangeSelectedOption(event);
-    this.handleChange(event);
-  },
-  handleChangeSelectedOption: function(event) {
+  onSelectedOptionChange: function(e) {
     this.setState({
-      selectedOption: event.target.value
+      selectedOption: e.currentTarget.value
     });
+    this.handleChange(e, true);
   },
-  handleChange: function(event) {
+  handleChange: function(event, flag) {
     var hidden_cities = this.refs.hidden_cities.checked;
     var cruising = this.refs.cruising.checked;
     var science_and_nature = this.refs.science_and_nature.checked;
@@ -45,7 +42,13 @@ var Destinations = React.createClass({
     var North_America = this.refs.North_America.checked;
     var South_America = this.refs.South_America.checked;
 
-    var sortBy = this.state.selectedOption;
+    console.log(this.state.selectedOption);
+    var sortBy = '';
+    if (flag === true) {
+      sortBy = event.currentTarget.value;
+    } else {
+      sortBy = this.state.selectedOption;
+    }
 
     var categories = [];
     if (hidden_cities) {
@@ -127,12 +130,12 @@ var Destinations = React.createClass({
 
             <span className="sort-form">
               <span className="sort-type">
-                  <input type="radio" value="rating" checked={this.state.selectedOption === 'rating'}
-                    onChange={this.handleBoth}>Price &emsp;&emsp;</input>
+                  <input type="radio" value="price" checked={this.state.selectedOption === 'price'}
+                    onChange={this.onSelectedOptionChange}>Price &emsp;&emsp;</input>
               </span>
               <span className="sort-type">
-                  <input type="radio" value="price" checked={this.state.selectedOption === 'price'}
-                    onChange={this.handleBoth}>Rating</input>
+                  <input type="radio" value="rating" checked={this.state.selectedOption === 'rating'}
+                    onChange={this.onSelectedOptionChange}>Rating</input>
               </span>
             </span>
           </div>
