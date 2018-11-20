@@ -1,8 +1,15 @@
 var React = require('react');
+var {connect} = require('react-redux');
+var backendApi = require('backendApi');
 
 var Persia = React.createClass({
   handleFavourites: function() {
-    alert("2007");
+    var {username} = this.props;
+    backendApi.addTripForUser(username, "2001").then((response) => {
+      console.log('Response form antarctica', response);
+    }, function (errorMessage) {
+      console.log(errorMessage);
+    });
   },
   render: function() {
     return (
@@ -330,4 +337,14 @@ var Persia = React.createClass({
   }
 });
 
-module.exports = Persia;
+module.exports = connect(
+  (state) => {
+    return {
+      user: state.setUserObject,
+      isLogged: state.setIsUserLogged,
+      accessToken: state.setAccessToken,
+      trips: state.setTripsForLoggedUser,
+      username: state.setLoggedUser
+    };
+  }
+)(Persia);

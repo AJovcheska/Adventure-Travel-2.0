@@ -226,10 +226,8 @@ module.exports = {
     var params = new URLSearchParams();
     params.append("username", encodedUsername);
     params.append("id", encodedId);
-    return axios.put(ADD_TRIP_FOR_USER_URL,
-      {
-        params: params
-      }).then(function (res) {
+    var refreshTokenUrl = `${ADD_TRIP_FOR_USER_URL}username=${encodedUsername}&id=${encodedId}`;
+    return axios.put(refreshTokenUrl).then(function (res) {
       if (res.data.cod && res.data.message) {
         throw new Error(res.data.message);
       } else {

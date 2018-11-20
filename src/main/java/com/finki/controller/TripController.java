@@ -70,9 +70,7 @@ public class TripController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, value = "/secure/trips/{username}")
     public ResponseEntity<List<Trip>> getTripsForUser(@PathVariable String username) {
-        List<Trip> tripsForUser = tripService.findTripsForUser(username);
-//        List<Trip> trips = preferenceCalculator.orderTripsByPreferences(username, tripsForUser);
-        return ResponseEntity.ok(tripsForUser);
+        return ResponseEntity.ok(tripService.findTripsForUser(username));
     }
 
     @ResponseBody
@@ -97,7 +95,7 @@ public class TripController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST, value = "/nonsecured/add/trip", consumes = MediaType.ALL_VALUE,
+    @RequestMapping(method = RequestMethod.PUT, value = "/nonsecured/add/trip", consumes = MediaType.ALL_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity addTripForUser(@RequestParam(value = "username") String username, @RequestParam(value = "id") String id) {
         tripService.addTripForUser(username, id);

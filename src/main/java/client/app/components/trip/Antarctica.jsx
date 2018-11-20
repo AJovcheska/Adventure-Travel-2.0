@@ -1,18 +1,18 @@
 var React = require('react');
 var {connect} = require('react-redux');
-var actions = require('actions');
 var backendApi = require('backendApi');
-
-function mapStateToProps(state) {
-  return { username: state.username };
-}
+var actions = require('actions');
 
 var Antarctica = React.createClass({
   handleFavourites: function() {
-     var {dispatch, username} = this.props;
-     console.log('Username:', username);
+     var {username, dispatch, trips} = this.props;
      backendApi.addTripForUser(username, "2001").then((response) => {
-       console.log('Response form antarctica', response);
+        backendApi.getTripById("2001").then((response) => {
+           console.log(response);
+          dispatch(actions.addTripForUser(username, trips, response.data));
+        }, function (errorMessage) {
+          console.log(errorMessage);
+        });
      }, function (errorMessage) {
        console.log(errorMessage);
      });
@@ -305,4 +305,14 @@ var Antarctica = React.createClass({
   }
 });
 
-module.exports = connect(mapStateToProps)(Antarctica);
+module.exports = connect(
+  (state) => {
+    return {
+      user: state.setUserObject,
+      isLogged: state.setIsUserLogged,
+      accessToken: state.setAccessToken,
+      trips: state.setTripsForLoggedUser,
+      username: state.setLoggedUser
+    };
+  }
+)(Antarctica);

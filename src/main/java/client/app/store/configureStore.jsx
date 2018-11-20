@@ -1,6 +1,6 @@
 var redux = require('redux');
 var {setLoggedUserReducer, setIsUserLoggedReducer, setAccessTokenReducer,
-  setTripsForLoggedUserReducer, setUserObjectReducer, tripsReducer} = require('reducers');
+  setTripsForLoggedUserReducer, setUserObjectReducer, setIsAdditionalDataSetReducer} = require('reducers');
 
 export var configure = () => {
   var reducer = redux.combineReducers({
@@ -9,7 +9,7 @@ export var configure = () => {
     setAccessToken: setAccessTokenReducer,
     setTripsForLoggedUser: setTripsForLoggedUserReducer,
     setUserObject: setUserObjectReducer,
-    tripsRedu: tripsReducer
+    setIsAdditionalDataSet: setIsAdditionalDataSetReducer
   });
 
   var store = redux.createStore(reducer, redux.compose(

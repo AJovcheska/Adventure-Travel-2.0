@@ -33,11 +33,19 @@ export var setUserObject = (user) => {
   }
 };
 
-export var addTripForUser = (username, tripId) => {
+export var addTripForUser = (username, trips, trip) => {
   return {
     type: 'ADD_TRIP_FOR_USER',
+    trips,
     username,
-    tripId
+    trip
+  }
+};
+
+export var setAdditionalDataSet = (additionalDataSet) => {
+  return {
+    type: 'SET_ADDITIONAL_DATA_SET',
+    additionalDataSet
   }
 };
 

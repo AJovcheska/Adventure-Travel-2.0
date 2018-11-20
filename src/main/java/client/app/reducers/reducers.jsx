@@ -25,10 +25,26 @@ export var setAccessTokenReducer = (state = '', action) => {
   }
 };
 
-export var setTripsForLoggedUserReducer = (state = [], action) => {
+var defaultTrip = {
+  username: '',
+  trips: [],
+  trip: ''
+};
+
+export var setTripsForLoggedUserReducer = (state = defaultTrip, action) => {
   switch (action.type) {
     case 'SET_TRIPS_FOR_LOGGED_USER':
       return action.trips;
+    case 'ADD_TRIP_FOR_USER':
+      return {
+        username: state.username,
+        trips: [
+          ...state.trips,
+          {
+            trip: action.trip
+          }
+        ]
+      };
     default:
       return state;
   }
@@ -38,29 +54,6 @@ export var setUserObjectReducer = (state = [], action) => {
   switch (action.type) {
     case 'SET_USER_OBJECT':
       return action.user;
-    default:
-      return state;
-  }
-};
-
-var defaultTrip = {
-  username: '',
-  trips: []
-};
-
-export var tripsReducer = (state = defaultTrip, action) => {
-  switch (action.type) {
-    case 'ADD_TRIP_FOR_USER':
-      return {
-        username: state.username,
-        trips: state.trips,
-        trips: [
-          state.trips,
-          {
-            trip: action.trip
-          }
-        ]
-      };
     default:
       return state;
   }

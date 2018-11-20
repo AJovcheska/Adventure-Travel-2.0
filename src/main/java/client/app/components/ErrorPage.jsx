@@ -1,11 +1,11 @@
-var React = require('react');
+import React from'react';
 
-var ErrorPage = React.createClass({
-  render: function() {
+class ErrorPage extends React.Component {
+  render() {
     return (
         <div className="successMessageRegistration">User not logged in.</div>
     );
   }
-});
+}
 
 module.exports = ErrorPage;

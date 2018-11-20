@@ -13,9 +13,8 @@ var Destinations = React.createClass({
     };
   },
   componentDidMount: function() {
-    var {username} = this.props;
-    console.log('Username', username);
-    backendApi.getTrips([], [], 'price', "Tropical place").then((response) => {
+    var {user} = this.props;
+    backendApi.getTrips([], [], 'price', user.destination).then((response) => {
       this.setState({
         trips: response.data
       });
@@ -30,6 +29,7 @@ var Destinations = React.createClass({
     this.handleChange(e, true);
   },
   handleChange: function(event, flag) {
+    var {user} = this.props;
     var hidden_cities = this.refs.hidden_cities.checked;
     var cruising = this.refs.cruising.checked;
     var science_and_nature = this.refs.science_and_nature.checked;
@@ -42,7 +42,6 @@ var Destinations = React.createClass({
     var North_America = this.refs.North_America.checked;
     var South_America = this.refs.South_America.checked;
 
-    console.log(this.state.selectedOption);
     var sortBy = '';
     if (flag === true) {
       sortBy = event.currentTarget.value;
@@ -84,7 +83,7 @@ var Destinations = React.createClass({
       regions.push('South America');
     }
 
-    backendApi.getTrips(categories, regions, sortBy, "Tropical place").then((response) => {
+    backendApi.getTrips(categories, regions, sortBy, user.destination).then((response) => {
       this.setState({
         trips: response.data
       });
@@ -152,7 +151,11 @@ var Destinations = React.createClass({
 module.exports = connect(
   (state) => {
     return {
-      username: state.username
+      user: state.setUserObject,
+      isLogged: state.setIsUserLogged,
+      accessToken: state.setAccessToken,
+      trips: state.setTripsForLoggedUser,
+      username: state.setLoggedUser
     };
   }
 )(Destinations);

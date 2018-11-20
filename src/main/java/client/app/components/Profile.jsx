@@ -1,52 +1,42 @@
 var React = require("react");
 var backendApi = require('backendApi');
 var TripListProfile = require('TripListProfile');
+var {connect} = require('react-redux');
+var actions = require('actions');
 
 var Profile = React.createClass({
   getInitialState: function () {
+    var addDataSet = false;
+    var {user} = this.props;
+    if (user.destination !== '' && user.entertainment !== '' && user.tripCompanion !== '' && user.tripLength !=='') {
+      addDataSet = true;
+    }
     return {
-      trips: [],
-      user: '',
-      tripCompanion: null,
-      entertainment: null,
-      tripLength: null,
-      destination: null,
-      additionalDataSet: false
+      accessToken: this.props.accessToken,
+      username: this.props.username,
+      trips: this.props.trips,
+      user: this.props.user,
+      isLogged: this.props.isLogged,
+      tripCompanion: this.props.user.tripCompanion,
+      entertainment: this.props.user.entertainment,
+      tripLength: this.props.user.tripLength,
+      destination: this.props.user.destination,
+      additionalDataSet: addDataSet
     };
-  },
-  componentDidMount: function() {
-    this.setState({
-      trips: this.props.location.state.trips,
-      user: this.props.location.state.user
-    });
-    var username = this.props.location.state.user.username;
-    var accessToken = this.props.location.state.accessToken;
-    backendApi.getUserByUsername(accessToken, username).then((response) =>{
-      this.setState({
-        user: response
-      });
-      if (response.destination !== '' && response.entertainment !== '' && response.tripCompanion !== '' && response.tripLength !=='') {
-        this.setState({
-          additionalDataSet: true
-        });
-      }
-    });
   },
   handleChangeData: function() {
     var {tripCompanion, entertainment, tripLength, destination} = this.state;
-    var username = this.props.location.state.user.username;
-    var accessToken = this.props.location.state.accessToken;
+    var {username, accessToken, dispatch} = this.props;
 
     backendApi.updateAdditionalInfo(username, destination, entertainment, tripLength, tripCompanion).then((response) => {
       backendApi.getUserByUsername(accessToken, username).then((response) =>{
-        this.setState({
-          user: response,
-          tripCompanion: null,
-          entertainment: null,
-          tripLength: null,
-          destination: null,
-          additionalDataSet: true
-        });
+        dispatch(actions.setUserObject(response));
+        if (response.destination !== '' && response.entertainment !== '' && response.tripCompanion !== '' && response.tripLength !=='') {
+          dispatch(actions.setAdditionalDataSet(true));
+          this.setState({
+            additionalDataSet: true
+          });
+        }
       });
     }, function(errorMessage) {
       console.log(errorMessage);
@@ -73,31 +63,34 @@ var Profile = React.createClass({
     });
   },
   handleTripDelete: function(tripId) {
+    var {dispatch} = this.props;
     backendApi.removeTripFromUser(this.props.location.state.user.username, tripId);
     backendApi.getTripsByUser(this.props.location.state.user.username).then((res) => {
+      dispatch(actions.setTripsForLoggedUser(res));
       this.setState({
-        trips: res
+        additionalDataSet: res
       });
     }, function (errorMessage) {
       console.log(errorMessage);
     });
   },
   toggleAdditionalInfo: function() {
+    var {dispatch} = this.props;
+    dispatch(actions.setAdditionalDataSet(!this.state.additionalDataSet));
     this.setState({
       additionalDataSet: !this.state.additionalDataSet
     });
   },
   render: function() {
-    var {name, age, country, profession, email, destination, entertainment, tripLength, tripCompanion} = this.state.user;
+    var {name, age, country, profession, email, destination, entertainment, tripLength, tripCompanion} = this.props.user;
     var tripLengthToShow = tripLength === '' ? '/' : tripLength;
     var entertainmentToShow = entertainment === '' ? '/' : entertainment;
     var tripCompanionToShow = tripCompanion === '' ? '/' : tripCompanion;
     var destinationToShow = destination === '' ? '/' : destination;
-    var trips = this.state.trips;
-    var user = this.state.user;
+    var {trips, user} = this.props;
+    var {additionalDataSet} = this.state;
 
     var styleName;
-    var {additionalDataSet} = this.state;
     if (additionalDataSet === false) {
       styleName = "profileContainer rightProfile";
     } else {
@@ -199,4 +192,15 @@ var Profile = React.createClass({
   }
 });
 
-module.exports = Profile;
+module.exports = connect(
+  (state) => {
+    return {
+      user: state.setUserObject,
+      isLogged: state.setIsUserLogged,
+      accessToken: state.setAccessToken,
+      trips: state.setTripsForLoggedUser,
+      username: state.setLoggedUser,
+      additionalDataSet: state.setIsAdditionalDataSet
+    };
+  }
+)(Profile);

@@ -1,5 +1,6 @@
 var React = require('react');
 var backendApi = require('backendApi');
+var {connect} = require('react-redux');
 
 var NewTrip = React.createClass({
   handleFavourites: function() {
@@ -16,6 +17,16 @@ var NewTrip = React.createClass({
     console.log(trip);
   },
   render: function() {
+    var {username} = this.props;
+    var showAddToFavorites = '';
+    if (username ==='admin') {
+      showAddToFavorites = '';
+    } else {
+      showAddToFavorites = <nav className="trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print">
+        <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>
+      </nav>;
+    }
+
     var trip = this.props.location.state.trip;
     return (
       <article className="event-content trip-content">
@@ -74,9 +85,7 @@ var NewTrip = React.createClass({
                   </ul>
                 </div>
               </div>
-              <nav className="trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print">
-                <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>
-              </nav>
+              {showAddToFavorites}
             </aside>
           </div>
         </div>
@@ -85,4 +94,14 @@ var NewTrip = React.createClass({
   }
 });
 
-module.exports = NewTrip;
+module.exports = connect(
+  (state) => {
+    return {
+      user: state.setUserObject,
+      isLogged: state.setIsUserLogged,
+      accessToken: state.setAccessToken,
+      trips: state.setTripsForLoggedUser,
+      username: state.setLoggedUser
+    };
+  }
+)(NewTrip);

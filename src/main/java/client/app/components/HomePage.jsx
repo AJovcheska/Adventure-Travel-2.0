@@ -7,11 +7,11 @@ var actions = require('actions');
 var HomePage = React.createClass({
   getInitialState: function () {
     return {
-      accessToken: '',
-      username: '',
-      trips: [],
-      user: [],
-      isLogged: false
+      accessToken: this.props.accessToken,
+      username: this.props.username,
+      trips: this.props.trips,
+      user: this.props.user,
+      isLogged: this.props.isLogged
     }
   },
   handleLogin: function (e) {
@@ -78,10 +78,9 @@ var HomePage = React.createClass({
       backgroundImage: `url(${whereWeTravelBackground})`
     };
 
-    var isLoggedIn = this.state.isLogged;
-    var username = this.state.username;
+    var {isLogged, username} = this.props;
     let greeting;
-    if (isLoggedIn) {
+    if (isLogged) {
       if (username === 'admin') {
         greeting =
           <Link to="/createTrip" className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
@@ -194,4 +193,14 @@ var HomePage = React.createClass({
   }
 });
 
-module.exports = connect()(HomePage);
+module.exports = connect(
+  (state) => {
+    return {
+      user: state.setUserObject,
+      isLogged: state.setIsUserLogged,
+      accessToken: state.setAccessToken,
+      trips: state.setTripsForLoggedUser,
+      username: state.setLoggedUser
+    };
+  }
+)(HomePage);
