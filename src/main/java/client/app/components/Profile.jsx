@@ -24,6 +24,17 @@ var Profile = React.createClass({
       additionalDataSet: addDataSet
     };
   },
+  componentDidMount: function() {
+    var {username, dispatch} = this.props;
+    backendApi.getTripsByUser(username).then((res) => {
+      dispatch(actions.setTripsForLoggedUser(res));
+      this.setState({
+        trips: res
+      });
+    }, function (errorMessage) {
+      console.log(errorMessage);
+    });
+  },
   handleChangeData: function() {
     var {tripCompanion, entertainment, tripLength, destination} = this.state;
     var {username, accessToken, dispatch} = this.props;
@@ -68,7 +79,7 @@ var Profile = React.createClass({
     backendApi.getTripsByUser(username).then((res) => {
       dispatch(actions.setTripsForLoggedUser(res));
       this.setState({
-        additionalDataSet: res
+        trips: res
       });
     }, function (errorMessage) {
       console.log(errorMessage);

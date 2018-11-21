@@ -6,7 +6,7 @@ var Morocco = React.createClass({
   handleFavourites: function() {
     var {username} = this.props;
     backendApi.addTripForUser(username, "2004").then((response) => {
-      console.log('Response form antarctica', response);
+      console.log(response);
     }, function (errorMessage) {
       console.log(errorMessage);
     });

@@ -25,24 +25,14 @@ export var setAccessTokenReducer = (state = '', action) => {
   }
 };
 
-var defaultTrip = {
-  username: '',
-  trips: [],
-  trip: ''
-};
-
-export var setTripsForLoggedUserReducer = (state = defaultTrip, action) => {
+export var setTripsForLoggedUserReducer = (state = [], action) => {
   switch (action.type) {
     case 'SET_TRIPS_FOR_LOGGED_USER':
       return action.trips;
     case 'ADD_TRIP_FOR_USER':
       return {
-        username: state.username,
         trips: [
-          ...state.trips,
-          {
-            trip: action.trip
-          }
+          action.trips
         ]
       };
     default:
@@ -58,3 +48,4 @@ export var setUserObjectReducer = (state = [], action) => {
       return state;
   }
 };
+

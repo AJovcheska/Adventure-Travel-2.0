@@ -26935,11 +26935,10 @@
 	  };
 	};
 
-	var addTripForUser = exports.addTripForUser = function addTripForUser(username, trips, trip) {
+	var addTripForUser = exports.addTripForUser = function addTripForUser(trips, trip) {
 	  return {
 	    type: 'ADD_TRIP_FOR_USER',
 	    trips: trips,
-	    username: username,
 	    trip: trip
 	  };
 	};
@@ -31548,18 +31547,34 @@
 	      additionalDataSet: addDataSet
 	    };
 	  },
-	  handleChangeData: function handleChangeData() {
+	  componentDidMount: function componentDidMount() {
 	    var _this = this;
+
+	    var _props = this.props,
+	        username = _props.username,
+	        dispatch = _props.dispatch;
+
+	    backendApi.getTripsByUser(username).then(function (res) {
+	      dispatch(actions.setTripsForLoggedUser(res));
+	      _this.setState({
+	        trips: res
+	      });
+	    }, function (errorMessage) {
+	      console.log(errorMessage);
+	    });
+	  },
+	  handleChangeData: function handleChangeData() {
+	    var _this2 = this;
 
 	    var _state = this.state,
 	        tripCompanion = _state.tripCompanion,
 	        entertainment = _state.entertainment,
 	        tripLength = _state.tripLength,
 	        destination = _state.destination;
-	    var _props = this.props,
-	        username = _props.username,
-	        accessToken = _props.accessToken,
-	        dispatch = _props.dispatch;
+	    var _props2 = this.props,
+	        username = _props2.username,
+	        accessToken = _props2.accessToken,
+	        dispatch = _props2.dispatch;
 
 
 	    backendApi.updateAdditionalInfo(username, destination, entertainment, tripLength, tripCompanion).then(function (response) {
@@ -31567,7 +31582,7 @@
 	        dispatch(actions.setUserObject(response));
 	        if (response.destination !== '' && response.entertainment !== '' && response.tripCompanion !== '' && response.tripLength !== '') {
 	          dispatch(actions.setAdditionalDataSet(true));
-	          _this.setState({
+	          _this2.setState({
 	            additionalDataSet: true
 	          });
 	        }
@@ -31597,17 +31612,17 @@
 	    });
 	  },
 	  handleTripDelete: function handleTripDelete(tripId) {
-	    var _this2 = this;
+	    var _this3 = this;
 
-	    var _props2 = this.props,
-	        dispatch = _props2.dispatch,
-	        username = _props2.username;
+	    var _props3 = this.props,
+	        dispatch = _props3.dispatch,
+	        username = _props3.username;
 
 	    backendApi.removeTripFromUser(username, tripId);
 	    backendApi.getTripsByUser(username).then(function (res) {
 	      dispatch(actions.setTripsForLoggedUser(res));
-	      _this2.setState({
-	        additionalDataSet: res
+	      _this3.setState({
+	        trips: res
 	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
@@ -31637,9 +31652,9 @@
 	    var entertainmentToShow = entertainment === '' ? '/' : entertainment;
 	    var tripCompanionToShow = tripCompanion === '' ? '/' : tripCompanion;
 	    var destinationToShow = destination === '' ? '/' : destination;
-	    var _props3 = this.props,
-	        trips = _props3.trips,
-	        user = _props3.user;
+	    var _props4 = this.props,
+	        trips = _props4.trips,
+	        user = _props4.user;
 	    var additionalDataSet = this.state.additionalDataSet;
 
 
@@ -31969,6 +31984,9 @@
 	var React = __webpack_require__(8);
 	var ProfileTrip = __webpack_require__(303);
 
+	var _require = __webpack_require__(225),
+	    connect = _require.connect;
+
 	var TripListProfile = React.createClass({
 	  displayName: 'TripListProfile',
 
@@ -31993,7 +32011,16 @@
 	  }
 	});
 
-	module.exports = TripListProfile;
+	module.exports = connect(function (state) {
+	  return {
+	    user: state.setUserObject,
+	    isLogged: state.setIsUserLogged,
+	    accessToken: state.setAccessToken,
+	    trips: state.setTripsForLoggedUser,
+	    username: state.setLoggedUser,
+	    additionalDataSet: state.setIsAdditionalDataSet
+	  };
+	})(TripListProfile);
 
 /***/ },
 /* 303 */
@@ -56153,7 +56180,7 @@
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2007").then(function (response) {
-	         console.log('Response form antarctica', response);
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -56950,7 +56977,7 @@
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2000").then(function (response) {
-	         console.log('Response form antarctica', response);
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -57704,7 +57731,7 @@
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2004").then(function (response) {
-	         console.log('Response form antarctica', response);
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -58566,7 +58593,7 @@
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2001").then(function (response) {
-	         console.log('Response form antarctica', response);
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -59462,7 +59489,7 @@
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2006").then(function (response) {
-	         console.log('Response form antarctica', response);
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -60481,7 +60508,7 @@
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2002").then(function (response) {
-	         console.log('Response form antarctica', response);
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -61267,18 +61294,10 @@
 	   displayName: 'Antarctica',
 
 	   handleFavourites: function handleFavourites() {
-	      var _props = this.props,
-	          username = _props.username,
-	          dispatch = _props.dispatch,
-	          trips = _props.trips;
+	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2001").then(function (response) {
-	         backendApi.getTripById("2001").then(function (response) {
-	            console.log(response);
-	            dispatch(actions.addTripForUser(username, trips, response.data));
-	         }, function (errorMessage) {
-	            console.log(errorMessage);
-	         });
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -62021,7 +62040,7 @@
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2008").then(function (response) {
-	         console.log('Response form antarctica', response);
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -62790,7 +62809,7 @@
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2009").then(function (response) {
-	         console.log('Response form antarctica', response);
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -63533,7 +63552,7 @@
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2012").then(function (response) {
-	         console.log('Response form antarctica', response);
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -64281,7 +64300,7 @@
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2011").then(function (response) {
-	         console.log('Response form antarctica', response);
+	         console.log(response);
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
@@ -65024,14 +65043,11 @@
 	var NewTrip = React.createClass({
 	  displayName: 'NewTrip',
 
-	  handleFavourites: function handleFavourites() {
-	    var _props = this.props,
-	        dispatch = _props.dispatch,
-	        username = _props.username;
+	  handleFavourites: function handleFavourites(id) {
+	    var username = this.props.username;
 
-	    console.log('Username:', username);
-	    backendApi.addTripForUser(username, "2001").then(function (response) {
-	      console.log('Response form antarctica', response);
+	    backendApi.addTripForUser(username, id).then(function (response) {
+	      console.log(response);
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
@@ -65043,6 +65059,8 @@
 	  render: function render() {
 	    var username = this.props.username;
 
+	    var trip = this.props.location.state.trip;
+
 	    var showAddToFavorites = '';
 	    if (username === 'admin') {
 	      showAddToFavorites = '';
@@ -65052,13 +65070,12 @@
 	        { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
 	        React.createElement(
 	          'button',
-	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          { className: 'favouriteButton', onClick: this.handleFavourites(trip.id) },
 	          'Add to favourites'
 	        )
 	      );
 	    }
 
-	    var trip = this.props.location.state.trip;
 	    return React.createElement(
 	      'article',
 	      { className: 'event-content trip-content' },
@@ -65259,9 +65276,6 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 	var setLoggedUserReducer = exports.setLoggedUserReducer = function setLoggedUserReducer() {
 	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 	  var action = arguments[1];
@@ -65298,14 +65312,8 @@
 	  }
 	};
 
-	var defaultTrip = {
-	  username: '',
-	  trips: [],
-	  trip: ''
-	};
-
 	var setTripsForLoggedUserReducer = exports.setTripsForLoggedUserReducer = function setTripsForLoggedUserReducer() {
-	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultTrip;
+	  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
 	  var action = arguments[1];
 
 	  switch (action.type) {
@@ -65313,10 +65321,7 @@
 	      return action.trips;
 	    case 'ADD_TRIP_FOR_USER':
 	      return {
-	        username: state.username,
-	        trips: [].concat(_toConsumableArray(state.trips), [{
-	          trip: action.trip
-	        }])
+	        trips: [action.trips]
 	      };
 	    default:
 	      return state;

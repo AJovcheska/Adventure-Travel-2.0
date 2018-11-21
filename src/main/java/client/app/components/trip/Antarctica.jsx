@@ -5,14 +5,9 @@ var actions = require('actions');
 
 var Antarctica = React.createClass({
   handleFavourites: function() {
-     var {username, dispatch, trips} = this.props;
+     var {username} = this.props;
      backendApi.addTripForUser(username, "2001").then((response) => {
-        backendApi.getTripById("2001").then((response) => {
-           console.log(response);
-          dispatch(actions.addTripForUser(username, trips, response.data));
-        }, function (errorMessage) {
-          console.log(errorMessage);
-        });
+        console.log(response);
      }, function (errorMessage) {
        console.log(errorMessage);
      });

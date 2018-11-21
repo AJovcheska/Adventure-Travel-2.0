@@ -1,5 +1,6 @@
 var React = require('react');
 var ProfileTrip = require('ProfileTrip');
+var {connect} = require('react-redux');
 
 var TripListProfile = React.createClass({
   render: function() {
@@ -20,4 +21,15 @@ var TripListProfile = React.createClass({
   }
 });
 
-module.exports = TripListProfile;
+module.exports = connect(
+  (state) => {
+    return {
+      user: state.setUserObject,
+      isLogged: state.setIsUserLogged,
+      accessToken: state.setAccessToken,
+      trips: state.setTripsForLoggedUser,
+      username: state.setLoggedUser,
+      additionalDataSet: state.setIsAdditionalDataSet
+    };
+  }
+)(TripListProfile);

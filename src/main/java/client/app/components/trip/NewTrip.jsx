@@ -3,11 +3,10 @@ var backendApi = require('backendApi');
 var {connect} = require('react-redux');
 
 var NewTrip = React.createClass({
-  handleFavourites: function() {
-    var {dispatch, username} = this.props;
-    console.log('Username:', username);
-    backendApi.addTripForUser(username, "2001").then((response) => {
-      console.log('Response form antarctica', response);
+  handleFavourites: function(id) {
+    var {username} = this.props;
+    backendApi.addTripForUser(username, id).then((response) => {
+      console.log(response);
     }, function (errorMessage) {
       console.log(errorMessage);
     });
@@ -18,16 +17,17 @@ var NewTrip = React.createClass({
   },
   render: function() {
     var {username} = this.props;
+    var trip = this.props.location.state.trip;
+
     var showAddToFavorites = '';
     if (username ==='admin') {
       showAddToFavorites = '';
     } else {
       showAddToFavorites = <nav className="trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print">
-        <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>
+        <button className="favouriteButton" onClick={this.handleFavourites(trip.id)}>Add to favourites</button>
       </nav>;
     }
 
-    var trip = this.props.location.state.trip;
     return (
       <article className="event-content trip-content">
         <div className="container">

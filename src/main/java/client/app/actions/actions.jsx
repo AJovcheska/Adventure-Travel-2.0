@@ -33,11 +33,10 @@ export var setUserObject = (user) => {
   }
 };
 
-export var addTripForUser = (username, trips, trip) => {
+export var addTripForUser = (trips, trip) => {
   return {
     type: 'ADD_TRIP_FOR_USER',
     trips,
-    username,
     trip
   }
 };
