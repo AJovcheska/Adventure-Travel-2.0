@@ -78,30 +78,17 @@ var HomePage = React.createClass({
       backgroundImage: `url(${whereWeTravelBackground})`
     };
 
-    var {isLogged, username} = this.props;
-    let greeting;
-    if (isLogged) {
-      if (username === 'admin') {
-        greeting =
-          <Link to="/createTrip" className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
-            Add new trip
-          </Link>;
-      } else {
-        greeting =
-          <Link to={{
-            pathname: "/profile",
-            state: {trips: this.state.trips, user: this.state.user, accessToken: this.state.accessToken}
-          }} className="profileLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
-            {username}'s profile
-          </Link>;
-      }
+    var {isLogged} = this.props;
+    var styleName = '';
+    if (isLogged === true) {
+      styleName = "loginFormHidden";
     } else {
-      greeting = <h1></h1>;
+      styleName = "";
     }
 
     return (
       <div>
-        <form>
+        <form className={styleName}>
           <div className="loginForm loginButton">
             <button type="submit" onClick={this.handleLogin}>Login</button>
           </div>
@@ -113,7 +100,6 @@ var HomePage = React.createClass({
           </div>
         </form>
 
-        {greeting}
         <div style={masterImgStyle}>
           <h1 className="text-center page-title homepage-transparentTitle">Transparent title</h1>
           <h1 className="text-center page-title homepage-title">Adventure Travel</h1>

@@ -25056,21 +25056,79 @@
 	    dispatch(actions.setUserObject(''));
 	  },
 	  render: function render() {
-	    var isLogged = this.props.isLogged;
+	    var _props = this.props,
+	        isLogged = _props.isLogged,
+	        username = _props.username;
 
 	    var link = '';
 	    if (isLogged === false) {
+
 	      link = React.createElement(
-	        Link,
-	        { to: '/registration', className: 'registerLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
-	        'Register'
+	        'div',
+	        { className: 'top-bar-right' },
+	        React.createElement(
+	          Link,
+	          { to: '/registration', className: 'registerLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
+	          'Register'
+	        )
 	      );
 	    } else {
-	      link = React.createElement(
-	        'button',
-	        { type: 'submit', className: 'signOutBtn', onClick: this.onSignOut },
-	        'Sign out'
-	      );
+	      if (username === 'admin') {
+	        link = React.createElement(
+	          'div',
+	          { className: 'top-bar-right' },
+	          React.createElement(
+	            'ul',
+	            { className: 'menu' },
+	            React.createElement(
+	              'li',
+	              null,
+	              React.createElement(
+	                Link,
+	                { to: '/createTrip' },
+	                'Add new trip'
+	              )
+	            ),
+	            React.createElement(
+	              'li',
+	              null,
+	              React.createElement(
+	                'button',
+	                { type: 'submit', className: 'signOutBtn', onClick: this.onSignOut },
+	                'Sign out'
+	              )
+	            )
+	          )
+	        );
+	      } else {
+	        link = React.createElement(
+	          'div',
+	          { className: 'top-bar-right' },
+	          React.createElement(
+	            'ul',
+	            { className: 'menu' },
+	            React.createElement(
+	              'li',
+	              null,
+	              React.createElement(
+	                Link,
+	                { to: '/profile' },
+	                username,
+	                '\'s profile '
+	              )
+	            ),
+	            React.createElement(
+	              'li',
+	              null,
+	              React.createElement(
+	                'button',
+	                { type: 'submit', className: 'signOutBtn', onClick: this.onSignOut },
+	                'Sign out'
+	              )
+	            )
+	          )
+	        );
+	      }
 	    }
 	    return React.createElement(
 	      'div',
@@ -25086,7 +25144,7 @@
 	            null,
 	            React.createElement(
 	              IndexLink,
-	              { to: '/', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
+	              { to: '/' },
 	              'Home'
 	            )
 	          ),
@@ -25095,17 +25153,13 @@
 	            null,
 	            React.createElement(
 	              Link,
-	              { to: '/destinations', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
+	              { to: '/destinations' },
 	              'Destinations'
 	            )
 	          )
 	        )
 	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'top-bar-right' },
-	        link
-	      )
+	      link
 	    );
 	  }
 	});
@@ -26993,31 +27047,13 @@
 	      backgroundImage: 'url(' + whereWeTravelBackground + ')'
 	    };
 
-	    var _props = this.props,
-	        isLogged = _props.isLogged,
-	        username = _props.username;
+	    var isLogged = this.props.isLogged;
 
-	    var greeting = void 0;
-	    if (isLogged) {
-	      if (username === 'admin') {
-	        greeting = React.createElement(
-	          Link,
-	          { to: '/createTrip', className: 'profileLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
-	          'Add new trip'
-	        );
-	      } else {
-	        greeting = React.createElement(
-	          Link,
-	          { to: {
-	              pathname: "/profile",
-	              state: { trips: this.state.trips, user: this.state.user, accessToken: this.state.accessToken }
-	            }, className: 'profileLink', activeClassName: 'active', activeStyle: { fontWeight: 'bold', color: '#C1B599' } },
-	          username,
-	          '\'s profile'
-	        );
-	      }
+	    var styleName = '';
+	    if (isLogged === true) {
+	      styleName = "loginFormHidden";
 	    } else {
-	      greeting = React.createElement('h1', null);
+	      styleName = "";
 	    }
 
 	    return React.createElement(
@@ -27025,7 +27061,7 @@
 	      null,
 	      React.createElement(
 	        'form',
-	        null,
+	        { className: styleName },
 	        React.createElement(
 	          'div',
 	          { className: 'loginForm loginButton' },
@@ -27046,7 +27082,6 @@
 	          React.createElement('input', { type: 'text', placeholder: 'Enter Username', ref: 'username', required: true })
 	        )
 	      ),
-	      greeting,
 	      React.createElement(
 	        'div',
 	        { style: masterImgStyle },
@@ -31564,10 +31599,12 @@
 	  handleTripDelete: function handleTripDelete(tripId) {
 	    var _this2 = this;
 
-	    var dispatch = this.props.dispatch;
+	    var _props2 = this.props,
+	        dispatch = _props2.dispatch,
+	        username = _props2.username;
 
-	    backendApi.removeTripFromUser(this.props.location.state.user.username, tripId);
-	    backendApi.getTripsByUser(this.props.location.state.user.username).then(function (res) {
+	    backendApi.removeTripFromUser(username, tripId);
+	    backendApi.getTripsByUser(username).then(function (res) {
 	      dispatch(actions.setTripsForLoggedUser(res));
 	      _this2.setState({
 	        additionalDataSet: res
@@ -31600,9 +31637,9 @@
 	    var entertainmentToShow = entertainment === '' ? '/' : entertainment;
 	    var tripCompanionToShow = tripCompanion === '' ? '/' : tripCompanion;
 	    var destinationToShow = destination === '' ? '/' : destination;
-	    var _props2 = this.props,
-	        trips = _props2.trips,
-	        user = _props2.user;
+	    var _props3 = this.props,
+	        trips = _props3.trips,
+	        user = _props3.user;
 	    var additionalDataSet = this.state.additionalDataSet;
 
 
@@ -66083,7 +66120,7 @@
 
 
 	// module
-	exports.push([module.id, ".content-card-text-homepage {\r\n  background-color: #EAE0D7;\r\n  width: 400px;\r\n  margin-left: 122px;\r\n  display: inline-block;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-title-homepage {\r\n  text-align: center;\r\n}\r\n\r\n.homepage-transparentTitle {\r\n  font-size: 66px;\r\n  margin-top: -32px;\r\n  opacity: 0;\r\n}\r\n\r\n.h5-homepage {\r\n  color: #333 !important;\r\n  font-weight: bold;\r\n}\r\n\r\n.homepage-title {\r\n  color: #333 !important;\r\n  font-size: 66px;\r\n  font-weight: bold;\r\n}\r\n\r\n.logoImg {\r\n  width: 200px;\r\n  height: 200px;\r\n  align: center;\r\n}\r\n\r\nimg {\r\n  padding: 2px;\r\n}\r\n\r\n.imgStyle {\r\n  width: 400px;\r\n  height: 250px;\r\n}\r\n\r\n.imagesStyle {\r\n  padding-left: 250px;\r\n}\r\n\r\n.tags-subtitle, .home-subtitle {\r\n  font-size: 40px;\r\n  font-style: oblique;\r\n  color: #1b624f;\r\n  width: 100%;\r\n  text-align: center;\r\n  padding-top: 25px;\r\n  padding-bottom: 25px;\r\n}\r\n .photobooth-subtitle {\r\n   font-size: 40px;\r\n   font-style: oblique;\r\n   color: #1b624f;\r\n   width: 100%;\r\n   text-align: center;\r\n   padding-top: 25px;\r\n   padding-bottom: 25px;\r\n   margin-left: -135px;\r\n }\r\n\r\n.tagsStyle {\r\n\r\n}\r\n\r\n.links-column {\r\n  letter-spacing: .04em;\r\n  font-weight: 400;\r\n  margin: 0;\r\n  padding: 0;\r\n  list-style: none;\r\n}\r\n\r\n.tag-li {\r\n  background-color: #ccb48d;\r\n  border-radius: 8px;\r\n  margin: 0 6px 6px 0;\r\n  display: inline-block;\r\n  line-height: 0;\r\n  height: 45px;\r\n  width: 300px;\r\n}\r\n\r\n.tag-li>a {\r\n  color: white;\r\n}\r\n\r\n.tag-li:hover {\r\n  background-color: #455A3B; /* Green */\r\n  color: white;\r\n  transition-duration: 0.4s;\r\n}\r\n\r\n.photoDiv {\r\n}\r\n\r\n.place-tags-top-content-header {\r\n  padding: 0 0 7px;\r\n  margin-bottom: 7px;\r\n  text-align: center;\r\n}\r\n\r\n.profileLink {\r\n  margin: 5px;\r\n  z-index: 1;\r\n  position: relative;\r\n  float: left;\r\n  color: #e2d5b4;\r\n  font-size: 30px;\r\n  margin-left: 23px;\r\n}\r\n", ""]);
+	exports.push([module.id, ".content-card-text-homepage {\r\n  background-color: #EAE0D7;\r\n  width: 400px;\r\n  margin-left: 122px;\r\n  display: inline-block;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-title-homepage {\r\n  text-align: center;\r\n}\r\n\r\n.homepage-transparentTitle {\r\n  font-size: 66px;\r\n  margin-top: -32px;\r\n  opacity: 0;\r\n}\r\n\r\n.h5-homepage {\r\n  color: #333 !important;\r\n  font-weight: bold;\r\n}\r\n\r\n.homepage-title {\r\n  color: #333 !important;\r\n  font-size: 66px;\r\n  font-weight: bold;\r\n}\r\n\r\n.logoImg {\r\n  width: 200px;\r\n  height: 200px;\r\n  align: center;\r\n}\r\n\r\nimg {\r\n  padding: 2px;\r\n}\r\n\r\n.imgStyle {\r\n  width: 400px;\r\n  height: 250px;\r\n}\r\n\r\n.imagesStyle {\r\n  padding-left: 250px;\r\n}\r\n\r\n.tags-subtitle, .home-subtitle {\r\n  font-size: 40px;\r\n  font-style: oblique;\r\n  color: #1b624f;\r\n  width: 100%;\r\n  text-align: center;\r\n  padding-top: 25px;\r\n  padding-bottom: 25px;\r\n}\r\n .photobooth-subtitle {\r\n   font-size: 40px;\r\n   font-style: oblique;\r\n   color: #1b624f;\r\n   width: 100%;\r\n   text-align: center;\r\n   padding-top: 25px;\r\n   padding-bottom: 25px;\r\n   margin-left: -135px;\r\n }\r\n\r\n.tagsStyle {\r\n\r\n}\r\n\r\n.links-column {\r\n  letter-spacing: .04em;\r\n  font-weight: 400;\r\n  margin: 0;\r\n  padding: 0;\r\n  list-style: none;\r\n}\r\n\r\n.tag-li {\r\n  background-color: #ccb48d;\r\n  border-radius: 8px;\r\n  margin: 0 6px 6px 0;\r\n  display: inline-block;\r\n  line-height: 0;\r\n  height: 45px;\r\n  width: 300px;\r\n}\r\n\r\n.tag-li>a {\r\n  color: white;\r\n}\r\n\r\n.tag-li:hover {\r\n  background-color: #455A3B; /* Green */\r\n  color: white;\r\n  transition-duration: 0.4s;\r\n}\r\n\r\n.photoDiv {\r\n}\r\n\r\n.place-tags-top-content-header {\r\n  padding: 0 0 7px;\r\n  margin-bottom: 7px;\r\n  text-align: center;\r\n}\r\n\r\n.profileLink {\r\n  margin: 5px;\r\n  z-index: 1;\r\n  position: relative;\r\n  float: left;\r\n  color: #e2d5b4;\r\n  font-size: 30px;\r\n  margin-left: 23px;\r\n}\r\n\r\n.loginFormHidden {\r\n  display: none;\r\n}", ""]);
 
 	// exports
 

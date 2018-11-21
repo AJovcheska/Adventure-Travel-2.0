@@ -13,32 +13,61 @@ var Nav = React.createClass({
     dispatch(actions.setUserObject(''));
   },
   render: function() {
-    var {isLogged} = this.props;
+    var {isLogged, username} = this.props;
     var link = '';
     if (isLogged === false) {
-      link = <Link to="/registration" className = "registerLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>Register</Link>;
+
+      link =
+        <div className="top-bar-right">
+          <Link to="/registration" className = "registerLink" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>Register</Link>
+        </div>;
     } else {
-      link = <button type="submit" className="signOutBtn" onClick={this.onSignOut}>Sign out</button>;
+      if (username === 'admin') {
+        link =
+          <div className="top-bar-right">
+            <ul className="menu">
+              <li>
+                <Link to="/createTrip">Add new trip</Link>
+              </li>
+              <li>
+                <button type="submit" className="signOutBtn" onClick={this.onSignOut}>Sign out</button>
+              </li>
+            </ul>
+          </div>;
+      } else {
+        link =
+          <div className="top-bar-right">
+            <ul className="menu">
+              <li>
+                <Link to="/profile">{username}'s profile </Link>
+              </li>
+              <li>
+                <button type="submit" className="signOutBtn" onClick={this.onSignOut}>Sign out</button>
+              </li>
+            </ul>
+          </div>;
+      }
+
     }
     return (
       <div className="top-bar">
         <div className="top-bar-left">
           <ul className="menu">
             <li>
-              <IndexLink to="/" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
+              <IndexLink to="/">
                 Home
               </IndexLink>
             </li>
             <li>
-              <Link to="/destinations" activeClassName="active" activeStyle={{fontWeight: 'bold', color: '#C1B599'}}>
+              <Link to="/destinations">
                 Destinations
               </Link>
             </li>
           </ul>
         </div>
-        <div className="top-bar-right">
-          {link}
-        </div>
+
+        {link}
+
       </div>
     );
   }
