@@ -3,15 +3,30 @@ var {connect} = require('react-redux');
 var backendApi = require('backendApi');
 
 var Petra = React.createClass({
+  getInitialState: function() {
+    return {
+      isAddedToFavorites: false
+    };
+  },
   handleFavourites: function() {
     var {username} = this.props;
     backendApi.addTripForUser(username, "2009").then((response) => {
       console.log(response);
+      this.setState({
+        isAddedToFavorites: true
+      });
     }, function (errorMessage) {
       console.log(errorMessage);
     });
   },
   render: function() {
+    var favButtonToShow = '';
+
+    if (this.state.isAddedToFavorites) {
+      favButtonToShow = <button className="favouriteButtonAdded" onClick={this.handleFavourites}>Added to favourites</button>;
+    } else {
+      favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>;
+    }
     return (
       <article className="event-content trip-content">
          <div className="container">
@@ -289,7 +304,7 @@ var Petra = React.createClass({
                      </ul>
                   </nav>
                   <nav className="trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print">
-                    <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>
+                    {favButtonToShow}
                   </nav>
                </aside>
             </div>

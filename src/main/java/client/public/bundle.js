@@ -56176,16 +56176,41 @@
 	var Barcelona = React.createClass({
 	   displayName: 'Barcelona',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2007").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -56934,11 +56959,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -56973,16 +56994,41 @@
 	var Rome = React.createClass({
 	   displayName: 'Rome',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2000").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -57688,11 +57734,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -57727,16 +57769,41 @@
 	var Morocco = React.createClass({
 	   displayName: 'Morocco',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2004").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -58550,11 +58617,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -58589,16 +58652,41 @@
 	var Persia = React.createClass({
 	   displayName: 'Persia',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
-	      backendApi.addTripForUser(username, "2001").then(function (response) {
+	      backendApi.addTripForUser(username, "2005").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -59446,11 +59534,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -59485,16 +59569,41 @@
 	var Mongolia = React.createClass({
 	   displayName: 'Mongolia',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2006").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -60465,11 +60574,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -60504,16 +60609,41 @@
 	var Everest = React.createClass({
 	   displayName: 'Everest',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2002").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -61253,11 +61383,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -61293,16 +61419,42 @@
 	var Antarctica = React.createClass({
 	   displayName: 'Antarctica',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2001").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -61997,11 +62149,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -62036,16 +62184,41 @@
 	var Brazil = React.createClass({
 	   displayName: 'Brazil',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2008").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -62766,11 +62939,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -62805,16 +62974,41 @@
 	var Petra = React.createClass({
 	   displayName: 'Petra',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2009").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -63509,11 +63703,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -63548,16 +63738,41 @@
 	var Zambia = React.createClass({
 	   displayName: 'Zambia',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2012").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -64257,11 +64472,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -64296,16 +64507,41 @@
 	var Rwanda = React.createClass({
 	   displayName: 'Rwanda',
 
+	   getInitialState: function getInitialState() {
+	      return {
+	         isAddedToFavorites: false
+	      };
+	   },
 	   handleFavourites: function handleFavourites() {
+	      var _this = this;
+
 	      var username = this.props.username;
 
 	      backendApi.addTripForUser(username, "2011").then(function (response) {
 	         console.log(response);
+	         _this.setState({
+	            isAddedToFavorites: true
+	         });
 	      }, function (errorMessage) {
 	         console.log(errorMessage);
 	      });
 	   },
 	   render: function render() {
+	      var favButtonToShow = '';
+
+	      if (this.state.isAddedToFavorites) {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	         );
+	      } else {
+	         favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButton', onClick: this.handleFavourites },
+	            'Add to favourites'
+	         );
+	      }
 	      return React.createElement(
 	         'article',
 	         { className: 'event-content trip-content' },
@@ -65005,11 +65241,7 @@
 	                  React.createElement(
 	                     'nav',
 	                     { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	                     React.createElement(
-	                        'button',
-	                        { className: 'favouriteButton', onClick: this.handleFavourites },
-	                        'Add to favourites'
-	                     )
+	                     favButtonToShow
 	                  )
 	               )
 	            )
@@ -65043,11 +65275,21 @@
 	var NewTrip = React.createClass({
 	  displayName: 'NewTrip',
 
+	  getInitialState: function getInitialState() {
+	    return {
+	      isAddedToFavorites: false
+	    };
+	  },
 	  handleFavourites: function handleFavourites(id) {
+	    var _this = this;
+
 	    var username = this.props.username;
 
 	    backendApi.addTripForUser(username, id).then(function (response) {
 	      console.log(response);
+	      _this.setState({
+	        isAddedToFavorites: true
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
@@ -65073,6 +65315,22 @@
 	          { className: 'favouriteButton', onClick: this.handleFavourites(trip.id) },
 	          'Add to favourites'
 	        )
+	      );
+	    }
+
+	    var favButtonToShow = '';
+
+	    if (this.state.isAddedToFavorites) {
+	      favButtonToShow = React.createElement(
+	        'button',
+	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	        'Added to favourites'
+	      );
+	    } else {
+	      favButtonToShow = React.createElement(
+	        'button',
+	        { className: 'favouriteButton', onClick: this.handleFavourites },
+	        'Add to favourites'
 	      );
 	    }
 
@@ -65765,7 +66023,7 @@
 
 
 	// module
-	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n  margin-left: -3px;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n  height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1196px;\r\n  margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n  margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n  height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n\r\n.tmpBtn {\r\n  opacity: 0;\r\n  margin: -16px;\r\n}\r\n\r\n\r\n", ""]);
+	exports.push([module.id, ".content-card-v2 {\r\n  display: inline-block !important;\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: black;\r\n  margin: 7px 10px 10px 10px;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n  padding: 20px;\r\n  background-color: #e2dcd0;\r\n  width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n  display: block;\r\n  margin-top: 5px;\r\n  color: #a89771;\r\n  margin-left: -3px;\r\n}\r\n\r\n.detail-sm {\r\n  color: #455A3B;\r\n}\r\n.trip-fees .trip-rating {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.event-location {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n  font-size: 17px;\r\n  line-height: 19px;\r\n  letter-spacing: .68px;\r\n  color: #a89771;\r\n  margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n  margin: 7px 0 10px;\r\n  color: #a89771;\r\n  overflow-wrap: break-word;\r\n  line-height: 1em;\r\n  font-size: 29px;\r\n  letter-spacing: .02em;\r\n  font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n  padding: 20px;\r\n  background-color: white;\r\n  height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n  display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n  font-size: 13px;\r\n  color: #333;\r\n  line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n  display: inline-block;\r\n  float: right;\r\n  width: 1196px;\r\n  margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n  margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n  min-width: 0;\r\n  align-self: start;\r\n  margin-left: -92px;\r\n  margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n  width: 303px !important;\r\n  margin-left: -41px !important;\r\n  height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n  grid-row-gap: 30px;\r\n  min-width: 0;\r\n  display: block;\r\n}\r\n\r\nbody.trips {\r\n  display: inline-block !important;\r\n  grid-template-columns: 1fr 1fr 1fr;\r\n  grid-gap: 30px 20px;\r\n  grid-row-gap: 30px;\r\n  display: grid;\r\n  margin-top: 31px;\r\n  margin-bottom: 40px;\r\n  box-sizing: border-box;\r\n  align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n  width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n}\r\n\r\n.favouriteButtonAdded {\r\n  width: 319px;\r\n  margin-left: -54px;\r\n  padding: 10px;\r\n  border-radius: 25px;\r\n  color: #455A3B;\r\n  background-color: white;\r\n  border: 2px solid #455A3B;\r\n}\r\n\r\n.tmpBtn {\r\n  opacity: 0;\r\n  margin: -16px;\r\n}\r\n\r\n\r\n", ""]);
 
 	// exports
 

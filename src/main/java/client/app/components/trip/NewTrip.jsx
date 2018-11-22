@@ -3,10 +3,18 @@ var backendApi = require('backendApi');
 var {connect} = require('react-redux');
 
 var NewTrip = React.createClass({
+  getInitialState: function() {
+    return {
+      isAddedToFavorites: false
+    };
+  },
   handleFavourites: function(id) {
     var {username} = this.props;
     backendApi.addTripForUser(username, id).then((response) => {
       console.log(response);
+      this.setState({
+        isAddedToFavorites: true
+      });
     }, function (errorMessage) {
       console.log(errorMessage);
     });
@@ -26,6 +34,14 @@ var NewTrip = React.createClass({
       showAddToFavorites = <nav className="trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print">
         <button className="favouriteButton" onClick={this.handleFavourites(trip.id)}>Add to favourites</button>
       </nav>;
+    }
+
+    var favButtonToShow = '';
+
+    if (this.state.isAddedToFavorites) {
+      favButtonToShow = <button className="favouriteButtonAdded" onClick={this.handleFavourites}>Added to favourites</button>;
+    } else {
+      favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>;
     }
 
     return (
