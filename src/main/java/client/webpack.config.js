@@ -84,8 +84,6 @@ module.exports = {
       tripsByTagsStyle: 'app/styles/tripsByTag.css',
       profileStyle: 'app/styles/profile.css',
       createTripStyle: 'app/styles/createTrip.css',
-
-      // trips css
       barcelonaStyle: 'app/styles/barcelona.css',
 
       // redux relates files

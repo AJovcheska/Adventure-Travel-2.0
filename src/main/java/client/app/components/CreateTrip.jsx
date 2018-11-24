@@ -2,19 +2,22 @@ var React = require('react');
 var backendApi = require('backendApi');
 var DatePicker = require('react-datepicker');
 var moment = require('moment');
+var {CountryDropdown, RegionDropdown} = require('react-country-region-selector');
 
 var CreateTrip = React.createClass({
-  getInitialState: function() {
-    return{
+  getInitialState: function () {
+    return {
       selectedOption: null,
       selectedFile: null,
-      startDate: moment()
+      startDate: moment(),
+      country: '',
+      continent: ''
     };
   },
-  handleAddTrip: function() {
+  handleAddTrip: function () {
     var title = this.refs.title.value;
-    var region = this.refs.region.value;
-    var country = this.refs.country.value;
+    var country = this.state.country;
+    var continent = this.state.continent;
     var highlights = this.refs.highlights.value;
     var description = this.refs.description.value;
     var dates = this.refs.dates.value;
@@ -37,41 +40,39 @@ var CreateTrip = React.createClass({
     var photoBomb = this.refs.photoBomb.checked;
     var tags = '';
     if (architecturalWonders) {
-      tags+='Architectural wonders,'
+      tags += 'Architectural wonders,'
     }
     if (motherNature) {
-      tags+='Mother nature,'
+      tags += 'Mother nature,'
     }
     if (art) {
-      tags+='Inspiring art,'
+      tags += 'Inspiring art,'
     }
     if (ice) {
-      tags+='Ice & cold,'
+      tags += 'Ice & cold,'
     }
     if (fauna) {
-      tags+='Fascinating fauna,'
+      tags += 'Fascinating fauna,'
     }
     if (farEast) {
-      tags+='Far far East,'
+      tags += 'Far far East,'
     }
     if (historyMistery) {
-      tags+='History and mistery,'
+      tags += 'History and mistery,'
     }
     if (mountains) {
-      tags+='In the mountains,'
+      tags += 'In the mountains,'
     }
     if (biking) {
-      tags+='Biking and hiking,'
+      tags += 'Biking and hiking,'
     }
     if (photoBomb) {
-      tags+='Photography bomb,'
+      tags += 'Photography bomb,'
     }
 
-    backendApi.addTrip(category,region,country,title,costs,tags,duration,dates,null,destination,description,highlights,image).then((response) => {
+    backendApi.addTrip(category, continent, country, title, costs, tags, duration, dates, null, destination, description, highlights, image).then((response) => {
       if (response.status === 200) {
         this.refs.title.value = '';
-        this.refs.region.value = '';
-        this.refs.country.value = '';
         this.refs.highlights.value = '';
         this.refs.description.value = '';
         this.refs.dates.value = '';
@@ -90,10 +91,13 @@ var CreateTrip = React.createClass({
         this.refs.biking.checked = false;
         this.refs.photoBomb.checked = false;
         this.setState({
-          selectedOption: null,
           destination: null,
           category: null,
-          selectedFile: null
+          selectedOption: null,
+          selectedFile: null,
+          startDate: moment(),
+          country: '',
+          continent: ''
         });
       }
     }, function (errorMessage) {
@@ -101,29 +105,40 @@ var CreateTrip = React.createClass({
     });
 
   },
-  handleChangeDestination: function(event) {
+  handleChangeDestination: function (event) {
     this.setState({
       destination: event.target.value
     });
   },
-  handleChangeCategory: function(event) {
+  handleChangeCategory: function (event) {
     this.setState({
       category: event.target.value
     });
   },
-  fileChangedHandler: function(event) {
+  fileChangedHandler: function (event) {
     this.setState({selectedFile: event.target.files[0]})
   },
-  onChange: function(date) {
+  onChange: function (date) {
     this.setState({
       startDate: date
     });
   },
-  render: function() {
+  selectCountry: function(val) {
+    this.setState({
+      country: val
+    });
+  },
+  handleChangeContinent: function(event) {
+    this.setState({
+      continent: event.target.value
+    });
+  },
+  render: function () {
     const masterBackground = "../images/places_to_visit_before_you_die-wallpaper-2048x1152.jpg";
     var masterImgStyle = {
       backgroundImage: `url(${masterBackground})`
     };
+    const {country} = this.state;
     return (
       <article className="event-content trip-content" style={masterImgStyle}>
         <div className="container">
@@ -133,9 +148,21 @@ var CreateTrip = React.createClass({
               <div className="row">
                 <header className="item-header trip-header js-item-header">
                   <div className="col-md-12">
-                    <input className="inputFieldsCreateTrip" type="text" placeholder="Enter country" ref="country" required/>
-                    <input className="inputFieldsCreateTrip" type="text" placeholder="Enter region" ref="region" required/>
-                    <input className="inputFieldsCreateTrip" type="text" placeholder="Enter title" ref="title" required/>
+                    <CountryDropdown className="country-select" value={country} ref= "country" onChange={(val) => this.selectCountry(val)} required/>
+
+                    <section className="item-body sort-type-trip create-trip-tags">
+                      <h5 className="event-body-heading sort-type-trip">Select continent </h5>
+                      <div className="sort-form">
+                        <div className="createTripTags"><input type="radio" value="Africa" checked={this.state.continent === 'Africa'} onChange={this.handleChangeContinent}>Africa</input></div>
+                        <div className="createTripTags"><input type="radio" value="Antarctica" checked={this.state.continent === 'Antarctica'} onChange={this.handleChangeContinent}>Antarctica</input></div>
+                        <div className="createTripTags"><input type="radio" value="Asia" checked={this.state.continent === 'Asia'} onChange={this.handleChangeContinent}>Asia</input></div>
+                        <div className="createTripTags"><input type="radio" value="Europe" checked={this.state.continent === 'Europe'} onChange={this.handleChangeContinent}>Europe</input></div>
+                        <div className="createTripTags"><input type="radio" value="North America" checked={this.state.continent === 'North America'} onChange={this.handleChangeContinent}>North America</input></div>
+                        <div className="createTripTags"><input type="radio" value="South America" checked={this.state.continent === 'South America'} onChange={this.handleChangeContinent}>South America</input></div>
+                      </div>
+                    </section>
+                    <input className="inputFieldsCreateTrip" type="text" placeholder="Enter title" ref="title"
+                           required/>
                   </div>
                 </header>
               </div>
@@ -150,7 +177,7 @@ var CreateTrip = React.createClass({
                         </ul>
                       </div>
                     </section>
-                    <section className="item-body sort-type-trip" id="event-trip-itinerary">
+                    <section className="item-body sort-type-trip create-trip-tags" id="event-trip-itinerary">
                       <h5 className="event-body-heading sort-type-trip">Tags</h5>
                       <div className="createTripTags"><input type="checkbox" ref="architecturalWonders" onChange={this.handleChange}>Architectural wonders</input></div>
                       <div className="createTripTags"><input type="checkbox" ref="motherNature" onChange={this.handleChange}>Mother nature</input></div>
@@ -159,61 +186,29 @@ var CreateTrip = React.createClass({
                       <div className="createTripTags"><input type="checkbox" ref="fauna" onChange={this.handleChange}>Fascinating fauna</input></div>
                       <div className="createTripTags"><input type="checkbox" ref="farEast" onChange={this.handleChange}>Far far East</input></div>
                       <div className="createTripTags"><input type="checkbox" ref="historyMistery" onChange={this.handleChange}>History and mistery</input></div>
-                      <div className="createTripTags"><input type="checkbox" ref="mountains" onChange={this.handleChange}>In the
-                        mountains</input></div>
+                      <div className="createTripTags"><input type="checkbox" ref="mountains" onChange={this.handleChange}>In the mountains</input></div>
                       <div className="createTripTags"><input type="checkbox" ref="biking" onChange={this.handleChange}>Biking and hiking</input></div>
                       <div className="createTripTags"><input type="checkbox" ref="photoBomb" onChange={this.handleChange}>Photography bomb</input></div>
+
+
+                      <h5 className="event-body-heading sort-type-trip">Type of destination: </h5>
+                      <div className="createTripTags create-trip-tag"><input type="radio" value="City" checked={this.state.destination === 'City'} onChange={this.handleChangeDestination}>City &emsp;&emsp;</input></div>
+                      <div className="createTripTags"><input type="radio" value="Mountain" checked={this.state.destination === 'Mountain'} onChange={this.handleChangeDestination}>Mountain &emsp;&emsp;</input></div>
+                      <div className="createTripTags"><input type="radio" value="Cold place" checked={this.state.destination === 'Cold place'} onChange={this.handleChangeDestination}>Cold place &emsp;&emsp;</input></div>
+                      <div className="createTripTags"><input type="radio" value="Historical place" checked={this.state.destination === 'Historical place'} onChange={this.handleChangeDestination}>Historical place &emsp;&emsp;</input></div>
+                      <div className="createTripTags"><input type="radio" value="Tropical place" checked={this.state.destination === 'Tropical place'} onChange={this.handleChangeDestination}>Tropical place &emsp;&emsp;</input></div>
+
+
+                      <h5 className="event-body-heading sort-type-trip">Category: </h5>
+                      <div className="sort-form">
+                        <div className="createTripTags"><input type="radio" value="HIDDEN_CITIES" checked={this.state.category === 'HIDDEN_CITIES'} onChange={this.handleChangeCategory}>Hidden cities &emsp;&emsp;</input></div>
+                        <div className="createTripTags"><input type="radio" value="CRUISING" checked={this.state.category === 'CRUISING'} onChange={this.handleChangeCategory}>Cruising &emsp;&emsp;</input></div>
+                        <div className="createTripTags"><input type="radio" value="SCIENCE_AND_NATURE" checked={this.state.category === 'SCIENCE_AND_NATURE'} onChange={this.handleChangeCategory}>Science and nature &emsp;&emsp;</input></div>
+                        <div className="createTripTags"><input type="radio" value="HISTORY_AND_CULTURE" checked={this.state.category === 'HISTORY_AND_CULTURE'} onChange={this.handleChangeCategory}>History and culture &emsp;&emsp;</input></div>
+                      </div>
                     </section>
                   </section>
                 </div>
-              </div>
-
-              <div className="sort-div-create-trip">
-                <h5 className="event-body-heading sort-type-trip">Type of destination: </h5>
-                <span className="sort-form">
-                  <span className="sort-type-trip">
-                      <input type="radio" value="City" checked={this.state.destination === 'City'}
-                             onChange={this.handleChangeDestination}>City &emsp;&emsp;</input>
-                  </span>
-                  <span className="sort-type-trip">
-                      <input type="radio" value="Mountain" checked={this.state.destination === 'Mountain'}
-                             onChange={this.handleChangeDestination}>Mountain &emsp;&emsp;</input>
-                  </span>
-                  <span className="sort-type-trip">
-                      <input type="radio" value="Cold place" checked={this.state.destination === 'Cold place'}
-                             onChange={this.handleChangeDestination}>Cold place &emsp;&emsp;</input>
-                  </span>
-                  <span className="sort-type-trip">
-                      <input type="radio" value="Historical place" checked={this.state.destination === 'Historical place'}
-                             onChange={this.handleChangeDestination}>Historical place &emsp;&emsp;</input>
-                  </span>
-                  <span className="sort-type-trip">
-                      <input type="radio" value="Tropical place" checked={this.state.destination === 'Tropical place'}
-                             onChange={this.handleChangeDestination}>Tropical place &emsp;&emsp;</input>
-                  </span>
-                </span>
-              </div>
-
-              <div className="sort-div-create-trip">
-                <h5 className="event-body-heading sort-type-trip">Category: </h5>
-                <span className="sort-form">
-                  <span className="sort-type-trip">
-                      <input type="radio" value="HIDDEN_CITIES" checked={this.state.category === 'HIDDEN_CITIES'}
-                             onChange={this.handleChangeCategory}>Hidden cities &emsp;&emsp;</input>
-                  </span>
-                  <span className="sort-type-trip">
-                      <input type="radio" value="CRUISING" checked={this.state.category === 'CRUISING'}
-                             onChange={this.handleChangeCategory}>Cruising &emsp;&emsp;</input>
-                  </span>
-                  <span className="sort-type-trip">
-                      <input type="radio" value="SCIENCE_AND_NATURE" checked={this.state.category === 'SCIENCE_AND_NATURE'}
-                             onChange={this.handleChangeCategory}>Science and nature &emsp;&emsp;</input>
-                  </span>
-                  <span className="sort-type-trip">
-                      <input type="radio" value="HISTORY_AND_CULTURE" checked={this.state.category === 'HISTORY_AND_CULTURE'}
-                             onChange={this.handleChangeCategory}>History and culture &emsp;&emsp;</input>
-                  </span>
-                </span>
               </div>
             </div>
             <aside className="content-siderail">
@@ -243,10 +238,6 @@ var CreateTrip = React.createClass({
                   </ul>
                 </div>
               </div>
-              {/*<DatePicker*/}
-                {/*selected={this.state.startDate}*/}
-                {/*onChange={this.onChange}*/}
-              {/*/>*/}
               <input className="fileInputType" type="file" onChange={this.fileChangedHandler}/>
             </aside>
           </div>
