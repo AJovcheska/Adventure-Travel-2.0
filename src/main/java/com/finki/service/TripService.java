@@ -84,4 +84,8 @@ public class TripService {
 
     public void addTrip(Trip trip) { tripRepository.addTrip(trip); }
 
+    public void updateAvailableSeats(String tripId, int number) {
+        tripRepository.updateAvailableSeats(tripId, number);
+    }
+
 }

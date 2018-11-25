@@ -28,6 +28,8 @@ const ADD_TRIP_FOR_USER_URL = "http://localhost:8080/api/nonsecured/add/trip?";
 
 const ADD_TRIP_URL = "http://localhost:8080/api/nonsecured/trip";
 
+const UPDATE_SEATS_URL = "http://localhost:8080/api/nonsecured/update/seats?";
+
 module.exports = {
   getTemp: function (location) {
     var encodedLocation = encodeURIComponent(location);
@@ -283,5 +285,14 @@ module.exports = {
           return res;
         }
       }).catch(e => console.log(e));
+  },
+  updateSeats: function(tripId, number) {
+    var encodedTripId = decodeURIComponent(tripId);
+    var encodedNumber = decodeURIComponent(number);
+    var url = `${UPDATE_SEATS_URL}tripId=${encodedTripId}&number=${encodedNumber}`;
+    return axios.put(url,
+      { headers: {"Content-Type": "application/json"}
+      }) .then(r => console.log(r.status))
+      .catch(e => console.log(e));
   }
 }

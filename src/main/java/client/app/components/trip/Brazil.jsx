@@ -5,11 +5,17 @@ var backendApi = require('backendApi');
 var Brazil = React.createClass({
   getInitialState: function () {
     return {
-      isAddedToFavorites: false
+      isAddedToFavorites: false,
+      availableSeats: 0
     };
   },
   componentDidMount: function () {
     var {username} = this.props;
+    backendApi.getTripById("2008").then((response) => {
+      this.setState({
+        availableSeats: response.data.availableSeats
+      });
+    });
     backendApi.getTripsByUser(username).then((response) => {
       response.map((trip) => {
         if (trip.id === 2008) {
@@ -27,18 +33,36 @@ var Brazil = React.createClass({
       this.setState({
         isAddedToFavorites: true
       });
+      backendApi.getTripById("2008").then((response) => {
+        console.log(response);
+        var {availableSeats} = response.data;
+        backendApi.updateSeats("2008", availableSeats - 1).then((response) => {
+          console.log(response);
+        });
+      });
     }, function (errorMessage) {
       console.log(errorMessage);
     });
   },
   render: function () {
+    var {username, isLogged} = this.props;
     var favButtonToShow = '';
 
-    if (this.state.isAddedToFavorites) {
-      favButtonToShow =
-        <button className="favouriteButtonAdded" onClick={this.handleFavourites}>Added to favourites</button>;
-    } else {
-      favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>;
+    if (isLogged) {
+      if (username === 'admin') {
+        favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Edit trip</button>;
+      } else {
+        if (this.state.isAddedToFavorites) {
+          favButtonToShow =
+            <button className="favouriteButtonAdded" onClick={this.handleFavourites}>Added to favourites</button>;
+        } else {
+          if (this.state.availableSeats > 0) {
+            favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>;
+          } else {
+            favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>No more available seats</button>;
+          }
+        }
+      }
     }
     return (
       <article className="event-content trip-content">

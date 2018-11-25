@@ -108,4 +108,11 @@ public class TripController {
         tripService.addTrip(trip);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.PUT, value = "nonsecured/update/seats", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateAvailableSeats(@RequestParam String tripId, @RequestParam int number) {
+        tripService.updateAvailableSeats(tripId, number);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

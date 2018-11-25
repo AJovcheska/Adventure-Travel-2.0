@@ -39,4 +39,6 @@ public class Trip {
     private String highlights;
 
     private String image;
+
+    private Integer availableSeats;
 }

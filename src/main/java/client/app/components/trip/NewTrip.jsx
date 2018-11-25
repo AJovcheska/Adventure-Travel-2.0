@@ -5,11 +5,17 @@ var {connect} = require('react-redux');
 var NewTrip = React.createClass({
   getInitialState: function () {
     return {
-      isAddedToFavorites: false
+      isAddedToFavorites: false,
+      availableSeats: 0
     };
   },
   componentDidMount: function () {
     var trip = this.props.location.state.trip;
+    backendApi.getTripById(trip.id).then((response) => {
+      this.setState({
+        availableSeats: response.data.availableSeats
+      });
+    });
     var {username} = this.props;
     backendApi.getTripsByUser(username).then((response) => {
       response.map((trip) => {
@@ -28,30 +34,38 @@ var NewTrip = React.createClass({
       this.setState({
         isAddedToFavorites: true
       });
+      backendApi.getTripById(id).then((response) => {
+        console.log(response);
+        var {availableSeats} = response.data;
+        backendApi.updateSeats(id, availableSeats - 1).then((response) => {
+          console.log(response);
+        });
+      });
     }, function (errorMessage) {
       console.log(errorMessage);
     });
   },
   render: function () {
-    var {username} = this.props;
     var trip = this.props.location.state.trip;
 
-    var showAddToFavorites = '';
-    if (username === 'admin') {
-      showAddToFavorites = '';
-    } else {
-      showAddToFavorites = <nav className="trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print">
-        <button className="favouriteButton" onClick={this.handleFavourites(trip.id)}>Add to favourites</button>
-      </nav>;
-    }
-
+    var {username, isLogged} = this.props;
     var favButtonToShow = '';
 
-    if (this.state.isAddedToFavorites) {
-      favButtonToShow =
-        <button className="favouriteButtonAdded" onClick={this.handleFavourites}>Added to favourites</button>;
-    } else {
-      favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>;
+    if (isLogged) {
+      if (username === 'admin') {
+        favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Edit trip</button>;
+      } else {
+        if (this.state.isAddedToFavorites) {
+          favButtonToShow =
+            <button className="favouriteButtonAdded" onClick={this.handleFavourites}>Added to favourites</button>;
+        } else {
+          if (this.state.availableSeats > 0) {
+            favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>;
+          } else {
+            favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>No more available seats</button>;
+          }
+        }
+      }
     }
 
     return (

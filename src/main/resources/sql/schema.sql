@@ -68,6 +68,7 @@ create table trip (
   description varchar2(500),
   highlights varchar2(500),
   image varchar2(200),
+  availableSeats number (19, 0),
 
   primary key (id)
 );

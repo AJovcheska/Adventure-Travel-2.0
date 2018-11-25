@@ -5,7 +5,8 @@ var backendApi = require('backendApi');
 var Barcelona = React.createClass({
   getInitialState: function () {
     return {
-      isAddedToFavorites: false
+      isAddedToFavorites: false,
+      availableSeats: 0
     };
   },
   componentDidMount: function () {
@@ -26,6 +27,13 @@ var Barcelona = React.createClass({
       console.log(response);
       this.setState({
         isAddedToFavorites: true
+      });
+      backendApi.getTripById("2007").then((response) => {
+        console.log(response);
+        var {availableSeats} = response.data;
+        backendApi.updateSeats("2007", availableSeats - 1).then((response) => {
+          console.log(response);
+        });
       });
     }, function (errorMessage) {
       console.log(errorMessage);

@@ -102,6 +102,14 @@ public class TripRepositoryImpl implements TripRepository {
     }
 
     @Override
+    public void updateAvailableSeats(String tripId, int number) {
+        MapSqlParameterSource map = new MapSqlParameterSource();
+        map.addValue("id", tripId);
+        map.addValue("number", number);
+        jdbcTemplate.update(tripQueries.getUpdateAvailableSeats(), map);
+    }
+
+    @Override
     public List<TripDto> findSelectedTrips(List<String> regions, List<String> categories, String sortBy, boolean ascending) {
         String selectAll = tripQueries.getSelectAll();
         StringBuilder sb = new StringBuilder();

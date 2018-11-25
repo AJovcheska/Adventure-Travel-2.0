@@ -37,4 +37,6 @@ public class TripDto {
     private String highlights;
 
     private String image;
+
+    private Integer availableSeats;
 }

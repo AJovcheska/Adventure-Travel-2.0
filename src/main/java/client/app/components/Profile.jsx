@@ -76,6 +76,13 @@ var Profile = React.createClass({
   handleTripDelete: function(tripId) {
     var {dispatch, username} = this.props;
     backendApi.removeTripFromUser(username, tripId);
+    backendApi.getTripById(tripId).then((response) => {
+      console.log(response);
+      var {availableSeats} = response.data;
+      backendApi.updateSeats(tripId, availableSeats + 1).then((response) => {
+        console.log(response);
+      });
+    });
     backendApi.getTripsByUser(username).then((res) => {
       dispatch(actions.setTripsForLoggedUser(res));
       this.setState({

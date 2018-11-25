@@ -27360,6 +27360,8 @@
 
 	var ADD_TRIP_URL = "http://localhost:8080/api/nonsecured/trip";
 
+	var UPDATE_SEATS_URL = "http://localhost:8080/api/nonsecured/update/seats?";
+
 	module.exports = {
 	  getTemp: function getTemp(location) {
 	    var encodedLocation = encodeURIComponent(location);
@@ -27614,6 +27616,17 @@
 	      } else {
 	        return res;
 	      }
+	    }).catch(function (e) {
+	      return console.log(e);
+	    });
+	  },
+	  updateSeats: function updateSeats(tripId, number) {
+	    var encodedTripId = decodeURIComponent(tripId);
+	    var encodedNumber = decodeURIComponent(number);
+	    var url = UPDATE_SEATS_URL + 'tripId=' + encodedTripId + '&number=' + encodedNumber;
+	    return axios.put(url, { headers: { "Content-Type": "application/json" }
+	    }).then(function (r) {
+	      return console.log(r.status);
 	    }).catch(function (e) {
 	      return console.log(e);
 	    });
@@ -31619,6 +31632,14 @@
 	        username = _props3.username;
 
 	    backendApi.removeTripFromUser(username, tripId);
+	    backendApi.getTripById(tripId).then(function (response) {
+	      console.log(response);
+	      var availableSeats = response.data.availableSeats;
+
+	      backendApi.updateSeats(tripId, availableSeats + 1).then(function (response) {
+	        console.log(response);
+	      });
+	    });
 	    backendApi.getTripsByUser(username).then(function (res) {
 	      dispatch(actions.setTripsForLoggedUser(res));
 	      _this3.setState({
@@ -49502,7 +49523,8 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
@@ -49529,6 +49551,14 @@
 	      console.log(response);
 	      _this2.setState({
 	        isAddedToFavorites: true
+	      });
+	      backendApi.getTripById("2007").then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2007", availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
 	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
@@ -50337,12 +50367,18 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
+	    backendApi.getTripById("2000").then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    var username = this.props.username;
 
 	    backendApi.getTripsByUser(username).then(function (response) {
@@ -50365,26 +50401,57 @@
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById("2000").then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2000", availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
+
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
+
 	    return React.createElement(
 	      'article',
 	      { className: 'event-content trip-content' },
@@ -51127,12 +51194,18 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
+	    backendApi.getTripById("2004").then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    var username = this.props.username;
 
 	    backendApi.getTripsByUser(username).then(function (response) {
@@ -51155,26 +51228,57 @@
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById("2004").then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2004", availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
+
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
+
 	    return React.createElement(
 	      'article',
 	      { className: 'event-content trip-content' },
@@ -52026,12 +52130,18 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
+	    backendApi.getTripById("2005").then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    var username = this.props.username;
 
 	    backendApi.getTripsByUser(username).then(function (response) {
@@ -52054,26 +52164,57 @@
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById("2005").then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2005", availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
+
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
+
 	    return React.createElement(
 	      'article',
 	      { className: 'event-content trip-content' },
@@ -52959,12 +53100,18 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
+	    backendApi.getTripById("2006").then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    var username = this.props.username;
 
 	    backendApi.getTripsByUser(username).then(function (response) {
@@ -52987,26 +53134,57 @@
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById("2006").then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2006", availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
+
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
+
 	    return React.createElement(
 	      'article',
 	      { className: 'event-content trip-content' },
@@ -54015,12 +54193,18 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
+	    backendApi.getTripById("2002").then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    var username = this.props.username;
 
 	    backendApi.getTripsByUser(username).then(function (response) {
@@ -54043,25 +54227,55 @@
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById("2002").then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2002", availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
+
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
 	    return React.createElement(
 	      'article',
@@ -54841,7 +55055,8 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
@@ -54849,6 +55064,11 @@
 
 	    var username = this.props.username;
 
+	    backendApi.getTripById("2001").then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    backendApi.getTripsByUser(username).then(function (response) {
 	      response.map(function (trip) {
 	        if (trip.id === 2001) {
@@ -54865,31 +55085,59 @@
 	    var username = this.props.username;
 
 	    backendApi.addTripForUser(username, "2001").then(function (response) {
-	      console.log(response);
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById("2001").then(function (response) {
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2001", availableSeats - 1).then(function (response) {
+	          console.log('Update seats', response);
+	        });
+	      });
 	    }, function (errorMessage) {
-	      console.log(errorMessage);
+	      console.log('Error', errorMessage);
 	    });
 	  },
 	  render: function render() {
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
 
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
+
 	    return React.createElement(
 	      'article',
 	      { className: 'event-content trip-content' },
@@ -55622,7 +55870,8 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
@@ -55630,6 +55879,11 @@
 
 	    var username = this.props.username;
 
+	    backendApi.getTripById("2008").then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    backendApi.getTripsByUser(username).then(function (response) {
 	      response.map(function (trip) {
 	        if (trip.id === 2008) {
@@ -55650,25 +55904,55 @@
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById("2008").then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2008", availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
+
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
 	    return React.createElement(
 	      'article',
@@ -56429,12 +56713,18 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
+	    backendApi.getTripById("2009").then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    var username = this.props.username;
 
 	    backendApi.getTripsByUser(username).then(function (response) {
@@ -56457,26 +56747,57 @@
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById("2009").then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2009", availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
+
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
+
 	    return React.createElement(
 	      'article',
 	      { className: 'event-content trip-content' },
@@ -57209,12 +57530,18 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
+	    backendApi.getTripById("2012").then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    var username = this.props.username;
 
 	    backendApi.getTripsByUser(username).then(function (response) {
@@ -57237,26 +57564,57 @@
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById("2012").then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2012", availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
+
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
+
 	    return React.createElement(
 	      'article',
 	      { className: 'event-content trip-content' },
@@ -57994,12 +58352,18 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
+	    backendApi.getTripById("2011").then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    var username = this.props.username;
 
 	    backendApi.getTripsByUser(username).then(function (response) {
@@ -58022,26 +58386,57 @@
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById("2011").then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats("2011", availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
+
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
+
 	    return React.createElement(
 	      'article',
 	      { className: 'event-content trip-content' },
@@ -58778,13 +59173,19 @@
 
 	  getInitialState: function getInitialState() {
 	    return {
-	      isAddedToFavorites: false
+	      isAddedToFavorites: false,
+	      availableSeats: 0
 	    };
 	  },
 	  componentDidMount: function componentDidMount() {
 	    var _this = this;
 
 	    var trip = this.props.location.state.trip;
+	    backendApi.getTripById(trip.id).then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
 	    var username = this.props.username;
 
 	    backendApi.getTripsByUser(username).then(function (response) {
@@ -58807,44 +59208,57 @@
 	      _this2.setState({
 	        isAddedToFavorites: true
 	      });
+	      backendApi.getTripById(id).then(function (response) {
+	        console.log(response);
+	        var availableSeats = response.data.availableSeats;
+
+	        backendApi.updateSeats(id, availableSeats - 1).then(function (response) {
+	          console.log(response);
+	        });
+	      });
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
 	  },
 	  render: function render() {
-	    var username = this.props.username;
-
 	    var trip = this.props.location.state.trip;
 
-	    var showAddToFavorites = '';
-	    if (username === 'admin') {
-	      showAddToFavorites = '';
-	    } else {
-	      showAddToFavorites = React.createElement(
-	        'nav',
-	        { className: 'trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print' },
-	        React.createElement(
-	          'button',
-	          { className: 'favouriteButton', onClick: this.handleFavourites(trip.id) },
-	          'Add to favourites'
-	        )
-	      );
-	    }
+	    var _props = this.props,
+	        username = _props.username,
+	        isLogged = _props.isLogged;
 
 	    var favButtonToShow = '';
 
-	    if (this.state.isAddedToFavorites) {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
-	        'Added to favourites'
-	      );
-	    } else {
-	      favButtonToShow = React.createElement(
-	        'button',
-	        { className: 'favouriteButton', onClick: this.handleFavourites },
-	        'Add to favourites'
-	      );
+	    if (isLogged) {
+	      if (username === 'admin') {
+	        favButtonToShow = React.createElement(
+	          'button',
+	          { className: 'favouriteButton', onClick: this.handleFavourites },
+	          'Edit trip'
+	        );
+	      } else {
+	        if (this.state.isAddedToFavorites) {
+	          favButtonToShow = React.createElement(
+	            'button',
+	            { className: 'favouriteButtonAdded', onClick: this.handleFavourites },
+	            'Added to favourites'
+	          );
+	        } else {
+	          if (this.state.availableSeats > 0) {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'Add to favourites'
+	            );
+	          } else {
+	            favButtonToShow = React.createElement(
+	              'button',
+	              { className: 'favouriteButton', onClick: this.handleFavourites },
+	              'No more available seats'
+	            );
+	          }
+	        }
+	      }
 	    }
 
 	    return React.createElement(

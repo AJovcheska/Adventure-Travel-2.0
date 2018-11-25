@@ -24,6 +24,7 @@ public final class TripDtoToTripMapper {
         trip.setDescription(tripDto.getDescription());
         trip.setHighlights(tripDto.getHighlights());
         trip.setImage(tripDto.getImage());
+        trip.setAvailableSeats(tripDto.getAvailableSeats());
         return trip;
     }
 }
