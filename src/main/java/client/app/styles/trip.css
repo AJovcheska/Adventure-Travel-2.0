@@ -149,6 +149,10 @@ body.trips {
     outline: none;
 }
 
+.edit-trip-link {
+    margin-left: 50px !important;
+}
+
 .tmpBtn {
     opacity: 0;
     margin: -16px;

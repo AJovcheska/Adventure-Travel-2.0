@@ -2,6 +2,7 @@ var React = require('react');
 var {connect} = require('react-redux');
 var backendApi = require('backendApi');
 var actions = require('actions');
+var {Link} = require('react-router');
 
 var DetailedTrip = React.createClass({
   getInitialState: function () {
@@ -13,7 +14,6 @@ var DetailedTrip = React.createClass({
   componentDidMount: function () {
     var trip = this.props.location.state.trip;
     var {username} = this.props;
-    console.log('Trip mounted', trip);
     backendApi.getTripById(trip.id).then((response) => {
       this.setState({
         availableSeats: response.data.availableSeats
@@ -53,7 +53,7 @@ var DetailedTrip = React.createClass({
 
     if (isLogged) {
       if (username === 'admin') {
-        favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Edit trip</button>;
+        favButtonToShow = <Link to={{pathname: `/editTrip`, state: {trip: trip}}} className="detail-sm cta-text edit-trip-link" onClick={this.handleDescription}>Edit Trip</Link>;
       } else {
         if (this.state.isAddedToFavorites) {
           favButtonToShow =

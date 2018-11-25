@@ -26,6 +26,7 @@ var FarFarEastTag = require('FarFarEastTag');
 
 var DetailedTrip = require('DetailedTrip');
 var NewTrip = require('NewTrip');
+var EditTrip = require('EditTrip');
 
 var actions = require('actions');
 var store = require('configureStore').configure();
@@ -69,6 +70,7 @@ ReactDOM.render(
 
         <Route path="detailedTrip" component={DetailedTrip}/>
         <Route path="trip" component={NewTrip}/>
+        <Route path="editTrip" component={EditTrip}/>
 
         <Route path="tags/mothernature" component={MotherNatureTag}/>
         <Route path="tags/inthemountain" component={InTheMountainTag}/>

@@ -128,6 +128,7 @@
 
 	var DetailedTrip = __webpack_require__(426);
 	var NewTrip = __webpack_require__(427);
+	var EditTrip = __webpack_require__(462);
 
 	var actions = __webpack_require__(259);
 	var store = __webpack_require__(428).configure();
@@ -177,6 +178,7 @@
 	      React.createElement(Route, { path: 'createTrip', component: CreateTrip }),
 	      React.createElement(Route, { path: 'detailedTrip', component: DetailedTrip }),
 	      React.createElement(Route, { path: 'trip', component: NewTrip }),
+	      React.createElement(Route, { path: 'editTrip', component: EditTrip }),
 	      React.createElement(Route, { path: 'tags/mothernature', component: MotherNatureTag }),
 	      React.createElement(Route, { path: 'tags/inthemountain', component: InTheMountainTag }),
 	      React.createElement(Route, { path: 'tags/architecturalwonders', component: ArchitecturalWondersTag }),
@@ -49499,6 +49501,9 @@
 	var backendApi = __webpack_require__(261);
 	var actions = __webpack_require__(259);
 
+	var _require2 = __webpack_require__(166),
+	    Link = _require2.Link;
+
 	var DetailedTrip = React.createClass({
 	  displayName: 'DetailedTrip',
 
@@ -49514,7 +49519,6 @@
 	    var trip = this.props.location.state.trip;
 	    var username = this.props.username;
 
-	    console.log('Trip mounted', trip);
 	    backendApi.getTripById(trip.id).then(function (response) {
 	      _this.setState({
 	        availableSeats: response.data.availableSeats
@@ -49562,9 +49566,9 @@
 	    if (isLogged) {
 	      if (username === 'admin') {
 	        favButtonToShow = React.createElement(
-	          'button',
-	          { className: 'favouriteButton', onClick: this.handleFavourites },
-	          'Edit trip'
+	          Link,
+	          { to: { pathname: '/editTrip', state: { trip: trip } }, className: 'detail-sm cta-text edit-trip-link', onClick: this.handleDescription },
+	          'Edit Trip'
 	        );
 	      } else {
 	        if (this.state.isAddedToFavorites) {
@@ -50857,7 +50861,7 @@
 
 
 	// module
-	exports.push([module.id, ".content-card-v2 {\r\n    display: inline-block !important;\r\n    font-size: 17px;\r\n    line-height: 19px;\r\n    letter-spacing: .68px;\r\n    color: black;\r\n    margin: 7px 10px 10px 10px;\r\n    overflow-wrap: break-word;\r\n    line-height: 1em;\r\n    letter-spacing: .02em;\r\n    font-weight: 400;\r\n    padding: 20px;\r\n    background-color: #e2dcd0;\r\n    width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n    display: block;\r\n    margin-top: 5px;\r\n    color: #a89771;\r\n    margin-left: -3px;\r\n}\r\n\r\n.detail-sm {\r\n    color: #455A3B;\r\n}\r\n\r\n.trip-fees .trip-rating {\r\n    font-size: 17px;\r\n    line-height: 19px;\r\n    letter-spacing: .68px;\r\n    color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n    font-size: 17px;\r\n    line-height: 19px;\r\n    letter-spacing: .68px;\r\n    color: #a89771;\r\n}\r\n\r\n.event-location {\r\n    font-size: 17px;\r\n    line-height: 19px;\r\n    letter-spacing: .68px;\r\n    color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n    font-size: 17px;\r\n    line-height: 19px;\r\n    letter-spacing: .68px;\r\n    color: #a89771;\r\n    margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n    margin: 7px 0 10px;\r\n    color: #a89771;\r\n    overflow-wrap: break-word;\r\n    line-height: 1em;\r\n    font-size: 29px;\r\n    letter-spacing: .02em;\r\n    font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n    padding: 20px;\r\n    background-color: white;\r\n    height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n    display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n    font-size: 13px;\r\n    color: #333;\r\n    line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n    display: inline-block;\r\n    float: right;\r\n    width: 1196px;\r\n    margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n    margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n    min-width: 0;\r\n    align-self: start;\r\n    margin-left: -92px;\r\n    margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n    width: 303px !important;\r\n    margin-left: -41px !important;\r\n    height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n    grid-row-gap: 30px;\r\n    min-width: 0;\r\n    display: block;\r\n}\r\n\r\nbody.trips {\r\n    display: inline-block !important;\r\n    grid-template-columns: 1fr 1fr 1fr;\r\n    grid-gap: 30px 20px;\r\n    grid-row-gap: 30px;\r\n    display: grid;\r\n    margin-top: 31px;\r\n    margin-bottom: 40px;\r\n    box-sizing: border-box;\r\n    align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n    width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n    width: 319px;\r\n    margin-left: -54px;\r\n    padding: 10px;\r\n    border-radius: 25px;\r\n    outline: none;\r\n}\r\n\r\n.favouriteButtonAdded {\r\n    width: 319px;\r\n    margin-left: -54px;\r\n    padding: 10px;\r\n    border-radius: 25px;\r\n    color: #455A3B;\r\n    background-color: white;\r\n    border: 2px solid #455A3B;\r\n    outline: none;\r\n}\r\n\r\n.tmpBtn {\r\n    opacity: 0;\r\n    margin: -16px;\r\n}\r\n\r\n\r\n", ""]);
+	exports.push([module.id, ".content-card-v2 {\r\n    display: inline-block !important;\r\n    font-size: 17px;\r\n    line-height: 19px;\r\n    letter-spacing: .68px;\r\n    color: black;\r\n    margin: 7px 10px 10px 10px;\r\n    overflow-wrap: break-word;\r\n    line-height: 1em;\r\n    letter-spacing: .02em;\r\n    font-weight: 400;\r\n    padding: 20px;\r\n    background-color: #e2dcd0;\r\n    width: 340px;\r\n}\r\n\r\n.content-card-footer {\r\n    display: block;\r\n    margin-top: 5px;\r\n    color: #a89771;\r\n    margin-left: -3px;\r\n}\r\n\r\n.detail-sm {\r\n    color: #455A3B;\r\n}\r\n\r\n.trip-fees .trip-rating {\r\n    font-size: 17px;\r\n    line-height: 19px;\r\n    letter-spacing: .68px;\r\n    color: #a89771;\r\n}\r\n\r\n.event-admission-info {\r\n    font-size: 17px;\r\n    line-height: 19px;\r\n    letter-spacing: .68px;\r\n    color: #a89771;\r\n}\r\n\r\n.event-location {\r\n    font-size: 17px;\r\n    line-height: 19px;\r\n    letter-spacing: .68px;\r\n    color: #a89771;\r\n}\r\n\r\n.content-card-info {\r\n    font-size: 17px;\r\n    line-height: 19px;\r\n    letter-spacing: .68px;\r\n    color: #a89771;\r\n    margin-bottom: 15px;\r\n}\r\n\r\n.content-card-v2-title {\r\n    margin: 7px 0 10px;\r\n    color: #a89771;\r\n    overflow-wrap: break-word;\r\n    line-height: 1em;\r\n    font-size: 29px;\r\n    letter-spacing: .02em;\r\n    font-weight: 400;\r\n}\r\n\r\n.content-card-text {\r\n    padding: 20px;\r\n    background-color: white;\r\n    height: 200px;\r\n}\r\n\r\n.trips-index-cards {\r\n    display: block;\r\n}\r\n\r\n.content-card-hat.content-tags {\r\n\r\n}\r\n\r\n.content-card-hat {\r\n    font-size: 13px;\r\n    color: #333;\r\n    line-height: 14px;\r\n}\r\n\r\n.card-grid {\r\n    display: inline-block;\r\n    float: right;\r\n    width: 1196px;\r\n    margin-top: -500px;\r\n}\r\n\r\n.card-grid-profile {\r\n    margin-left: 200px;\r\n}\r\n\r\n.content-card-item {\r\n    min-width: 0;\r\n    align-self: start;\r\n    margin-left: -92px;\r\n    margin-right: 115px;\r\n}\r\n\r\n.trip-img {\r\n    width: 303px !important;\r\n    margin-left: -41px !important;\r\n    height: 165px;\r\n}\r\n\r\nbody.trips.all {\r\n    grid-row-gap: 30px;\r\n    min-width: 0;\r\n    display: block;\r\n}\r\n\r\nbody.trips {\r\n    display: inline-block !important;\r\n    grid-template-columns: 1fr 1fr 1fr;\r\n    grid-gap: 30px 20px;\r\n    grid-row-gap: 30px;\r\n    display: grid;\r\n    margin-top: 31px;\r\n    margin-bottom: 40px;\r\n    box-sizing: border-box;\r\n    align-self: start;\r\n}\r\n\r\n.detail-image-css {\r\n    width: 700px;\r\n}\r\n\r\n.favouriteButton {\r\n    width: 319px;\r\n    margin-left: -54px;\r\n    padding: 10px;\r\n    border-radius: 25px;\r\n    outline: none;\r\n}\r\n\r\n.favouriteButtonAdded {\r\n    width: 319px;\r\n    margin-left: -54px;\r\n    padding: 10px;\r\n    border-radius: 25px;\r\n    color: #455A3B;\r\n    background-color: white;\r\n    border: 2px solid #455A3B;\r\n    outline: none;\r\n}\r\n\r\n.edit-trip-link {\r\n    margin-left: 50px !important;\r\n}\r\n\r\n.tmpBtn {\r\n    opacity: 0;\r\n    margin: -16px;\r\n}\r\n\r\n\r\n", ""]);
 
 	// exports
 
@@ -51341,6 +51345,382 @@
 
 	// exports
 
+
+/***/ },
+/* 462 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(8);
+	var backendApi = __webpack_require__(261);
+
+	var _require = __webpack_require__(225),
+	    connect = _require.connect;
+
+	var _require2 = __webpack_require__(166),
+	    Link = _require2.Link;
+
+	var EditTrip = React.createClass({
+	  displayName: 'EditTrip',
+
+	  getInitialState: function getInitialState() {
+	    return {
+	      isAddedToFavorites: false,
+	      availableSeats: 0
+	    };
+	  },
+	  componentDidMount: function componentDidMount() {
+	    var _this = this;
+
+	    var trip = this.props.location.state.trip;
+	    backendApi.getTripById(trip.id).then(function (response) {
+	      _this.setState({
+	        availableSeats: response.data.availableSeats
+	      });
+	    });
+	    var username = this.props.username;
+
+	    backendApi.getTripsByUser(username).then(function (response) {
+	      response.map(function (trip) {
+	        if (trip.id === trip.id) {
+	          _this.setState({
+	            isAddedToFavorites: true
+	          });
+	        }
+	      });
+	    });
+	  },
+	  handleEditTrip: function handleEditTrip() {},
+	  render: function render() {
+	    var trip = this.props.location.state.trip;
+
+	    return React.createElement(
+	      'article',
+	      { className: 'event-content trip-content' },
+	      React.createElement(
+	        'div',
+	        { className: 'container' },
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'div',
+	            { className: 'col-md-8' },
+	            React.createElement(
+	              'div',
+	              { className: 'row' },
+	              React.createElement(
+	                'header',
+	                { className: 'item-header trip-header js-item-header' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'col-md-12' },
+	                  React.createElement(
+	                    'h2',
+	                    { className: 'detail-sm item-supertitle' },
+	                    React.createElement('input', { className: 'inputFieldsCreateTrip', type: 'text', placeholder: 'Enter title', ref: 'title', value: trip.country })
+	                  ),
+	                  React.createElement(
+	                    'h1',
+	                    { className: 'title-lg item-title trip-title' },
+	                    React.createElement('input', { className: 'inputFieldsCreateTrip', type: 'text', placeholder: 'Enter title', ref: 'title', value: trip.title })
+	                  )
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'row' },
+	              React.createElement(
+	                'div',
+	                { className: 'content-body event-content-body col-md-11 trip-content-body' },
+	                React.createElement(
+	                  'section',
+	                  { id: 'event-body', className: 'item-body' },
+	                  React.createElement(
+	                    'h3',
+	                    { className: 'event-body-subheading' },
+	                    'HIGHLIGHTS'
+	                  ),
+	                  React.createElement(
+	                    'ul',
+	                    null,
+	                    React.createElement(
+	                      'li',
+	                      null,
+	                      React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.highlights })
+	                    )
+	                  ),
+	                  React.createElement(
+	                    'section',
+	                    { id: 'event-trip-itinerary' },
+	                    React.createElement(
+	                      'h5',
+	                      { className: 'event-body-heading' },
+	                      'Itinerary'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'trip-day-wrap' },
+	                      React.createElement('a', { name: 'day1' }),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'trip-day-nav-num trip-day-body-num' },
+	                        'Day 1'
+	                      ),
+	                      React.createElement(
+	                        'h6',
+	                        { className: 'trip-body-title trip-day-title' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleOne })
+	                      ),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'event-body-subheading trip-day-dateline' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateOne })
+	                      ),
+	                      React.createElement(
+	                        'ul',
+	                        { className: 'tripsUl' },
+	                        React.createElement(
+	                          'li',
+	                          null,
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dayOne })
+	                        )
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'trip-day-wrap' },
+	                      React.createElement('a', { name: 'day2' }),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'trip-day-nav-num trip-day-body-num' },
+	                        'Day 2'
+	                      ),
+	                      React.createElement(
+	                        'h6',
+	                        { className: 'trip-body-title trip-day-title' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleTwo })
+	                      ),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'event-body-subheading trip-day-dateline' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateTwo })
+	                      ),
+	                      React.createElement(
+	                        'ul',
+	                        { className: 'tripsUl' },
+	                        React.createElement(
+	                          'li',
+	                          null,
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dayTwo })
+	                        )
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'trip-day-wrap' },
+	                      React.createElement('a', { name: 'day3' }),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'trip-day-nav-num trip-day-body-num' },
+	                        'Day 3'
+	                      ),
+	                      React.createElement(
+	                        'h6',
+	                        { className: 'trip-body-title trip-day-title' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleThree })
+	                      ),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'event-body-subheading trip-day-dateline' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateThree })
+	                      ),
+	                      React.createElement(
+	                        'ul',
+	                        { className: 'tripsUl' },
+	                        React.createElement(
+	                          'li',
+	                          null,
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dayThree })
+	                        )
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'trip-day-wrap' },
+	                      React.createElement('a', { name: 'day4' }),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'trip-day-nav-num trip-day-body-num' },
+	                        'Day 4'
+	                      ),
+	                      React.createElement(
+	                        'h6',
+	                        { className: 'trip-body-title trip-day-title' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleFour })
+	                      ),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'event-body-subheading trip-day-dateline' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateFour })
+	                      ),
+	                      React.createElement(
+	                        'ul',
+	                        { className: 'tripsUl' },
+	                        React.createElement(
+	                          'li',
+	                          null,
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dayFour })
+	                        )
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'trip-day-wrap' },
+	                      React.createElement('a', { name: 'day5' }),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'trip-day-nav-num trip-day-body-num' },
+	                        'Day 5'
+	                      ),
+	                      React.createElement(
+	                        'h6',
+	                        { className: 'trip-body-title trip-day-title' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleFive })
+	                      ),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'event-body-subheading trip-day-dateline' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateFive })
+	                      ),
+	                      React.createElement(
+	                        'ul',
+	                        { className: 'tripsUl' },
+	                        React.createElement(
+	                          'li',
+	                          null,
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dayFive })
+	                        )
+	                      )
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'trip-day-wrap' },
+	                      React.createElement('a', { name: 'day6' }),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'trip-day-nav-num trip-day-body-num' },
+	                        'Day 6'
+	                      ),
+	                      React.createElement(
+	                        'h6',
+	                        { className: 'trip-body-title trip-day-title' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleSix })
+	                      ),
+	                      React.createElement(
+	                        'div',
+	                        { className: 'event-body-subheading trip-day-dateline' },
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateSix })
+	                      ),
+	                      React.createElement(
+	                        'ul',
+	                        { className: 'tripsUl' },
+	                        React.createElement(
+	                          'li',
+	                          null,
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.daySix })
+	                        )
+	                      )
+	                    )
+	                  ),
+	                  React.createElement(
+	                    'button',
+	                    { onClick: this.handleEditTrip },
+	                    'Submit changes'
+	                  )
+	                )
+	              )
+	            )
+	          ),
+	          React.createElement(
+	            'aside',
+	            { className: 'content-siderail' },
+	            React.createElement(
+	              'div',
+	              { className: 'trip-detail-pane-wrap hidden-sm hidden-xs' },
+	              React.createElement(
+	                'div',
+	                { className: 'event-details-pane' },
+	                React.createElement(
+	                  'ul',
+	                  { className: 'event-details-top event-details-list' },
+	                  React.createElement(
+	                    'li',
+	                    null,
+	                    React.createElement(
+	                      'label',
+	                      { className: 'detail-sm event-details-label' },
+	                      'Dates'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'event-detail' },
+	                      React.createElement(
+	                        'div',
+	                        null,
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.departureDate })
+	                      )
+	                    )
+	                  ),
+	                  React.createElement(
+	                    'li',
+	                    null,
+	                    React.createElement(
+	                      'label',
+	                      { className: 'detail-sm event-details-label' },
+	                      'Cost'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'event-detail' },
+	                      React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.price })
+	                    )
+	                  ),
+	                  React.createElement(
+	                    'li',
+	                    null,
+	                    React.createElement(
+	                      'label',
+	                      { className: 'detail-sm event-details-label' },
+	                      'Number of days'
+	                    ),
+	                    React.createElement(
+	                      'div',
+	                      { className: 'event-detail' },
+	                      React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.duration })
+	                    )
+	                  )
+	                )
+	              )
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = connect(function (state) {
+	  return {
+	    user: state.setUserObject,
+	    isLogged: state.setIsUserLogged,
+	    accessToken: state.setAccessToken,
+	    trips: state.setTripsForLoggedUser,
+	    username: state.setLoggedUser
+	  };
+	})(EditTrip);
 
 /***/ }
 /******/ ]);

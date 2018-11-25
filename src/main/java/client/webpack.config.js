@@ -57,6 +57,7 @@ module.exports = {
       BikingAndHikingTag: 'app/components/tags/BikingAndHikingTag.jsx',
       DetailedTrip: 'app/components/DetailedTrip.jsx',
       NewTrip: 'app/components/NewTrip.jsx',
+      EditTrip: 'app/components/EditTrip.jsx',
 
       // styles
       applicationStyles: 'app/styles/app.css',
