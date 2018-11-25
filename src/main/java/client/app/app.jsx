@@ -24,17 +24,7 @@ var PhotographyBombTag = require('PhotographyBombTag');
 var FascinatingFaunaTag = require('FascinatingFaunaTag');
 var FarFarEastTag = require('FarFarEastTag');
 
-var Barcelona = require('Barcelona');
-var Rome = require('Rome');
-var Morocco = require('Morocco');
-var Persia = require('Persia');
-var Mongolia = require('Mongolia');
-var Everest = require('Everest');
-var Antarctica = require('Antarctica');
-var Brazil = require('Brazil');
-var Petra = require('Petra');
-var Zambia = require('Zambia');
-var Rwanda = require('Rwanda');
+var DetailedTrip = require('DetailedTrip');
 var NewTrip = require('NewTrip');
 
 var actions = require('actions');
@@ -77,17 +67,7 @@ ReactDOM.render(
         <Route path="login" component={LoginForm}/>
         <Route path="createTrip" component={CreateTrip}/>
 
-        <Route path="2000" component={Rome}/>
-        <Route path="2001" component={Antarctica}/>
-        <Route path="2002" component={Everest}/>
-        <Route path="2004" component={Morocco}/>
-        <Route path="2005" component={Persia}/>
-        <Route path="2006" component={Mongolia}/>
-        <Route path="2007" component={Barcelona}/>
-        <Route path="2008" component={Brazil}/>
-        <Route path="2009" component={Petra}/>
-        <Route path="2010" component={Rwanda}/>
-        <Route path="2011" component={Zambia}/>
+        <Route path="detailedTrip" component={DetailedTrip}/>
         <Route path="trip" component={NewTrip}/>
 
         <Route path="tags/mothernature" component={MotherNatureTag}/>

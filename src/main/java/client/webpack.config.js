@@ -55,20 +55,8 @@ module.exports = {
       FarFarEastTag: 'app/components/tags/FarFarEastTag.jsx',
       HistoryAndMisteryTag: 'app/components/tags/HistoryAndMisteryTag.jsx',
       BikingAndHikingTag: 'app/components/tags/BikingAndHikingTag.jsx',
-
-      // trips
-      Barcelona: 'app/components/trip/Barcelona.jsx',
-      Rome: 'app/components/trip/Rome.jsx',
-      Morocco: 'app/components/trip/Morocco.jsx',
-      Persia: 'app/components/trip/Persia.jsx',
-      Mongolia: 'app/components/trip/Mongolia.jsx',
-      Everest: 'app/components/trip/Everest.jsx',
-      Antarctica: 'app/components/trip/Antarctica.jsx',
-      Brazil: 'app/components/trip/Brazil.jsx',
-      Petra: 'app/components/trip/Petra.jsx',
-      Zambia: 'app/components/trip/Zambia.jsx',
-      Rwanda: 'app/components/trip/Rwanda.jsx',
-      NewTrip: 'app/components/trip/NewTrip.jsx',
+      DetailedTrip: 'app/components/DetailedTrip.jsx',
+      NewTrip: 'app/components/NewTrip.jsx',
 
       // styles
       applicationStyles: 'app/styles/app.css',

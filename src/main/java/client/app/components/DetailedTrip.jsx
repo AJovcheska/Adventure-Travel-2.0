@@ -1,8 +1,9 @@
 var React = require('react');
 var {connect} = require('react-redux');
 var backendApi = require('backendApi');
+var actions = require('actions');
 
-var Petra = React.createClass({
+var DetailedTrip = React.createClass({
   getInitialState: function () {
     return {
       isAddedToFavorites: false,
@@ -10,15 +11,16 @@ var Petra = React.createClass({
     };
   },
   componentDidMount: function () {
-    backendApi.getTripById("2009").then((response) => {
+    var trip = this.props.location.state.trip;
+    var {username} = this.props;
+    backendApi.getTripById(trip.id).then((response) => {
       this.setState({
         availableSeats: response.data.availableSeats
       });
     });
-    var {username} = this.props;
     backendApi.getTripsByUser(username).then((response) => {
       response.map((trip) => {
-        if (trip.id === 2009) {
+        if (trip.id === trip.id) {
           this.setState({
             isAddedToFavorites: true
           });
@@ -28,25 +30,26 @@ var Petra = React.createClass({
   },
   handleFavourites: function () {
     var {username} = this.props;
-    backendApi.addTripForUser(username, "2009").then((response) => {
-      console.log(response);
+    var trip = this.props.location.state.trip;
+    backendApi.addTripForUser(username, trip.id).then((response) => {
       this.setState({
         isAddedToFavorites: true
       });
-      backendApi.getTripById("2009").then((response) => {
-        console.log(response);
+      backendApi.getTripById(trip.id).then((response) => {
         var {availableSeats} = response.data;
-        backendApi.updateSeats("2009", availableSeats - 1).then((response) => {
-          console.log(response);
+        backendApi.updateSeats(trip.id, availableSeats - 1).then((response) => {
+          console.log('Update seats', response);
         });
       });
     }, function (errorMessage) {
-      console.log(errorMessage);
+      console.log('Error', errorMessage);
     });
   },
   render: function () {
     var {username, isLogged} = this.props;
+    var trip = this.props.location.state.trip;
     var favButtonToShow = '';
+    console.log(trip);
 
     if (isLogged) {
       if (username === 'admin') {
@@ -74,9 +77,9 @@ var Petra = React.createClass({
                 <header className="item-header trip-header js-item-header">
                   <div className="col-md-12">
                     <h2 className="detail-sm item-supertitle">
-                      Jordan
+                      {trip.country}
                     </h2>
-                    <h1 className="title-lg item-title trip-title">Jordan: Lost City Of Arabia</h1>
+                    <h1 className="title-lg item-title trip-title">{trip.title}</h1>
                   </div>
                 </header>
               </div>
@@ -85,9 +88,7 @@ var Petra = React.createClass({
                   <section id="event-body" className="item-body">
                     <h3 className="event-body-subheading">HIGHLIGHTS</h3>
                     <ul>
-                      <li>Exploring the ruins of Roman Jerash</li>
-                      <li>Staying with local villagers in the north of the country</li>
-                      <li>Camping in the deserts of Wadi Rum</li>
+                      <li>{trip.highlights}</li>
                     </ul>
                     <section id="event-trip-itinerary">
                       <h5 className="event-body-heading">Itinerary</h5>
@@ -97,17 +98,15 @@ var Petra = React.createClass({
                           Day 1
                         </div>
                         <h6 className="trip-body-title trip-day-title">
-                          Tour starts in Madaba
+                          {trip.titleOne}
                         </h6>
                         <div className="event-body-subheading trip-day-dateline">
-                          Monday, March 4
+                          {trip.dateOne}
                         </div>
                         <ul className="tripsUl">
-                          <li>The tour starts in the the town of Madaba, home to some of the most extraordinary mosaics
-                            in the Middle East.
-                          </li>
+                          <li>{trip.dayOne}</li>
                         </ul>
-                        <img src="../images/petra1.jpg"/>
+                        <img className="detail-image-css" src = {`../images/${trip.imageOne}`}/>
                       </div>
                       <div className="trip-day-wrap">
                         <a name="day2"></a>
@@ -115,17 +114,15 @@ var Petra = React.createClass({
                           Day 2
                         </div>
                         <h6 className="trip-body-title trip-day-title">
-                          Madaba to Jerash
+                          {trip.titleTwo}
                         </h6>
                         <div className="event-body-subheading trip-day-dateline">
-                          Tuesday, March 5
+                          {trip.dateTwo}
                         </div>
                         <ul className="tripsUl">
-                          <li>A busy day ahead of us, we will first visit Madaba’s famous Byzantine Church, before
-                            heading across to Mt Nebo, after which we will head north to the Roman city of Jerash.
-                          </li>
+                          <li>{trip.dayTwo}</li>
                         </ul>
-                        <img src="../images/petra2.jpg"/>
+                        <img className="detail-image-css" src = {`../images/${trip.imageTwo}`}/>
                       </div>
                       <div className="trip-day-wrap">
                         <a name="day3"></a>
@@ -133,18 +130,15 @@ var Petra = React.createClass({
                           Day 3
                         </div>
                         <h6 className="trip-body-title trip-day-title">
-                          Jerash – Ajloun - Orjan
+                          {trip.titleThree}
                         </h6>
                         <div className="event-body-subheading trip-day-dateline">
-                          Wednesday, March 6
+                          {trip.dateThree}
                         </div>
                         <ul className="tripsUl">
-                          <li>This morning we will head to Ajloun’s crusader-era castle before heading to the village of
-                            Rasun for lunch before walking through the hills to Orjan village, where we’ll overnight
-                            with our village host families.
-                          </li>
+                          <li>{trip.dayThree}</li>
                         </ul>
-                        <img src="../images/petra3.jpg"/>
+                        <img className="detail-image-css" src = {`../images/${trip.imageThree}`}/>
                       </div>
                       <div className="trip-day-wrap">
                         <a name="day4"></a>
@@ -152,18 +146,15 @@ var Petra = React.createClass({
                           Day 4
                         </div>
                         <h6 className="trip-body-title trip-day-title">
-                          Orjan – Kerak - Dana Nature Reserve
+                          {trip.titleFour}
                         </h6>
                         <div className="event-body-subheading trip-day-dateline">
-                          Thursday, March 7
+                          {trip.dateFour}
                         </div>
                         <ul className="tripsUl">
-                          <li>This morning we'll take a walk through the surrounding area, before joining up with our
-                            vehicle and head towards the Dana Nature Reserve, stopping off at the stunning Crusader
-                            castle of Kerak on the way.
-                          </li>
+                          <li>{trip.dayFour}</li>
                         </ul>
-                        <img src="../images/petra4.jpg"/>
+                        <img className="detail-image-css" src = {`../images/${trip.imageFour}`}/>
                       </div>
                       <div className="trip-day-wrap">
                         <a name="day5"></a>
@@ -171,17 +162,15 @@ var Petra = React.createClass({
                           Day 5
                         </div>
                         <h6 className="trip-body-title trip-day-title">
-                          Orjan – Kerak - Dana Nature Reserve
+                          {trip.titleFive}
                         </h6>
                         <div className="event-body-subheading trip-day-dateline">
-                          Friday, March 8
+                          {trip.dateFive}
                         </div>
                         <ul className="tripsUl">
-                          <li>Today will be on foot as we follow the Wadi Dana Trail, walking from Dana to Feynan,
-                            covering approximately 14km.
-                          </li>
+                          <li>{trip.dayFive}</li>
                         </ul>
-                        <img src="../images/petra5.jpg"/>
+                        <img className="detail-image-css" src = {`../images/${trip.imageFive}`}/>
                       </div>
                       <div className="trip-day-wrap">
                         <a name="day6"></a>
@@ -189,72 +178,15 @@ var Petra = React.createClass({
                           Day 6
                         </div>
                         <h6 className="trip-body-title trip-day-title">
-                          Dana Nature Reserve
+                          {trip.titleSix}
                         </h6>
                         <div className="event-body-subheading trip-day-dateline">
-                          Saturday, March 9
+                          {trip.dateSix}
                         </div>
                         <ul className="tripsUl">
-                          <li>We’ll head straight to Petra this morning and take a guided tour of the ancient Nabataean
-                            city of Petra.
-                          </li>
+                          <li>{trip.daySix}</li>
                         </ul>
-                        <img src="../images/petra6.jpg"/>
-                      </div>
-                      <div className="trip-day-wrap">
-                        <a name="day7"></a>
-                        <div className="trip-day-nav-num trip-day-body-num">
-                          Day 7
-                        </div>
-                        <h6 className="trip-body-title trip-day-title">
-                          Petra
-                        </h6>
-                        <div className="event-body-subheading trip-day-dateline">
-                          Sunday, March 10
-                        </div>
-                        <ul className="tripsUl">
-                          <li>Today we’ll return to Petra via the “secret road” of al-Madras, and visit the High Place
-                            of Sacrifice, and Royal Tombs.
-                          </li>
-                        </ul>
-                        <img src="../images/petra7.jpg"/>
-                      </div>
-                      <div className="trip-day-wrap">
-                        <a name="day8"></a>
-                        <div className="trip-day-nav-num trip-day-body-num">
-                          Day 8
-                        </div>
-                        <h6 className="trip-body-title trip-day-title">
-                          Petra – Wadi Rum
-                        </h6>
-                        <div className="event-body-subheading trip-day-dateline">
-                          Monday, March 11
-                        </div>
-                        <ul className="tripsUl">
-                          <li>Leaving Petra behind us we strike into the desert of Wadi Rum in 4WD jeeps for a full day
-                            of exploration.
-                          </li>
-                        </ul>
-                        <img src="../images/petra8.jpg"/>
-                      </div>
-                      <div className="trip-day-wrap">
-                        <a name="day9"></a>
-                        <div className="trip-day-nav-num trip-day-body-num">
-                          Day 9
-                        </div>
-                        <h6 className="trip-body-title trip-day-title">
-                          Dead Sea
-                        </h6>
-                        <div className="event-body-subheading trip-day-dateline">
-                          Tuesday, March 12
-                        </div>
-                        <ul className="tripsUl">
-                          <li>We head towards the saline waters of the Dead Sea, the lowest place on earth, where there
-                            will be time to have a float before heading to Amman for our final night.
-                          </li>
-                          <li>Until next time!</li>
-                        </ul>
-                        <img src="../images/petra9.jpg"/>
+                        <img className="detail-image-css" src = {`../images/${trip.imageSix}`}/>
                       </div>
                     </section>
                   </section>
@@ -264,22 +196,19 @@ var Petra = React.createClass({
                         <div className="event-fine-print-body item-body">
                           <div className="title-sm">The Fine Print</div>
                           <div className="event-fine-print-body item-body">
-                            <h3 className="event-body-subheading">YOUR JORDAN TRIP INCLUDES</h3>
+                            <h3 className="event-body-subheading">YOUR ANTARCTICA TRIP INCLUDES</h3>
                             <ul className="tripsUl">
-                              <li>All lodging in double-accommodation rooms at the Hotel Oriente for the duration of the
-                                tour. (Single supplement for a private room is available for $530. Otherwise we'll work
+                              <li>All lodging in double-accommodation rooms at a central hotel for the duration of the
+                                tour. (Single supplement for a private room is available for $725. Otherwise we'll work
                                 to place individuals of the same gender together.)
                               </li>
-                              <li>Daily breakfast at the hotel, five lunches, and two dinners.</li>
-                              <li>Two expert guides, with a great depth and breadth of knowledge about Barcelona, its
-                                elaborate history, and its vibrant arts and culture.
+                              <li>Daily breakfast at the hotel, four lunches, and three dinners.</li>
+                              <li>Two expert guides, with a great depth and breadth of knowledge about Rome’s history,
+                                arts, and culture.
                               </li>
                               <li>Admission to all proposed activities and events.</li>
                               <li>A full briefing packet for each explorer, including logistical and contact
                                 information, recommended reading list, and packing list.
-                              </li>
-                              <li>A curious group of fellow Atlas Obscura explorers, excited to discover all that
-                                Barcelona has to offer!
                               </li>
                             </ul>
                             <h3 className="event-body-subheading"><strong>ACTIVITY LEVEL</strong></h3>
@@ -297,9 +226,9 @@ var Petra = React.createClass({
                               included with the final payment. </p>
                             <h3 className="event-body-subheading">TRAVELERS ARE RESPONSIBLE FOR</h3>
                             <ul className="tripsUl">
-                              <li>Transportation and flights to and from Barcelona.</li>
-                              <li>Transportation from the Barcelona airport (or other origin) to the group's hotel.</li>
-                              <li>Individual travel insurance (optional).</li>
+                              <li>Flights or other transportation to and from Argentina.</li>
+                              <li>Transportation from the Rome airport (or other origin) to the group's hotel.</li>
+                              <li>Travel insurance (recommended).</li>
                               <li>Baggage charges.</li>
                             </ul>
                           </div>
@@ -320,65 +249,24 @@ var Petra = React.createClass({
                     <li>
                       <label className="detail-sm event-details-label">Dates</label>
                       <div className="event-detail">
-                        <div>Sept 06&ndash;Sept 15, 2019</div>
+                        <div>{trip.departureDate}</div>
                       </div>
                     </li>
                     <li>
                       <label className="detail-sm event-details-label">Cost</label>
                       <div className="event-detail">
-                        $2,274.00 USD
+                        ${trip.price},00 USD
                       </div>
                     </li>
                     <li>
                       <label className="detail-sm event-details-label">Itinerary</label>
                       <div className="event-detail">
-                        9 days, 8 nights
+                        {trip.duration} days, {trip.duration -1} nights
                       </div>
                     </li>
                   </ul>
                 </div>
               </div>
-              <nav className="trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print">
-                <h6 className="trip-body-title">Trip Schedule</h6>
-                <ul>
-                  <li className="trip-day-nav-li">
-                    <div className="trip-day-nav-num detail-sm-non-uppercase">Day 1</div>
-                    <a className="detail-md trip-day-nav-link" href="#day1">Tour starts in Madaba</a>
-                  </li>
-                  <li className="trip-day-nav-li">
-                    <div className="trip-day-nav-num detail-sm-non-uppercase">Day 2</div>
-                    <a className="detail-md trip-day-nav-link" href="#day2">Madaba to Jerash</a>
-                  </li>
-                  <li className="trip-day-nav-li">
-                    <div className="trip-day-nav-num detail-sm-non-uppercase">Day 3</div>
-                    <a className="detail-md trip-day-nav-link" href="#day3">Jerash – Ajloun - Orjan</a>
-                  </li>
-                  <li className="trip-day-nav-li">
-                    <div className="trip-day-nav-num detail-sm-non-uppercase">Day 4</div>
-                    <a className="detail-md trip-day-nav-link" href="#day4">Orjan – Kerak - Dana Nature Reserve</a>
-                  </li>
-                  <li className="trip-day-nav-li">
-                    <div className="trip-day-nav-num detail-sm-non-uppercase">Day 5</div>
-                    <a className="detail-md trip-day-nav-link" href="#day5">Orjan – Kerak - Dana Nature Reserve</a>
-                  </li>
-                  <li className="trip-day-nav-li">
-                    <div className="trip-day-nav-num detail-sm-non-uppercase">Day 6</div>
-                    <a className="detail-md trip-day-nav-link" href="#day6">Dana Nature Reserve</a>
-                  </li>
-                  <li className="trip-day-nav-li">
-                    <div className="trip-day-nav-num detail-sm-non-uppercase">Day 7</div>
-                    <a className="detail-md trip-day-nav-link" href="#day7">Petra</a>
-                  </li>
-                  <li className="trip-day-nav-li">
-                    <div className="trip-day-nav-num detail-sm-non-uppercase">Day 8</div>
-                    <a className="detail-md trip-day-nav-link" href="#day8">Petra – Wadi Rum</a>
-                  </li>
-                  <li className="trip-day-nav-li">
-                    <div className="trip-day-nav-num detail-sm-non-uppercase">Day 9</div>
-                    <a className="detail-md trip-day-nav-link" href="#day9">Dead Sea</a>
-                  </li>
-                </ul>
-              </nav>
               <nav className="trip-day-nav trip-sidebar-wrap hidden-xs hidden-sm hidden-print">
                 {favButtonToShow}
               </nav>
@@ -400,4 +288,4 @@ module.exports = connect(
       username: state.setLoggedUser
     };
   }
-)(Petra);
+)(DetailedTrip);

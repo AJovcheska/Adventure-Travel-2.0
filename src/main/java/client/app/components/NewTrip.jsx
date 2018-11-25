@@ -125,7 +125,7 @@ var NewTrip = React.createClass({
                   </ul>
                 </div>
               </div>
-              {showAddToFavorites}
+              {favButtonToShow}
             </aside>
           </div>
         </div>

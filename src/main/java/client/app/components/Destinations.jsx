@@ -68,7 +68,7 @@ var Destinations = React.createClass({
       regions.push('Africa');
     }
     if (Antartica) {
-      regions.push('Antarctica');
+      regions.push('DetailedTrip');
     }
     if (Asia) {
       regions.push('Asia');

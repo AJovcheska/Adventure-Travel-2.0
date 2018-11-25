@@ -41,4 +41,32 @@ public class Trip {
     private String image;
 
     private Integer availableSeats;
+
+    private String dayOne;
+    private String dayTwo;
+    private String dayThree;
+    private String dayFour;
+    private String dayFive;
+    private String daySix;
+
+    private String imageOne;
+    private String imageTwo;
+    private String imageThree;
+    private String imageFour;
+    private String imageFive;
+    private String imageSix;
+
+    private String dateOne;
+    private String dateTwo;
+    private String dateThree;
+    private String dateFour;
+    private String dateFive;
+    private String dateSix;
+
+    private String titleOne;
+    private String titleTwo;
+    private String titleThree;
+    private String titleFour;
+    private String titleFive;
+    private String titleSix;
 }

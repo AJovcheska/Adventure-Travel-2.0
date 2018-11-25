@@ -25,6 +25,34 @@ public final class TripDtoToTripMapper {
         trip.setHighlights(tripDto.getHighlights());
         trip.setImage(tripDto.getImage());
         trip.setAvailableSeats(tripDto.getAvailableSeats());
+
+        trip.setImageOne(tripDto.getImageOne());
+        trip.setImageTwo(tripDto.getImageTwo());
+        trip.setImageThree(tripDto.getImageThree());
+        trip.setImageFour(tripDto.getImageFour());
+        trip.setImageFive(tripDto.getImageFive());
+        trip.setImageSix(tripDto.getImageSix());
+
+        trip.setTitleOne(tripDto.getTitleOne());
+        trip.setTitleTwo(tripDto.getTitleTwo());
+        trip.setTitleThree(tripDto.getTitleThree());
+        trip.setTitleFour(tripDto.getTitleFour());
+        trip.setTitleFive(tripDto.getTitleFive());
+        trip.setTitleSix(tripDto.getTitleSix());
+
+        trip.setDayOne(tripDto.getDayOne());
+        trip.setDayTwo(tripDto.getDayTwo());
+        trip.setDayThree(tripDto.getDayThree());
+        trip.setDayFour(tripDto.getDayFour());
+        trip.setDayFive(tripDto.getDayFive());
+        trip.setDaySix(tripDto.getDaySix());
+
+        trip.setDateOne(tripDto.getDateOne());
+        trip.setDateTwo(tripDto.getDateTwo());
+        trip.setDateThree(tripDto.getDateThree());
+        trip.setDateFour(tripDto.getDateFour());
+        trip.setDateFive(tripDto.getDateFive());
+        trip.setDateSix(tripDto.getDateSix());
         return trip;
     }
 }

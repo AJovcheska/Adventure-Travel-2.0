@@ -154,7 +154,7 @@ var CreateTrip = React.createClass({
                       <h5 className="event-body-heading sort-type-trip">Select continent </h5>
                       <div className="sort-form">
                         <div className="createTripTags"><input type="radio" value="Africa" checked={this.state.continent === 'Africa'} onChange={this.handleChangeContinent}>Africa</input></div>
-                        <div className="createTripTags"><input type="radio" value="Antarctica" checked={this.state.continent === 'Antarctica'} onChange={this.handleChangeContinent}>Antarctica</input></div>
+                        <div className="createTripTags"><input type="radio" value="Antarctica" checked={this.state.continent === 'DetailedTrip'} onChange={this.handleChangeContinent}>Antarctica</input></div>
                         <div className="createTripTags"><input type="radio" value="Asia" checked={this.state.continent === 'Asia'} onChange={this.handleChangeContinent}>Asia</input></div>
                         <div className="createTripTags"><input type="radio" value="Europe" checked={this.state.continent === 'Europe'} onChange={this.handleChangeContinent}>Europe</input></div>
                         <div className="createTripTags"><input type="radio" value="North America" checked={this.state.continent === 'North America'} onChange={this.handleChangeContinent}>North America</input></div>
