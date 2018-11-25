@@ -13,14 +13,15 @@ var DetailedTrip = React.createClass({
   componentDidMount: function () {
     var trip = this.props.location.state.trip;
     var {username} = this.props;
+    console.log('Trip mounted', trip);
     backendApi.getTripById(trip.id).then((response) => {
       this.setState({
         availableSeats: response.data.availableSeats
       });
     });
     backendApi.getTripsByUser(username).then((response) => {
-      response.map((trip) => {
-        if (trip.id === trip.id) {
+      response.map((tp) => {
+        if (trip.id === tp.id) {
           this.setState({
             isAddedToFavorites: true
           });
@@ -49,7 +50,6 @@ var DetailedTrip = React.createClass({
     var {username, isLogged} = this.props;
     var trip = this.props.location.state.trip;
     var favButtonToShow = '';
-    console.log(trip);
 
     if (isLogged) {
       if (username === 'admin') {
@@ -62,7 +62,7 @@ var DetailedTrip = React.createClass({
           if (this.state.availableSeats > 0) {
             favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>;
           } else {
-            favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>No more available seats</button>;
+            favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>No longer available</button>;
           }
         }
       }
@@ -196,7 +196,7 @@ var DetailedTrip = React.createClass({
                         <div className="event-fine-print-body item-body">
                           <div className="title-sm">The Fine Print</div>
                           <div className="event-fine-print-body item-body">
-                            <h3 className="event-body-subheading">YOUR ANTARCTICA TRIP INCLUDES</h3>
+                            <h3 className="event-body-subheading">YOUR {trip.country} TRIP INCLUDES</h3>
                             <ul className="tripsUl">
                               <li>All lodging in double-accommodation rooms at a central hotel for the duration of the
                                 tour. (Single supplement for a private room is available for $725. Otherwise we'll work

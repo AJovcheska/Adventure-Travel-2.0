@@ -62,7 +62,7 @@ var NewTrip = React.createClass({
           if (this.state.availableSeats > 0) {
             favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>Add to favourites</button>;
           } else {
-            favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>No more available seats</button>;
+            favButtonToShow = <button className="favouriteButton" onClick={this.handleFavourites}>No longer available</button>;
           }
         }
       }

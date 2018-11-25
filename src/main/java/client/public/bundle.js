@@ -49514,14 +49514,15 @@
 	    var trip = this.props.location.state.trip;
 	    var username = this.props.username;
 
+	    console.log('Trip mounted', trip);
 	    backendApi.getTripById(trip.id).then(function (response) {
 	      _this.setState({
 	        availableSeats: response.data.availableSeats
 	      });
 	    });
 	    backendApi.getTripsByUser(username).then(function (response) {
-	      response.map(function (trip) {
-	        if (trip.id === trip.id) {
+	      response.map(function (tp) {
+	        if (trip.id === tp.id) {
 	          _this.setState({
 	            isAddedToFavorites: true
 	          });
@@ -49557,7 +49558,6 @@
 
 	    var trip = this.props.location.state.trip;
 	    var favButtonToShow = '';
-	    console.log(trip);
 
 	    if (isLogged) {
 	      if (username === 'admin') {
@@ -49584,7 +49584,7 @@
 	            favButtonToShow = React.createElement(
 	              'button',
 	              { className: 'favouriteButton', onClick: this.handleFavourites },
-	              'No more available seats'
+	              'No longer available'
 	            );
 	          }
 	        }
@@ -49861,7 +49861,9 @@
 	                          React.createElement(
 	                            'h3',
 	                            { className: 'event-body-subheading' },
-	                            'YOUR ANTARCTICA TRIP INCLUDES'
+	                            'YOUR ',
+	                            trip.country,
+	                            ' TRIP INCLUDES'
 	                          ),
 	                          React.createElement(
 	                            'ul',
@@ -50159,7 +50161,7 @@
 	            favButtonToShow = React.createElement(
 	              'button',
 	              { className: 'favouriteButton', onClick: this.handleFavourites },
-	              'No more available seats'
+	              'No longer available'
 	            );
 	          }
 	        }
