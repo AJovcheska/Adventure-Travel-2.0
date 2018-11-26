@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -113,6 +114,13 @@ public class TripController {
     @RequestMapping(method = RequestMethod.PUT, value = "nonsecured/update/seats", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateAvailableSeats(@RequestParam String tripId, @RequestParam int number) {
         tripService.updateAvailableSeats(tripId, number);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.PUT, value = "nonsecured/edit/trip", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity editTripById(@RequestBody Trip trip) {
+        tripService.editTripById(trip);
         return new ResponseEntity(HttpStatus.OK);
     }
 }

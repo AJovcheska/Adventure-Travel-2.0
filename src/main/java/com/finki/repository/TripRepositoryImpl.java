@@ -110,6 +110,37 @@ public class TripRepositoryImpl implements TripRepository {
     }
 
     @Override
+    public void editTripById(Trip trip) {
+        MapSqlParameterSource map = new MapSqlParameterSource();
+        map.addValue("country", trip.getCountry());
+        map.addValue("title", trip.getTitle());
+        map.addValue("price", trip.getPrice());
+        map.addValue("duration", trip.getDuration());
+        map.addValue("date", trip.getDepartureDate());
+        map.addValue("highlights", trip.getHighlights());
+        map.addValue("dayOne", trip.getDayOne());
+        map.addValue("dayTwo", trip.getDayTwo());
+        map.addValue("dayThree", trip.getDayThree());
+        map.addValue("dayFour", trip.getDayFour());
+        map.addValue("dayFive", trip.getDayFive());
+        map.addValue("daySix", trip.getDaySix());
+        map.addValue("dateOne", trip.getDateOne());
+        map.addValue("dateTwo", trip.getDateTwo());
+        map.addValue("dateThree", trip.getDateThree());
+        map.addValue("dateFour", trip.getDateFour());
+        map.addValue("dateFive", trip.getDateFive());
+        map.addValue("dateSix", trip.getDateSix());
+        map.addValue("titleOne", trip.getTitleOne());
+        map.addValue("titleTwo", trip.getTitleTwo());
+        map.addValue("titleThree", trip.getTitleThree());
+        map.addValue("titleFour", trip.getTitleFour());
+        map.addValue("titleFive", trip.getTitleFive());
+        map.addValue("titleSix", trip.getTitleSix());
+        map.addValue("id", trip.getId());
+        jdbcTemplate.update(tripQueries.getEditTrip(), map);
+    }
+
+    @Override
     public List<TripDto> findSelectedTrips(List<String> regions, List<String> categories, String sortBy, boolean ascending) {
         String selectAll = tripQueries.getSelectAll();
         StringBuilder sb = new StringBuilder();

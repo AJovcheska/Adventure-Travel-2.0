@@ -38,4 +38,7 @@ public interface TripRepository {
     @Transactional(readOnly = true)
     void updateAvailableSeats(String tripId, int number);
 
+    @Transactional(readOnly = true)
+    void editTripById(Trip trip);
+
 }

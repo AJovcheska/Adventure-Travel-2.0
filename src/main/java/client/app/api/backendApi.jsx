@@ -30,6 +30,8 @@ const ADD_TRIP_URL = "http://localhost:8080/api/nonsecured/trip";
 
 const UPDATE_SEATS_URL = "http://localhost:8080/api/nonsecured/update/seats?";
 
+const EDIT_TRIP_URL = "http://localhost:8080/api/nonsecured/edit/trip";
+
 module.exports = {
   getTemp: function (location) {
     var encodedLocation = encodeURIComponent(location);
@@ -291,6 +293,42 @@ module.exports = {
     var encodedNumber = decodeURIComponent(number);
     var url = `${UPDATE_SEATS_URL}tripId=${encodedTripId}&number=${encodedNumber}`;
     return axios.put(url,
+      { headers: {"Content-Type": "application/json"}
+      }) .then(r => console.log(r.status))
+      .catch(e => console.log(e));
+  },
+  editTripById: function(id, country, title, duration, price, date, highlights, dayOne, dayTwo, dayThree, dayFour, dayFive, daySix,
+                         dateOne, dateTwo, dateThree, dateFour, dateFive, dateSix,
+                         titleOne, titleTwo, titleThree, titleFour, titleFive, titleSix) {
+
+    return axios.put(EDIT_TRIP_URL,
+      {
+        id: id,
+        country: country,
+        duration: duration,
+        price: price,
+        duration_date: date,
+        title: title,
+        highlights: highlights,
+        dayOne: dayOne,
+        dayTwo: dayTwo,
+        dayThree: dayThree,
+        dayFour: dayFour,
+        dayFive: dayFive,
+        daySix: daySix,
+        dateOne: dateOne,
+        dateTwo: dateTwo,
+        dateThree: dateThree,
+        dateFour: dateFour,
+        dateFive: dateFive,
+        dateSix: dateSix,
+        titleOne: titleOne,
+        titleTwo: titleTwo,
+        titleThree: titleThree,
+        titleFour: titleFour,
+        titleFive: titleFive,
+        titleSix: titleSix
+      },
       { headers: {"Content-Type": "application/json"}
       }) .then(r => console.log(r.status))
       .catch(e => console.log(e));

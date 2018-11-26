@@ -27344,6 +27344,8 @@
 
 	var UPDATE_SEATS_URL = "http://localhost:8080/api/nonsecured/update/seats?";
 
+	var EDIT_TRIP_URL = "http://localhost:8080/api/nonsecured/edit/trip";
+
 	module.exports = {
 	  getTemp: function getTemp(location) {
 	    var encodedLocation = encodeURIComponent(location);
@@ -27607,6 +27609,41 @@
 	    var encodedNumber = decodeURIComponent(number);
 	    var url = UPDATE_SEATS_URL + 'tripId=' + encodedTripId + '&number=' + encodedNumber;
 	    return axios.put(url, { headers: { "Content-Type": "application/json" }
+	    }).then(function (r) {
+	      return console.log(r.status);
+	    }).catch(function (e) {
+	      return console.log(e);
+	    });
+	  },
+	  editTripById: function editTripById(id, country, title, duration, price, date, highlights, dayOne, dayTwo, dayThree, dayFour, dayFive, daySix, dateOne, dateTwo, dateThree, dateFour, dateFive, dateSix, titleOne, titleTwo, titleThree, titleFour, titleFive, titleSix) {
+
+	    return axios.put(EDIT_TRIP_URL, {
+	      id: id,
+	      country: country,
+	      duration: duration,
+	      price: price,
+	      duration_date: date,
+	      title: title,
+	      highlights: highlights,
+	      dayOne: dayOne,
+	      dayTwo: dayTwo,
+	      dayThree: dayThree,
+	      dayFour: dayFour,
+	      dayFive: dayFive,
+	      daySix: daySix,
+	      dateOne: dateOne,
+	      dateTwo: dateTwo,
+	      dateThree: dateThree,
+	      dateFour: dateFour,
+	      dateFive: dateFive,
+	      dateSix: dateSix,
+	      titleOne: titleOne,
+	      titleTwo: titleTwo,
+	      titleThree: titleThree,
+	      titleFour: titleFour,
+	      titleFive: titleFive,
+	      titleSix: titleSix
+	    }, { headers: { "Content-Type": "application/json" }
 	    }).then(function (r) {
 	      return console.log(r.status);
 	    }).catch(function (e) {
@@ -50372,7 +50409,42 @@
 	      });
 	    });
 	  },
-	  handleEditTrip: function handleEditTrip() {},
+	  handleEditTrip: function handleEditTrip() {
+	    var _this2 = this;
+
+	    var trip = this.props.location.state.trip;
+
+	    var id = trip.id;
+	    var highlights = this.refs.highlights.value;
+	    var country = this.refs.country.value;
+	    var title = this.refs.title.value;
+	    var titleOne = this.refs.titleOne.value;
+	    var titleTwo = this.refs.titleTwo.value;
+	    var titleThree = this.refs.titleThree.value;
+	    var titleFour = this.refs.titleFour.value;
+	    var titleFive = this.refs.titleFive.value;
+	    var titleSix = this.refs.titleSix.value;
+	    var duration = this.refs.duration.value;
+	    var date = this.refs.departureDate.value;
+	    var price = this.refs.price.value;
+	    var dayOne = this.refs.dayOne.value;
+	    var dayTwo = this.refs.dayTwo.value;
+	    var dayThree = this.refs.dayThree.value;
+	    var dayFour = this.refs.dayFour.value;
+	    var dayFive = this.refs.dayFive.value;
+	    var daySix = this.refs.daySix.value;
+	    var dateOne = this.refs.dateOne.value;
+	    var dateTwo = this.refs.dateTwo.value;
+	    var dateThree = this.refs.dateThree.value;
+	    var dateFour = this.refs.dateFour.value;
+	    var dateFive = this.refs.dateFive.value;
+	    var dateSix = this.refs.dateSix.value;
+	    backendApi.editTripById(id, country, title, duration, price, date, highlights, dayOne, dayTwo, dayThree, dayFour, dayFive, daySix, dateOne, dateTwo, dateThree, dateFour, dateFive, dateSix, titleOne, titleTwo, titleThree, titleFour, titleFive, titleSix).then(function (response) {
+	      var history = _this2.props.history;
+
+	      history.pushState(null, 'destinations');
+	    });
+	  },
 	  render: function render() {
 	    var trip = this.props.location.state.trip;
 
@@ -50400,12 +50472,12 @@
 	                  React.createElement(
 	                    'h2',
 	                    { className: 'detail-sm item-supertitle' },
-	                    React.createElement('input', { className: 'inputFieldsCreateTrip', type: 'text', placeholder: 'Enter title', ref: 'title', value: trip.country })
+	                    React.createElement('input', { className: 'inputFieldsCreateTrip', type: 'text', placeholder: 'Enter title', ref: 'country', defaultValue: trip.country })
 	                  ),
 	                  React.createElement(
 	                    'h1',
 	                    { className: 'title-lg item-title trip-title' },
-	                    React.createElement('input', { className: 'inputFieldsCreateTrip', type: 'text', placeholder: 'Enter title', ref: 'title', value: trip.title })
+	                    React.createElement('input', { className: 'inputFieldsCreateTrip', type: 'text', placeholder: 'Enter title', ref: 'title', defaultValue: trip.title })
 	                  )
 	                )
 	              )
@@ -50430,7 +50502,7 @@
 	                    React.createElement(
 	                      'li',
 	                      null,
-	                      React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.highlights })
+	                      React.createElement('textarea', { placeholder: 'Enter description', ref: 'highlights', defaultValue: trip.highlights })
 	                    )
 	                  ),
 	                  React.createElement(
@@ -50453,12 +50525,12 @@
 	                      React.createElement(
 	                        'h6',
 	                        { className: 'trip-body-title trip-day-title' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleOne })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'titleOne', defaultValue: trip.titleOne })
 	                      ),
 	                      React.createElement(
 	                        'div',
 	                        { className: 'event-body-subheading trip-day-dateline' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateOne })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'dateOne', defaultValue: trip.dateOne })
 	                      ),
 	                      React.createElement(
 	                        'ul',
@@ -50466,7 +50538,7 @@
 	                        React.createElement(
 	                          'li',
 	                          null,
-	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dayOne })
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'dayOne', defaultValue: trip.dayOne })
 	                        )
 	                      )
 	                    ),
@@ -50482,12 +50554,12 @@
 	                      React.createElement(
 	                        'h6',
 	                        { className: 'trip-body-title trip-day-title' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleTwo })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'titleTwo', defaultValue: trip.titleTwo })
 	                      ),
 	                      React.createElement(
 	                        'div',
 	                        { className: 'event-body-subheading trip-day-dateline' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateTwo })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'dateTwo', defaultValue: trip.dateTwo })
 	                      ),
 	                      React.createElement(
 	                        'ul',
@@ -50495,7 +50567,7 @@
 	                        React.createElement(
 	                          'li',
 	                          null,
-	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dayTwo })
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'dayTwo', defaultValue: trip.dayTwo })
 	                        )
 	                      )
 	                    ),
@@ -50511,12 +50583,12 @@
 	                      React.createElement(
 	                        'h6',
 	                        { className: 'trip-body-title trip-day-title' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleThree })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'titleThree', defaultValue: trip.titleThree })
 	                      ),
 	                      React.createElement(
 	                        'div',
 	                        { className: 'event-body-subheading trip-day-dateline' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateThree })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'dateThree', defaultValue: trip.dateThree })
 	                      ),
 	                      React.createElement(
 	                        'ul',
@@ -50524,7 +50596,7 @@
 	                        React.createElement(
 	                          'li',
 	                          null,
-	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dayThree })
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'dayThree', defaultValue: trip.dayThree })
 	                        )
 	                      )
 	                    ),
@@ -50540,12 +50612,12 @@
 	                      React.createElement(
 	                        'h6',
 	                        { className: 'trip-body-title trip-day-title' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleFour })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'titleFour', defaultValue: trip.titleFour })
 	                      ),
 	                      React.createElement(
 	                        'div',
 	                        { className: 'event-body-subheading trip-day-dateline' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateFour })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'dateFour', defaultValue: trip.dateFour })
 	                      ),
 	                      React.createElement(
 	                        'ul',
@@ -50553,7 +50625,7 @@
 	                        React.createElement(
 	                          'li',
 	                          null,
-	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dayFour })
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'dayFour', defaultValue: trip.dayFour })
 	                        )
 	                      )
 	                    ),
@@ -50569,12 +50641,12 @@
 	                      React.createElement(
 	                        'h6',
 	                        { className: 'trip-body-title trip-day-title' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleFive })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'titleFive', defaultValue: trip.titleFive })
 	                      ),
 	                      React.createElement(
 	                        'div',
 	                        { className: 'event-body-subheading trip-day-dateline' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateFive })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'dateFive', defaultValue: trip.dateFive })
 	                      ),
 	                      React.createElement(
 	                        'ul',
@@ -50582,7 +50654,7 @@
 	                        React.createElement(
 	                          'li',
 	                          null,
-	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dayFive })
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'dayFive', defaultValue: trip.dayFive })
 	                        )
 	                      )
 	                    ),
@@ -50598,12 +50670,12 @@
 	                      React.createElement(
 	                        'h6',
 	                        { className: 'trip-body-title trip-day-title' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.titleSix })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'titleSix', defaultValue: trip.titleSix })
 	                      ),
 	                      React.createElement(
 	                        'div',
 	                        { className: 'event-body-subheading trip-day-dateline' },
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.dateSix })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'dateSix', defaultValue: trip.dateSix })
 	                      ),
 	                      React.createElement(
 	                        'ul',
@@ -50611,15 +50683,15 @@
 	                        React.createElement(
 	                          'li',
 	                          null,
-	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.daySix })
+	                          React.createElement('textarea', { placeholder: 'Enter description', ref: 'daySix', defaultValue: trip.daySix })
 	                        )
 	                      )
 	                    )
 	                  ),
 	                  React.createElement(
 	                    'button',
-	                    { onClick: this.handleEditTrip },
-	                    'Submit changes'
+	                    { type: 'submit', onClick: this.handleEditTrip },
+	                    'Edit trip'
 	                  )
 	                )
 	              )
@@ -50651,7 +50723,7 @@
 	                      React.createElement(
 	                        'div',
 	                        null,
-	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.departureDate })
+	                        React.createElement('textarea', { placeholder: 'Enter description', ref: 'departureDate', defaultValue: trip.departureDate })
 	                      )
 	                    )
 	                  ),
@@ -50666,7 +50738,7 @@
 	                    React.createElement(
 	                      'div',
 	                      { className: 'event-detail' },
-	                      React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.price })
+	                      React.createElement('textarea', { placeholder: 'Enter description', ref: 'price', defaultValue: trip.price })
 	                    )
 	                  ),
 	                  React.createElement(
@@ -50680,7 +50752,7 @@
 	                    React.createElement(
 	                      'div',
 	                      { className: 'event-detail' },
-	                      React.createElement('textarea', { placeholder: 'Enter description', ref: 'description', value: trip.duration })
+	                      React.createElement('textarea', { placeholder: 'Enter description', ref: 'duration', defaultValue: trip.duration })
 	                    )
 	                  )
 	                )

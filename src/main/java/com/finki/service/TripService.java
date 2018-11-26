@@ -88,4 +88,8 @@ public class TripService {
         tripRepository.updateAvailableSeats(tripId, number);
     }
 
+    public void editTripById(Trip trip) {
+        tripRepository.editTripById(trip);
+    }
+
 }

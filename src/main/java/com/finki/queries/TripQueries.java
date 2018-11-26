@@ -36,6 +36,9 @@ public class TripQueries {
 
     @Value("${update-seats}")
     private String updateAvailableSeats;
+
+    @Value("${edit-trip}")
+    private String editTrip;
 }
 
 
