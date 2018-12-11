@@ -95,7 +95,7 @@ public class TripRepositoryImpl implements TripRepository {
         map.addValue("destination", trip.getDestination());
         map.addValue("rating", trip.getRating());
         map.addValue("description", trip.getDescription());
-        map.addValue("highlights", trip.getDescription());
+        map.addValue("highlights", trip.getHighlights());
         map.addValue("image", trip.getImage());
         jdbcTemplate.update(tripQueries.getAddTrip(),
                 map);

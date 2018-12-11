@@ -65,7 +65,7 @@ create table trip (
   departure_date varchar2(50),
   end_date_to_sign date,
   destination varchar2(40),
-  description varchar2(500),
+  description varchar2(2000),
   highlights varchar2(1000),
   image varchar2(200),
   availableSeats number (19, 0),

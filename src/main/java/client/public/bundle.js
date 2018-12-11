@@ -32357,9 +32357,12 @@
 	var DatePicker = __webpack_require__(308);
 	var moment = __webpack_require__(310);
 
-	var _require = __webpack_require__(293),
-	    CountryDropdown = _require.CountryDropdown,
-	    RegionDropdown = _require.RegionDropdown;
+	var _require = __webpack_require__(225),
+	    connect = _require.connect;
+
+	var _require2 = __webpack_require__(293),
+	    CountryDropdown = _require2.CountryDropdown,
+	    RegionDropdown = _require2.RegionDropdown;
 
 	var CreateTrip = React.createClass({
 	  displayName: 'CreateTrip',
@@ -32432,35 +32435,9 @@
 	    }
 
 	    backendApi.addTrip(category, continent, country, title, costs, tags, duration, dates, null, destination, description, highlights, image).then(function (response) {
-	      if (response.status === 200) {
-	        _this.refs.title.value = '';
-	        _this.refs.highlights.value = '';
-	        _this.refs.description.value = '';
-	        _this.refs.dates.value = '';
-	        _this.refs.costs.value = '';
-	        _this.refs.duration.value = '';
-	        _this.refs.destination.value = '';
-	        _this.refs.category.value = '';
-	        _this.refs.architecturalWonders.checked = null;
-	        _this.refs.motherNature.checked = false;
-	        _this.refs.art.checked = false;
-	        _this.refs.ice.checked = false;
-	        _this.refs.fauna.checked = false;
-	        _this.refs.farEast.checked = false;
-	        _this.refs.historyMistery.checked = false;
-	        _this.refs.mountains.checked = false;
-	        _this.refs.biking.checked = false;
-	        _this.refs.photoBomb.checked = false;
-	        _this.setState({
-	          destination: null,
-	          category: null,
-	          selectedOption: null,
-	          selectedFile: null,
-	          startDate: moment(),
-	          country: '',
-	          continent: ''
-	        });
-	      }
+	      var history = _this.props.history;
+
+	      history.pushState(null, 'destinations');
 	    }, function (errorMessage) {
 	      console.log(errorMessage);
 	    });
@@ -32902,7 +32879,15 @@
 	  }
 	});
 
-	module.exports = CreateTrip;
+	module.exports = connect(function (state) {
+	  return {
+	    user: state.setUserObject,
+	    isLogged: state.setIsUserLogged,
+	    accessToken: state.setAccessToken,
+	    trips: state.setTripsForLoggedUser,
+	    username: state.setLoggedUser
+	  };
+	})(CreateTrip);
 
 /***/ },
 /* 308 */

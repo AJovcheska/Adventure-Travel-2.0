@@ -2,6 +2,7 @@ var React = require('react');
 var backendApi = require('backendApi');
 var DatePicker = require('react-datepicker');
 var moment = require('moment');
+var {connect} = require('react-redux');
 var {CountryDropdown, RegionDropdown} = require('react-country-region-selector');
 
 var CreateTrip = React.createClass({
@@ -71,35 +72,8 @@ var CreateTrip = React.createClass({
     }
 
     backendApi.addTrip(category, continent, country, title, costs, tags, duration, dates, null, destination, description, highlights, image).then((response) => {
-      if (response.status === 200) {
-        this.refs.title.value = '';
-        this.refs.highlights.value = '';
-        this.refs.description.value = '';
-        this.refs.dates.value = '';
-        this.refs.costs.value = '';
-        this.refs.duration.value = '';
-        this.refs.destination.value = '';
-        this.refs.category.value = '';
-        this.refs.architecturalWonders.checked = null;
-        this.refs.motherNature.checked = false;
-        this.refs.art.checked = false;
-        this.refs.ice.checked = false;
-        this.refs.fauna.checked = false;
-        this.refs.farEast.checked = false;
-        this.refs.historyMistery.checked = false;
-        this.refs.mountains.checked = false;
-        this.refs.biking.checked = false;
-        this.refs.photoBomb.checked = false;
-        this.setState({
-          destination: null,
-          category: null,
-          selectedOption: null,
-          selectedFile: null,
-          startDate: moment(),
-          country: '',
-          continent: ''
-        });
-      }
+      var {history} = this.props;
+      history.pushState(null, 'destinations');
     }, function (errorMessage) {
       console.log(errorMessage);
     });
@@ -250,4 +224,14 @@ var CreateTrip = React.createClass({
   }
 });
 
-module.exports = CreateTrip;
+module.exports = connect(
+  (state) => {
+    return {
+      user: state.setUserObject,
+      isLogged: state.setIsUserLogged,
+      accessToken: state.setAccessToken,
+      trips: state.setTripsForLoggedUser,
+      username: state.setLoggedUser
+    };
+  }
+)(CreateTrip);
